@@ -1,12 +1,14 @@
 <!doctype html>
 <html lang="de">
+
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>QM-Portal – Intensivpflege-Halle-GmbH</title>
 
 <style>
+
 :root{
     --bg:#f4f7f8;
     --card:#ffffff;
@@ -32,9 +34,15 @@ body{
     color:var(--text);
 }
 
+/* HEADER */
+
 header{
-    background:linear-gradient(135deg,var(--accent2),var(--accent));
-    color:#fff;
+    background:linear-gradient(
+        135deg,
+        var(--accent2),
+        var(--accent)
+    );
+    color:white;
     padding:34px 20px;
 }
 
@@ -46,8 +54,8 @@ header{
 .brand{
     display:flex;
     justify-content:space-between;
-    gap:20px;
     align-items:center;
+    gap:20px;
 }
 
 .brand h1{
@@ -70,12 +78,15 @@ header{
     font-weight:700;
 }
 
+
+/* NAVIGATION */
+
 nav{
-    background:#fff;
+    background:white;
     border-bottom:1px solid var(--line);
     position:sticky;
     top:0;
-    z-index:5;
+    z-index:10;
 }
 
 nav .wrap{
@@ -96,6 +107,9 @@ nav a{
 nav a:hover{
     background:#eaf5f5;
 }
+
+
+/* MAIN */
 
 main{
     padding:30px 16px;
@@ -133,23 +147,29 @@ h3{
     color:var(--muted);
 }
 
+
+/* GRID */
+
 .grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:16px;
 }
 
-.grid3{
+.folder-grid{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:16px;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
 }
+
+
+/* DOKUMENT-KARTEN */
 
 .item{
     padding:18px;
     border:1px solid var(--line);
     border-radius:10px;
-    background:#fff;
+    background:white;
 }
 
 .item strong{
@@ -157,20 +177,24 @@ h3{
     margin-bottom:7px;
 }
 
-.search{
-    width:100%;
-    padding:13px 15px;
-    border:1px solid var(--line);
-    border-radius:10px;
-    font-size:16px;
-    margin:10px 0 18px;
+.file-icon{
+    font-size:32px;
+    margin-bottom:10px;
 }
+
+.folder-icon{
+    font-size:42px;
+    margin-bottom:10px;
+}
+
+
+/* BUTTONS */
 
 .button{
     display:inline-block;
     border:0;
     background:var(--accent);
-    color:#fff;
+    color:white;
     padding:10px 14px;
     border-radius:8px;
     cursor:pointer;
@@ -182,25 +206,56 @@ h3{
     background:var(--accent2);
 }
 
-.file-icon{
-    font-size:30px;
-    margin-bottom:10px;
+.folder-button{
+    background:var(--accent2);
 }
 
-.file-type{
-    display:inline-block;
-    font-size:12px;
-    font-weight:bold;
-    padding:4px 8px;
-    border-radius:6px;
+.folder-button:hover{
+    background:var(--accent);
+}
+
+
+/* SUCHFELD */
+
+.search{
+    width:100%;
+    padding:13px 15px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    font-size:16px;
+    margin:10px 0 18px;
+}
+
+
+/* ORDNER-INHALT */
+
+.folder-content{
+    display:none;
+    margin-top:20px;
+}
+
+.folder-content.active{
+    display:block;
+}
+
+.folder-header{
     background:#eaf5f5;
-    color:var(--accent2);
-    margin-bottom:10px;
+    border:1px solid #c9e5e6;
+    padding:18px;
+    border-radius:10px;
+    margin-bottom:16px;
 }
 
-section{
-    scroll-margin-top:70px;
+.back-button{
+    background:#61747b;
 }
+
+.back-button:hover{
+    background:#17313a;
+}
+
+
+/* FOOTER */
 
 footer{
     margin-top:30px;
@@ -213,11 +268,14 @@ footer{
     font-size:14px;
 }
 
+
+/* MOBILE */
+
 @media(max-width:750px){
 
     .hero,
     .grid,
-    .grid3{
+    .folder-grid{
         grid-template-columns:1fr;
     }
 
@@ -229,526 +287,702 @@ footer{
         margin-top:15px;
     }
 }
+
 </style>
 </head>
 
+
 <body>
 
-<!-- =========================
-     KOPFBEREICH
-========================= -->
+
+<!-- =====================================
+     HEADER
+===================================== -->
 
 <header>
 
-    <div class="wrap brand">
+<div class="wrap brand">
 
-        <div>
-            <h1>QM-Portal</h1>
+<div>
 
-            <p>
-                Qualitätsmanagement · Intensivpflege-Halle-GmbH
-            </p>
-        </div>
+<h1>
+QM-Portal
+</h1>
 
-        <span class="badge">
-            Interne QM-Übersicht
-        </span>
+<p>
+Qualitätsmanagement · Intensivpflege-Halle-GmbH
+</p>
 
-    </div>
+</div>
+
+<span class="badge">
+Interne QM-Übersicht
+</span>
+
+</div>
 
 </header>
 
 
-<!-- =========================
+<!-- =====================================
      NAVIGATION
-========================= -->
+===================================== -->
 
 <nav>
 
-    <div class="wrap">
+<div class="wrap">
 
-        <a href="#start">Start</a>
+<a href="#start">
+Start
+</a>
 
-        <a href="#qm">QM-Handbuch</a>
+<a href="#qm">
+QM-Handbuch
+</a>
 
-        <a href="#standards">Standards</a>
+<a href="#anweisungen">
+Anweisungen
+</a>
 
-        <a href="#checklisten">Checklisten</a>
+<a href="#standards">
+Standards
+</a>
 
-        <a href="#teams">Teams</a>
+<a href="#checklisten">
+Checklisten
+</a>
 
-        <a href="#formulare">Formulare</a>
+<a href="#teams">
+Teams
+</a>
 
-        <a href="#schulungen">Schulungen</a>
+<a href="#formulare">
+Formulare
+</a>
 
-        <a href="#kontakt">Kontakt</a>
+<a href="#schulungen">
+Schulungen
+</a>
 
-    </div>
+<a href="#kontakt">
+Kontakt
+</a>
+
+</div>
 
 </nav>
 
 
-<main class="wrap" id="start">
+<main class="wrap">
 
 
-<!-- =========================
-     STARTSEITE
-========================= -->
-
-<section class="hero">
-
-    <div class="card">
-
-        <h2>
-            Willkommen im QM-Portal
-        </h2>
-
-        <p>
-            Diese Website dient als zentrale Oberfläche
-            für die interne Qualitätsmanagement-Dokumentation.
-        </p>
-
-        <p class="muted">
-            Hier findest du freigegebene QM-Dokumente,
-            Standards, Verfahrensanweisungen und weitere
-            Unterlagen.
-        </p>
-
-    </div>
-
-
-    <div class="card">
-
-        <h3>
-            Schnellzugriff
-        </h3>
-
-        <p>
-            <a href="#qm">📘 QM-Handbuch</a>
-        </p>
-
-        <p>
-            <a href="#standards">📋 Standards</a>
-        </p>
-
-        <p>
-            <a href="#checklisten">✅ Checklisten</a>
-        </p>
-
-        <p>
-            <a href="#kontakt">📞 Ansprechpartner</a>
-        </p>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     QM HANDBUCH
-========================= -->
+<!-- =====================================
+     START
+===================================== -->
 
 <section
-    id="qm"
-    class="card"
-    style="margin-top:16px"
+id="start"
+class="hero"
 >
 
-    <h2>
-        QM-Handbuch
-    </h2>
+<div class="card">
 
-    <p class="muted">
-        Bereich für das QM-Handbuch und freigegebene
-        Qualitätsmanagement-Unterlagen.
-    </p>
+<h2>
+Willkommen im QM-Portal
+</h2>
 
-    <div class="item">
+<p>
+Diese Website dient als zentrale Oberfläche
+für die interne Qualitätsmanagement-Dokumentation.
+</p>
 
-        <div class="file-icon">
-            📄
-        </div>
+<p class="muted">
+Hier findest du freigegebene QM-Dokumente,
+Standards, Anweisungen und weitere Unterlagen.
+</p>
 
-        <span class="file-type">
-            PDF
-        </span>
+</div>
 
-        <strong>
-            Flussdiagramm – Chronische Wunden
-        </strong>
 
-        <span class="muted">
-            Stand: 15.01.2026
-        </span>
+<div class="card">
 
-        <br>
+<h3>
+Schnellzugriff
+</h3>
 
-        <a
-            class="button"
-            href="dokumente/IH%20PDF%20Flussdiagramm%2015.01.2026.pdf"
-            target="_blank"
-            rel="noopener"
-        >
-            PDF öffnen
-        </a>
+<p>
+<a href="#anweisungen">
+📁 Anweisungen von PDL an Mitarbeiter
+</a>
+</p>
 
-    </div>
+<p>
+<a href="#standards">
+📋 Standards
+</a>
+</p>
+
+<p>
+<a href="#checklisten">
+✅ Checklisten
+</a>
+</p>
+
+<p>
+<a href="#kontakt">
+📞 Ansprechpartner
+</a>
+</p>
+
+</div>
 
 </section>
 
 
-<!-- =========================
+
+<!-- =====================================
+     QM-HANDBUCH
+===================================== -->
+
+<section
+id="qm"
+class="card"
+style="margin-top:16px"
+>
+
+<h2>
+QM-Handbuch
+</h2>
+
+<p class="muted">
+Bereich für das QM-Handbuch und freigegebene
+Qualitätsmanagement-Unterlagen.
+</p>
+
+</section>
+
+
+
+<!-- =====================================
+     ANWEISUNGEN VON PDL
+===================================== -->
+
+<section
+id="anweisungen"
+class="card"
+style="margin-top:16px"
+>
+
+<h2>
+📁 Anweisungen von PDL an Mitarbeiter
+</h2>
+
+<p class="muted">
+Hier befinden sich interne Anweisungen und
+Dienstanweisungen der Pflegedienstleitung.
+</p>
+
+
+<!-- ORDNER -->
+
+<div
+id="folderOverview"
+class="folder-grid"
+>
+
+
+<div class="item">
+
+<div class="folder-icon">
+📁
+</div>
+
+<h3>
+Anweisungen von PDL an Mitarbeiter
+</h3>
+
+<p class="muted">
+6 Dokumente
+</p>
+
+<p>
+Hier findest du alle aktuellen Anweisungen
+und Dienstanweisungen für Mitarbeiter.
+</p>
+
+<button
+class="button folder-button"
+onclick="openFolder()"
+>
+Ordner öffnen
+</button>
+
+</div>
+
+</div>
+
+
+
+<!-- =====================================
+     DOKUMENTE IM ORDNER
+===================================== -->
+
+<div
+id="folderContent"
+class="folder-content"
+>
+
+
+<div class="folder-header">
+
+<h3>
+📁 Anweisungen von PDL an Mitarbeiter
+</h3>
+
+<p class="muted">
+6 Dokumente verfügbar
+</p>
+
+<button
+class="button back-button"
+onclick="closeFolder()"
+>
+← Zurück zum Ordner
+</button>
+
+</div>
+
+
+<input
+class="search"
+id="documentSearch"
+placeholder="Dokument suchen …"
+>
+
+
+<div
+class="grid"
+id="pdlDocuments"
+>
+
+
+<!-- =====================================
+     PDF 1
+===================================== -->
+
+<div class="item">
+
+<div class="file-icon">
+📄
+</div>
+
+<strong>
+Anweisung Urlaubplanung für 2026
+</strong>
+
+<span class="muted">
+Anweisung zur Urlaubsplanung für das Jahr 2026.
+</span>
+
+<br>
+
+<a
+class="button"
+href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Anweisung%20Urlaubplanung%20f%C3%BCr%202026.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<!-- =====================================
+     PDF 2
+===================================== -->
+
+<div class="item">
+
+<div class="file-icon">
+📄
+</div>
+
+<strong>
+Belehrung über Nebentätigkeit im Pflegeunternehmen
+</strong>
+
+<span class="muted">
+Belehrung für Mitarbeiter über Nebentätigkeiten.
+</span>
+
+<br>
+
+<a
+class="button"
+href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Belehrung%20%C3%BCber%20Nebent%C3%A4tigkeit%20%20im%20Pflegeunternehmen.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<!-- =====================================
+     PDF 3
+===================================== -->
+
+<div class="item">
+
+<div class="file-icon">
+📄
+</div>
+
+<strong>
+Dienstanweisung Regelung zur Urlaubsplanung 20.05.2025
+</strong>
+
+<span class="muted">
+Dienstanweisung zur Regelung der Urlaubsplanung.
+</span>
+
+<br>
+
+<a
+class="button"
+href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Dienstanweisung%20Regelung%20zur%20Urlaubsplanung%2020.05.2025.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<!-- =====================================
+     PDF 4
+===================================== -->
+
+<div class="item">
+
+<div class="file-icon">
+📄
+</div>
+
+<strong>
+Interne Anweisung Erstellung dokumentenechter Dienstpläne 16.01.2026
+</strong>
+
+<span class="muted">
+Interne Anweisung zur Erstellung dokumentenechter Dienstpläne.
+</span>
+
+<br>
+
+<a
+class="button"
+href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Interne%20Anweisung%20Erstellung%20dokumentenechter%20Dienstpl%C3%A4ne%2016.01.2026.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<!-- =====================================
+     PDF 5
+===================================== -->
+
+<div class="item">
+
+<div class="file-icon">
+📄
+</div>
+
+<strong>
+Krankmeldung Dienstanweisung 20.05.2025
+</strong>
+
+<span class="muted">
+Dienstanweisung zur Krankmeldung.
+</span>
+
+<br>
+
+<a
+class="button"
+href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Krankmeldung%20Dienstanweisung%2020.05.2025.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<!-- =====================================
+     PDF 6
+===================================== -->
+
+<div class="item">
+
+<div class="file-icon">
+📄
+</div>
+
+<strong>
+Wunschfrei & Dienstanweisung vom 20.05.2025
+</strong>
+
+<span class="muted">
+Dienstanweisung zum Thema Wunschfrei.
+</span>
+
+<br>
+
+<a
+class="button"
+href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Wunschfrei%20%26%20Dienstanweisung%20vom%2020.05.2025.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================
      STANDARDS
-========================= -->
+===================================== -->
 
 <section
-    id="standards"
-    class="card"
-    style="margin-top:16px"
+id="standards"
+class="card"
+style="margin-top:16px"
 >
 
-    <h2>
-        Standards & Verfahrensanweisungen
-    </h2>
+<h2>
+📋 Standards & Verfahrensanweisungen
+</h2>
 
-    <input
-        class="search"
-        id="search"
-        placeholder="Nach Dokumenten suchen …"
-    >
-
-
-    <div
-        class="grid"
-        id="docs"
-    >
-
-
-        <!-- PDF -->
-
-        <div class="item">
-
-            <div class="file-icon">
-                📕
-            </div>
-
-            <span class="file-type">
-                PDF
-            </span>
-
-            <strong>
-                IH PDF Flussdiagramm 15.01.2026
-            </strong>
-
-            <span class="muted">
-                Flussdiagramm zu chronischen Wunden.
-            </span>
-
-            <br>
-
-            <a
-                class="button"
-                href="dokumente/IH%20PDF%20Flussdiagramm%2015.01.2026.pdf"
-                target="_blank"
-                rel="noopener"
-            >
-                PDF öffnen
-            </a>
-
-        </div>
-
-
-        <!-- ODT 1 -->
-
-        <div class="item">
-
-            <div class="file-icon">
-                📝
-            </div>
-
-            <span class="file-type">
-                ODT
-            </span>
-
-            <strong>
-                VA chronische Wunden IH
-            </strong>
-
-            <span class="muted">
-                Verfahrensanweisung chronische Wunden.
-            </span>
-
-            <br>
-
-            <a
-                class="button"
-                href="dokumente/VA%20chronische%20Wunden%20IH.pdf"
-            >
-                PDF öffnen
-            </a>
-
-        </div>
-
-
-        <!-- ODT 2 -->
-
-        <div class="item">
-
-            <div class="file-icon">
-                📝
-            </div>
-
-            <span class="file-type">
-                ODT
-            </span>
-
-            <strong>
-                VA chronische Wunden IH (1)
-            </strong>
-
-            <span class="muted">
-                Zweite Version der Verfahrensanweisung.
-            </span>
-
-            <br>
-
-            <a
-                class="button"
-                href="dokumente/VA%20chronische%20Wunden%20IH%20%281%29.pdf"
-            >
-                PDF öffnen
-            </a>
-
-        </div>
-
-
-        <!-- ODG -->
-
-        <div class="item">
-
-            <div class="file-icon">
-                🖼️
-            </div>
-
-            <span class="file-type">
-                ODG
-            </span>
-
-            <strong>
-                Chronische Wunden – Anlagen
-            </strong>
-
-            <span class="muted">
-                Anlagen zum Thema chronische Wunden.
-            </span>
-
-            <br>
-
-            <a
-                class="button"
-                href="dokumente/chronische%20wunden%20Anlagen%20IH.pdf"
-            >
-                PDF öffnen
-            </a>
-
-        </div>
-
-
-    </div>
+<p class="muted">
+Hier können weitere freigegebene Standards
+und Verfahrensanweisungen abgelegt werden.
+</p>
 
 </section>
 
 
-<!-- =========================
+
+<!-- =====================================
      CHECKLISTEN
-========================= -->
+===================================== -->
 
 <section
-    id="checklisten"
-    class="card"
-    style="margin-top:16px"
+id="checklisten"
+class="card"
+style="margin-top:16px"
 >
 
-    <h2>
-        Checklisten
-    </h2>
+<h2>
+✅ Checklisten
+</h2>
 
-    <div class="grid">
+<div class="grid">
 
-        <div class="item">
+<div class="item">
 
-            <strong>
-                ☐ Checkliste – Bereich 1
-            </strong>
+<strong>
+☐ Checkliste – Bereich 1
+</strong>
 
-            <span class="muted">
-                Dokument hier ergänzen.
-            </span>
+<span class="muted">
+Dokument hier ergänzen.
+</span>
 
-        </div>
+</div>
 
 
-        <div class="item">
+<div class="item">
 
-            <strong>
-                ☐ Checkliste – Bereich 2
-            </strong>
+<strong>
+☐ Checkliste – Bereich 2
+</strong>
 
-            <span class="muted">
-                Dokument hier ergänzen.
-            </span>
+<span class="muted">
+Dokument hier ergänzen.
+</span>
 
-        </div>
+</div>
 
-    </div>
+</div>
 
 </section>
 
 
-<!-- =========================
+
+<!-- =====================================
      TEAMS
-========================= -->
+===================================== -->
 
 <section
-    id="teams"
-    class="card"
-    style="margin-top:16px"
+id="teams"
+class="card"
+style="margin-top:16px"
 >
 
-    <h2>
-        Teams
-    </h2>
+<h2>
+👥 Teams
+</h2>
 
-    <div class="grid">
+<div class="grid">
 
-        <div class="item">
+<div class="item">
 
-            <strong>
-                TEAM SÜD
-            </strong>
+<strong>
+TEAM SÜD
+</strong>
 
-            <div>
-                1:1 Team Petersberg / OT Wallwitz
-            </div>
+<div>
+1:1 Team Petersberg / OT Wallwitz
+</div>
 
-            <div>
-                Klingner / Jungck
-            </div>
+<div>
+Klingner / Jungck
+</div>
 
-        </div>
+</div>
 
 
-        <div class="item">
+<div class="item">
 
-            <strong>
-                TEAM NORD
-            </strong>
+<strong>
+TEAM NORD
+</strong>
 
-            <div>
-                1:1 Team Wolfsburg / Wollscheid
-            </div>
+<div>
+1:1 Team Wolfsburg / Wollscheid
+</div>
 
-            <div>
-                1:1 Team Bernburg / Barchend
-            </div>
+<div>
+1:1 Team Bernburg / Barchend
+</div>
 
-        </div>
+</div>
 
-    </div>
+</div>
 
 </section>
 
 
-<!-- =========================
+
+<!-- =====================================
      FORMULARE
-========================= -->
+===================================== -->
 
 <section
-    id="formulare"
-    class="card"
-    style="margin-top:16px"
+id="formulare"
+class="card"
+style="margin-top:16px"
 >
 
-    <h2>
-        Formulare
-    </h2>
+<h2>
+📝 Formulare
+</h2>
 
-    <p class="muted">
-        Bereich für freigegebene Formulare.
-    </p>
+<p class="muted">
+Bereich für freigegebene Formulare.
+</p>
 
 </section>
 
 
-<!-- =========================
+
+<!-- =====================================
      SCHULUNGEN
-========================= -->
+===================================== -->
 
 <section
-    id="schulungen"
-    class="card"
-    style="margin-top:16px"
+id="schulungen"
+class="card"
+style="margin-top:16px"
 >
 
-    <h2>
-        Schulungen & Unterweisungen
-    </h2>
+<h2>
+🎓 Schulungen & Unterweisungen
+</h2>
 
-    <p class="muted">
-        Bereich für Schulungspläne, Nachweise
-        und Unterweisungsunterlagen.
-    </p>
+<p class="muted">
+Bereich für Schulungspläne, Nachweise
+und Unterweisungsunterlagen.
+</p>
 
 </section>
 
 
-<!-- =========================
+
+<!-- =====================================
      KONTAKT
-========================= -->
+===================================== -->
 
 <section
-    id="kontakt"
-    class="card"
-    style="margin-top:16px"
+id="kontakt"
+class="card"
+style="margin-top:16px"
 >
 
-    <h2>
-        Kontakt
-    </h2>
+<h2>
+📞 Kontakt
+</h2>
 
-    <p>
+<p>
 
-        <strong>
-            Intensivpflege-Halle-GmbH
-        </strong>
+<strong>
+Intensivpflege-Halle-GmbH
+</strong>
 
-        <br>
+<br>
 
-        Wilhelm-von-Klewiz-Str. 11
+Wilhelm-von-Klewiz-Str. 11
 
-        <br>
+<br>
 
-        06132 Halle (Saale)
+06132 Halle (Saale)
 
-    </p>
+</p>
 
 
-    <p>
+<p>
 
-        Telefon:
-        +49 (0)3493–82 38 868
+Telefon:
++49 (0)3493–82 38 868
 
-        <br>
+<br>
 
-        Fax:
-        +49 (0)3493-82 39 882
+Fax:
++49 (0)3493-82 39 882
 
-        <br>
+<br>
 
-        E-Mail:
-        intensivpflegehalle@gmail.com
+E-Mail:
+intensivpflegehalle@gmail.com
 
-    </p>
+</p>
 
 </section>
 
@@ -756,47 +990,82 @@ footer{
 </main>
 
 
-<!-- =========================
-     FUSSZEILE
-========================= -->
+
+<!-- =====================================
+     FOOTER
+===================================== -->
 
 <footer>
 
-    <div class="wrap small">
+<div class="wrap small">
 
-        Internes QM-Portal · Intensivpflege-Halle-GmbH
+Internes QM-Portal · Intensivpflege-Halle-GmbH
 
-    </div>
+</div>
 
 </footer>
 
 
-<!-- =========================
-     SUCHFUNKTION
-========================= -->
+
+<!-- =====================================
+     JAVASCRIPT
+===================================== -->
 
 <script>
 
-const input =
-    document.getElementById('search');
+function openFolder(){
 
-input.addEventListener(
-    'input',
-    () => {
+    document
+        .getElementById("folderOverview")
+        .style.display = "none";
 
-        const q =
-            input.value.toLowerCase();
+    document
+        .getElementById("folderContent")
+        .classList.add("active");
+
+}
+
+
+function closeFolder(){
+
+    document
+        .getElementById("folderContent")
+        .classList.remove("active");
+
+    document
+        .getElementById("folderOverview")
+        .style.display = "grid";
+
+}
+
+
+const search =
+    document.getElementById("documentSearch");
+
+
+search.addEventListener(
+    "input",
+    function(){
+
+        const query =
+            this.value.toLowerCase();
 
         document
-            .querySelectorAll('#docs .item')
-            .forEach(x => {
+            .querySelectorAll("#pdlDocuments .item")
+            .forEach(function(document){
 
-                x.style.display =
-                    x.innerText
-                    .toLowerCase()
-                    .includes(q)
-                    ? 'block'
-                    : 'none';
+                const text =
+                    document.innerText.toLowerCase();
+
+                if(text.includes(query)){
+
+                    document.style.display = "block";
+
+                }else{
+
+                    document.style.display = "none";
+
+                }
 
             });
 
@@ -804,6 +1073,7 @@ input.addEventListener(
 );
 
 </script>
+
 
 </body>
 </html>
