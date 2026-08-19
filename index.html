@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>QM-Portal – Intensivpflege-Halle-GmbH</title>
 
@@ -15,7 +15,6 @@
   --accent:#167c80;
   --accent2:#0e5f63;
   --line:#dce6e8;
-  --hover:#eaf5f5;
 }
 
 *{
@@ -28,7 +27,7 @@ html{
 
 body{
   margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
   background:var(--bg);
   color:var(--text);
 }
@@ -36,7 +35,7 @@ body{
 header{
   background:linear-gradient(135deg,var(--accent2),var(--accent));
   color:white;
-  padding:30px 20px;
+  padding:32px 20px;
 }
 
 .wrap{
@@ -48,7 +47,7 @@ header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:25px;
+  gap:20px;
 }
 
 .brand h1{
@@ -62,12 +61,21 @@ header{
 }
 
 .logo{
+  max-height:70px;
+  max-width:230px;
   background:white;
-  border-radius:12px;
-  padding:10px 16px;
+  padding:8px;
+  border-radius:10px;
+}
+
+.badge{
+  display:inline-block;
+  background:#d9eeee;
   color:var(--accent2);
-  font-weight:800;
-  white-space:nowrap;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
 }
 
 nav{
@@ -75,12 +83,12 @@ nav{
   border-bottom:1px solid var(--line);
   position:sticky;
   top:0;
-  z-index:100;
+  z-index:10;
 }
 
 nav .wrap{
   display:flex;
-  gap:5px;
+  gap:6px;
   overflow-x:auto;
   padding:10px 12px;
 }
@@ -88,21 +96,17 @@ nav .wrap{
 nav a{
   color:var(--text);
   text-decoration:none;
-  padding:10px 13px;
+  padding:9px 12px;
   border-radius:8px;
   white-space:nowrap;
 }
 
 nav a:hover{
-  background:var(--hover);
+  background:#eaf5f5;
 }
 
 main{
-  padding:30px 16px 50px;
-}
-
-section{
-  scroll-margin-top:75px;
+  padding:30px 16px;
 }
 
 .hero{
@@ -122,7 +126,7 @@ section{
 }
 
 .hero .card:first-child{
-  background:var(--hover);
+  background:#eaf5f5;
   border-color:#c9e5e6;
 }
 
@@ -138,111 +142,56 @@ h3{
   color:var(--muted);
 }
 
-.badge{
-  display:inline-block;
-  background:#d9eeee;
-  color:var(--accent2);
-  padding:6px 10px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:700;
-}
-
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:16px;
+  gap:15px;
 }
 
 .grid2{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:16px;
+  gap:15px;
 }
 
 .item{
-  padding:16px;
+  padding:17px;
   border:1px solid var(--line);
-  border-radius:10px;
-  background:white;
+  border-radius:11px;
+  background:#fff;
 }
 
 .item strong{
   display:block;
-  margin-bottom:6px;
+  margin-bottom:7px;
 }
 
 .folder{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  cursor:pointer;
-  transition:.15s;
+  background:#f8fbfb;
+  border:2px solid #d8e9ea;
+  transition:.2s;
 }
 
 .folder:hover{
-  background:var(--hover);
-  border-color:#b9dfe0;
+  border-color:var(--accent);
+  transform:translateY(-2px);
 }
 
 .folder-icon{
-  font-size:34px;
+  font-size:32px;
+  margin-bottom:8px;
 }
 
-.folder-title{
-  font-weight:800;
-  font-size:17px;
-}
-
-.folder-description{
-  color:var(--muted);
-  font-size:14px;
-  margin-top:4px;
-}
-
-.file-list{
-  display:none;
-  margin-top:12px;
-  background:#f8fbfb;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:15px;
-}
-
-.file-list.open{
-  display:block;
-}
-
-.file{
+.document{
   display:flex;
+  flex-direction:column;
   justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  padding:13px 10px;
-  border-bottom:1px solid var(--line);
+  min-height:145px;
 }
 
-.file:last-child{
-  border-bottom:0;
-}
-
-.file-name{
-  line-height:1.4;
-}
-
-.file-button{
-  display:inline-block;
-  background:var(--accent);
-  color:white;
-  text-decoration:none;
-  padding:8px 12px;
-  border-radius:8px;
-  white-space:nowrap;
-  font-size:14px;
-}
-
-.file-button:hover{
-  background:var(--accent2);
+.document-icon{
+  font-size:26px;
+  margin-bottom:7px;
 }
 
 .search{
@@ -254,51 +203,65 @@ h3{
   margin:10px 0 18px;
 }
 
-.quick{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-}
-
-.quick a{
-  display:block;
-  background:white;
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:15px;
+button,
+.button{
+  display:inline-block;
+  border:0;
+  background:var(--accent);
+  color:#fff;
+  padding:10px 14px;
+  border-radius:8px;
+  cursor:pointer;
   text-decoration:none;
-  color:var(--text);
+  font-size:14px;
+  margin-top:10px;
 }
 
-.quick a:hover{
-  background:var(--hover);
+button:hover,
+.button:hover{
+  background:var(--accent2);
+}
+
+.open{
+  margin-top:auto;
 }
 
 footer{
-  margin-top:20px;
+  margin-top:30px;
   background:#17313a;
   color:#dce9eb;
-  padding:28px 16px;
+  padding:26px 16px;
 }
 
 .small{
   font-size:14px;
 }
 
-.contact a{
-  color:var(--accent);
+.back{
+  display:inline-block;
+  margin-bottom:12px;
+  color:var(--accent2);
+  text-decoration:none;
+  font-weight:600;
 }
 
-@media(max-width:850px){
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
 
+.count{
+  color:var(--muted);
+  font-size:14px;
+}
+
+@media(max-width:800px){
   .hero,
   .grid,
   .grid2{
     grid-template-columns:1fr;
-  }
-
-  .quick{
-    grid-template-columns:repeat(2,1fr);
   }
 
   .brand{
@@ -306,32 +269,11 @@ footer{
   }
 
   .logo{
-    display:inline-block;
-    margin-top:15px;
-  }
-}
-
-@media(max-width:600px){
-
-  .quick{
-    grid-template-columns:1fr;
-  }
-
-  .file{
-    display:block;
-  }
-
-  .file-button{
-    margin-top:10px;
-  }
-
-  .brand h1{
-    font-size:24px;
+    margin-top:20px;
   }
 }
 </style>
 </head>
-
 
 <body>
 
@@ -343,9 +285,10 @@ footer{
 <p>Qualitätsmanagement · Intensivpflege-Halle-GmbH</p>
 </div>
 
-<div class="logo">
-Intensivpflege-Halle-GmbH
-</div>
+<!-- Falls du später das Logo direkt einbauen möchtest,
+     kannst du hier die Logo-Datei verlinken. -->
+
+<span class="badge">Interne QM-Übersicht</span>
 
 </div>
 </header>
@@ -353,17 +296,13 @@ Intensivpflege-Halle-GmbH
 
 <nav>
 <div class="wrap">
-
 <a href="#start">Start</a>
 <a href="#qm">QM-Handbuch</a>
 <a href="#standards">Standards</a>
-<a href="#checklisten">Checklisten</a>
-<a href="#teams">Teams</a>
-<a href="#formulare">Formulare</a>
-<a href="#schulungen">Schulungen</a>
+<a href="#pdl">PDL-Anweisungen</a>
 <a href="#bilder">Bilderlaubnis</a>
+<a href="#schulungen">Schulungen</a>
 <a href="#kontakt">Kontakt</a>
-
 </div>
 </nav>
 
@@ -385,14 +324,8 @@ Qualitätsmanagement-Dokumentation der Intensivpflege-Halle-GmbH.
 </p>
 
 <p class="muted">
-Über die einzelnen Bereiche können freigegebene QM-Dokumente,
-Verfahrensanweisungen, Schulungsunterlagen und Formulare direkt
-im Browser geöffnet werden.
+Alle bereitgestellten Dokumente können direkt im Browser geöffnet werden.
 </p>
-
-<span class="badge">
-Interne QM-Übersicht
-</span>
 
 </div>
 
@@ -401,10 +334,11 @@ Interne QM-Übersicht
 
 <h3>Schnellzugriff</h3>
 
-<p><a href="#qm">📘 QM-Handbuch</a></p>
-<p><a href="#standards">📋 Standards & Verfahrensanweisungen</a></p>
-<p><a href="#schulungen">🎓 Schulungen</a></p>
-<p><a href="#bilder">📷 Bilderlaubnis</a></p>
+<p>📘 <a href="#qm">QM-Handbuch</a></p>
+<p>📋 <a href="#standards">Standards & Verfahrensanweisungen</a></p>
+<p>👥 <a href="#pdl">Anweisungen der PDL</a></p>
+<p>🖼️ <a href="#bilder">Bilderlaubnis</a></p>
+<p>🎓 <a href="#schulungen">Schulungen</a></p>
 
 </div>
 
@@ -416,324 +350,182 @@ Interne QM-Übersicht
 
 <section id="qm" class="card">
 
+<div class="section-title">
 <h2>📘 QM-Handbuch</h2>
+<span class="count">2 Bereiche</span>
+</div>
 
 <p class="muted">
-QM-Handbuch, Hygiene, Prophylaxen und Expertenstandards.
+Bereiche des QM-Handbuchs.
 </p>
+
+
+<div class="grid2">
 
 
 <!-- HYGIENE -->
 
-<div class="item folder"
-onclick="toggleFolder('hygiene')">
+<div class="item folder">
 
 <div class="folder-icon">📁</div>
 
-<div>
-<div class="folder-title">Hygiene</div>
-<div class="folder-description">
-Hygieneplan, Infektionsschutz, MRSA, MRE, Noro-Viren und weitere Hygieneunterlagen
-</div>
-</div>
+<strong>Hygiene</strong>
 
-</div>
+<span class="muted">
+Hygienepläne, Infektionsschutz, MRE/MRSA,
+Händehygiene und weitere Hygieneunterlagen.
+</span>
 
-
-<div id="hygiene" class="file-list">
-
-<h3>🧼 Hygiene</h3>
-
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/1.%20Anlage%203%20Reinigungs-%26%20Desinfektionsplan.pdf"
-target="_blank">
-1. Anlage 3 Reinigungs-& Desinfektionsplan.pdf
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/2.%20Rahmenhygieneplan%20für%20ambulante%20Pflegedienste.pdf"
-target="_blank">
-2. Rahmenhygieneplan für ambulante Pflegedienste.pdf
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/3.%20Anlage%205%20Regelung%20zum%20Umgang%20mit%20Schmuck,%20Piercings%20und%20künstlichen%20Fingernägeln.pdf"
-target="_blank">
-3. Anlage 5 – Schmuck, Piercings und künstliche Fingernägel
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/4.%20Handlungsanleitung%20zum%20Umgang%20mit%20Coronaviren%20(COVID-19).pdf"
-target="_blank">
-4. Handlungsanleitung COVID-19
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/5.%20Hygieneplan%20in%20Anlehnung%20an%20dem%20RHP%20inkl.%20Regelung%20zum%20Umgang%20mit%20MRE,%20Noro-Vireen,Influenza.pdf"
-target="_blank">
-5. Hygieneplan RHP / MRE / Noro / Influenza
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/6.%20Anlage%204%20Regelungen%20zum%20Umgang%20mit%20Noro-Viren.pdf"
-target="_blank">
-6. Anlage 4 – Noro-Viren
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/7.%20Informationsblatt%20Noro-Viren.pdf"
-target="_blank">
-7. Informationsblatt Noro-Viren
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/8.%20Anlage%203%20Influenza%20-%20Präventions-%20%26%20Bekämpfungsplan.pdf"
-target="_blank">
-8. Anlage 3 – Influenza Präventions- & Bekämpfungsplan
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/9.%20Anlage%201%20Hygienemaßnahmen%20beim%20Auftreten%20MRE%20%26%20MRSA.pdf"
-target="_blank">
-9. Anlage 1 – MRE & MRSA
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/9.%20Bekanntmachungen%20-%20Amtliche%20Empfehlungen.pdf"
-target="_blank">
-9. Bekanntmachungen – Amtliche Empfehlungen
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/9.%20Belehrungsblatt%20MRSA.pdf"
-target="_blank">
-9. Belehrungsblatt MRSA
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/9.%20HYSA%20Merkblatt%20zum%20Umgang%20mit%20Patienten%20mit%203MRGN%20und%204MRGN%20in%20Rehaeinrichtungen.pdf"
-target="_blank">
-9. HYSA Merkblatt 3MRGN / 4MRGN
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/9.%20Hysa%20Merkblatt%20MRSA%20im%20ambulanten%20Pflegedienst.pdf"
-target="_blank">
-9. HYSA Merkblatt MRSA im ambulanten Pflegedienst
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/10.%20Infektionsschutzgesetz%20Belehrung.pdf"
-target="_blank">
-10. Infektionsschutzgesetz Belehrung
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/10.%20Anlage%201%20Erkärung%20gem.%20§%2043%20Abs.%201%20Nr.%202%20Infektionsschutzgesetz.pdf"
-target="_blank">
-10. Anlage 1 – Erklärung §43
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/10.%20Anlage%202%20Bescheinigung%20des%20Gesundheitsamtes%20gem.%20§%2043%20Abs.%201%20Nr.%201%20Infektionsschutzgesetz.pdf"
-target="_blank">
-10. Anlage 2 – Bescheinigung Gesundheitsamt
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/11.%20Anforderungen%20an%20die%20Hygiene%20bei%20der%20Reingiung%20und%20Desinfektion%20von%20Flächen.pdf"
-target="_blank">
-11. Anforderungen Reinigung & Desinfektion
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/12.%20Händehygiene%20in%20Einrichtungen%20des%20Gesundheitswesens.pdf"
-target="_blank">
-12. Händehygiene
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/13.%20Prüfbogen%20Hygienebegehung%20im%20Wohnungsbereich.pdf"
-target="_blank">
-13. Prüfbogen Hygienebegehung
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/14.%20Averosa%20-%20Prüfprotokoll%20Hygieneplan%20-%20Ambulant%20gem.%20Rahmenhygieneplan.pdf"
-target="_blank">
-14. Averosa – Prüfprotokoll Hygieneplan
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/15.%20Prävention%20und%20Kontrolle%20Katheter-assoziierter%20Harnwegsinfektion.pdf"
-target="_blank">
-15. Prävention und Kontrolle Katheter-assoziierter Harnwegsinfektion
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/Auflistung%20Hygiene%201-15.pdf"
-target="_blank">
-Auflistung Hygiene 1-15
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Hygiene/Deckblatt%20Hygiene.pdf"
-target="_blank">
-Deckblatt Hygiene
+<a class="button"
+href="#hygiene">
+Ordner öffnen
 </a>
 
 </div>
-
-
-<br>
 
 
 <!-- PROPHYLAXEN -->
 
-<div class="item folder"
-onclick="toggleFolder('prophylaxen')">
+<div class="item folder">
 
 <div class="folder-icon">📁</div>
 
-<div>
-<div class="folder-title">
+<strong>
 Prevention Prophylaxen & Expertenstandards
-</div>
+</strong>
 
-<div class="folder-description">
-Prophylaxen und Expertenstandards
-</div>
+<span class="muted">
+Prophylaxen, Expertenstandards und
+entsprechende Verfahrensanweisungen.
+</span>
 
-</div>
-</div>
-
-
-<div id="prophylaxen" class="file-list">
-
-<h3>📘 Prevention Prophylaxen & Expertenstandards</h3>
-
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/Deckblatt%20Prophylaxen%20%26%20Expertenstandards.pdf"
-target="_blank">
-Deckblatt Prophylaxen & Expertenstandards
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/Deckblatt%20Sturprohylaxe.pdf"
-target="_blank">
-Deckblatt Sturzprophylaxe
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/Mangelernährung.pdf"
-target="_blank">
-Mangelernährung
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/Standard%20Dehydration.pdf"
-target="_blank">
-Standard Dehydration
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/VA%20-%2017%20Förderung%20der%20Harnkonzinenz%20Anlehnung%20Expertenstandards.pdf"
-target="_blank">
-VA 17 – Förderung der Harnkontinenz
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/VA%20-%2018%20Obstipationsprophylaxe.pdf"
-target="_blank">
-VA 18 – Obstipationsprophylaxe
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/VA%20-%2019%20Pneumonieprophylaxe.pdf"
-target="_blank">
-VA 19 – Pneumonieprophylaxe
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/VA%20-%2020%20Feststellung%20des%20Kontrakturrisiko%20%26%20Maßnahme%20der%20Kontrakturenprophylaxe.pdf"
-target="_blank">
-VA 20 – Kontrakturenprophylaxe
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/VA%20-%2021%20Intertrigoprophylaxe.pdf"
-target="_blank">
-VA 21 – Intertrigoprophylaxe
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/VA%20-%2022%20Dekubitusprophylaxe%20in%20der%20Pflege.pdf"
-target="_blank">
-VA 22 – Dekubitusprophylaxe
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/VA%20-%2023%20Sturzprophylaxe%20in%20der%20Pflege.pdf"
-target="_blank">
-VA 23 – Sturzprophylaxe
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/VA%20-%2024%20Thromboseprophylaxe.pdf"
-target="_blank">
-VA 24 – Thromboseprophylaxe
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/VA%20-%2025%20Anlage%20Berechnungsformeln%20(Oberarmumfangs).pdf"
-target="_blank">
-VA 25 – Anlage Berechnungsformeln
-</a>
-<br><br>
-
-<a class="file-button"
-href="QM-Handbuch/Prevention%20Prophylaxen%20%26%20Expertenstandards/VA%20-%2025%20Dehydrationsproghylaxe%20_%20Ernährung%20in%20der%20Pflege.pdf"
-target="_blank">
-VA 25 – Dehydrationsprophylaxe / Ernährung
+<a class="button"
+href="#prophylaxen">
+Ordner öffnen
 </a>
 
 </div>
+
+
+</div>
+
+</section>
+
+
+
+<!-- HYGIENE -->
+
+<section id="hygiene" class="card">
+
+<a class="back" href="#qm">← Zurück zum QM-Handbuch</a>
+
+<h2>🧼 Hygiene</h2>
+
+<p class="muted">
+Alle Dokumente des Hygiene-Ordners.
+</p>
+
+<input
+class="search"
+placeholder="Hygiene-Dokument suchen …"
+oninput="filterDocuments(this,'hygieneDocs')"
+>
+
+
+<div class="grid" id="hygieneDocs">
+
+
+<script>
+const hygieneFiles = [
+"1. Anlage 3 Reinigungs-& Desinfektionsplan.pdf",
+"10. Anlage 1 Erkärung gem. § 43 Abs. 1 Nr. 2 Infektionsschutzgesetz.pdf",
+"10. Anlage 2 Bescheinigung des Gesundheitsamtes gem. § 43 Abs. 1 Nr. 1 Infektionsschutzgesetz.pdf",
+"10. Infektionsschutzgesetz Belehrung.pdf",
+"11. Anforderungen an die Hygiene bei der Reingiung und Desinfektion von Flächen.pdf",
+"12. Händehygiene in Einrichtungen des Gesundheitswesens.pdf",
+"13. Prüfbogen Hygienebegehung im Wohnungsbereich.pdf",
+"14. Averosa - Prüfprotokoll Hygieneplan - Ambulant gem. Rahmenhygieneplan.pdf",
+"15. Prävention und Kontrolle Katheter-assoziierter Harnwegsinfektion.pdf",
+"2. Rahmenhygieneplan für ambulante Pflegedienste.pdf",
+"3. Anlage 5 Regelung zum Umgang mit Schmuck, Piercings und künstlichen Fingernägeln.pdf",
+"4. Handlungsanleitung zum Umgang mit Coronaviren (COVID-19).pdf",
+"5. Hygieneplan in Anlehnung an dem RHP inkl. Regelung zum Umgang mit MRE, Noro-Vireen,Influenza.pdf",
+"6. Anlage 4 Regelungen zum Umgang mit Noro-Viren.pdf",
+"7. Informationsblatt Noro-Viren.pdf",
+"8. Anlage 3 Influenza - Präventions- & Bekämpfungsplan.pdf",
+"9. Anlage 1 Hygienemaßnahmen beim Auftreten MRE & MRSA.pdf",
+"9. Bekanntmachungen - Amtliche Empfehlungen.pdf",
+"9. Belehrungsblatt MRSA.pdf",
+"9. HYSA Merkblatt zum Umgang mit Patienten mit 3MRGN und 4MRGN in Rehaeinrichtungen.pdf",
+"9. Hysa Merkblatt MRSA im ambulanten Pflegedienst.pdf",
+"Auflistung Hygiene 1-15.pdf",
+"Deckblatt Hygiene.pdf"
+];
+
+function encodePath(path){
+return path.split('/').map(encodeURIComponent).join('/');
+}
+
+function createDocuments(files,folder,id){
+
+const container=document.getElementById(id);
+
+files.forEach(file=>{
+
+const div=document.createElement("div");
+div.className="item document";
+
+const url=
+"https://christiandiebner86-cpu.github.io/"
++encodePath(folder)
++"/"
++encodeURIComponent(file);
+
+div.innerHTML=
+'<div>'+
+'<div class="document-icon">📄</div>'+
+'<strong>'+file+'</strong>'+
+'</div>'+
+'<a class="button open" target="_blank" href="'+url+'">Dokument öffnen</a>';
+
+container.appendChild(div);
+
+});
+
+}
+
+createDocuments(
+hygieneFiles,
+"QM-Handbuch/Hygiene",
+"hygieneDocs"
+);
+</script>
+
+</div>
+
+</section>
+
+
+
+<!-- PROPHYLAXEN -->
+
+<section id="prophylaxen" class="card">
+
+<a class="back" href="#qm">← Zurück zum QM-Handbuch</a>
+
+<h2>🛡️ Prevention Prophylaxen & Expertenstandards</h2>
+
+<p class="muted">
+Alle Dokumente des Ordners.
+</p>
+
+<input
+class="search"
+placeholder="Dokument suchen …"
+oninput="filterDocuments(this,'prophylaxenDocs')"
+>
+
+<div class="grid" id="prophylaxenDocs"></div>
 
 </section>
 
@@ -745,293 +537,52 @@ VA 25 – Dehydrationsprophylaxe / Ernährung
 
 <h2>📋 Standards & Verfahrensanweisungen</h2>
 
-<input
-class="search"
-id="search"
-placeholder="Nach Dokumenten suchen …"
->
+<p class="muted">
+Verfahrensanweisungen und Standards der Behandlungspflege.
+</p>
 
-
-<!-- VA BEHANDLUNGSPFLEGE -->
-
-<div class="item folder"
-onclick="toggleFolder('behandlungspflege')">
-
-<div class="folder-icon">📁</div>
-
-<div>
-<div class="folder-title">
-VA Behandlungspflege
-</div>
-
-<div class="folder-description">
-Verfahrensanweisungen, Medikamentengabe, Dokumentation und Behandlungspflege
-</div>
-
-</div>
-</div>
-
-
-<div id="behandlungspflege" class="file-list">
-
-
-<h3>🩺 VA Behandlungspflege</h3>
-
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Deckblatt%20Behandlungspflege%208-30.pdf">
-Deckblatt Behandlungspflege 8-30
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Deckblatt%20Medikamentengabe.pdf">
-Deckblatt Medikamentengabe
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Deckblatt%20VA%20(MA)%20Grundpflege_Behandlungspflege_Prophylaxen%20%26%20Expertenstandards.pdf">
-Deckblatt VA Grundpflege / Behandlungspflege
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Delegation%20ärztlicher%20Tätigkeiten_Anordnung%20Medikation.pdf">
-Delegation ärztlicher Tätigkeiten / Anordnung Medikation
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Dokumentation%20BTM.pdf">
-Dokumentation BTM
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Dokumentation%20Blutzucker.pdf">
-Dokumentation Blutzucker
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Dokumentation%20Ärzliche%20Verordnung.pdf">
-Dokumentation Ärztliche Verordnung
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Dokumentation%20Ärztliche%20Kommunikation.pdf">
-Dokumentation Ärztliche Kommunikation
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Pulsioximetrie.pdf">
-Pulsioximetrie
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Umgang%20mit%20Arzneimitteln.pdf">
-Umgang mit Arzneimitteln
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20-%2008%20Kontrolle%20%26%20Messungen%20des%20Blutdrucks.pdf">
-VA 08 – Kontrolle & Messungen des Blutdrucks
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20-%2009%20Katheterisieren%20der%20Harnblase.pdf">
-VA 09 – Katheterisieren der Harnblase
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20-%2010%20Intramuskuläre%20Injektiion%20nach%20von%20Hochstetter.pdf">
-VA 10 – Intramuskuläre Injektion
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20-%2011%20Subkutane%20Injektion.pdf">
-VA 11 – Subkutane Injektion
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20-%2012%20Verbandswechsel%20einer%20aseptischen%20Wunde.pdf">
-VA 12 – Verbandswechsel aseptische Wunde
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20-%2013%20Verbandswechsel%20eienr%20septischen%20Wunde.pdf">
-VA 13 – Verbandswechsel septische Wunde
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20-%2014%20Verbandswechsel%20bei%20PEG.pdf">
-VA 14 – Verbandswechsel bei PEG
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20-%2015%20Verabrechen%20von%20Sondennahrung.pdf">
-VA 15 – Verabreichen von Sondennahrung
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20-%2028%20Messen%20des%20Blutzuckers.pdf">
-VA 28 – Messen des Blutzuckers
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20-%2029%20(NEU)%20Stand%2030.03.2023%20Standard%20Mobilität.pdf">
-VA 29 – Standard Mobilität
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20-%2030%20Regelung%20zur%20Umsetzung%20der%20speziellen%20Krankenbeobachtung.pdf">
-VA 30 – Spezielle Krankenbeobachtung
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/VA%20Fehlmedikation.pdf">
-VA Fehlmedikation
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Verabreichung%20von%20Tropfen%20%26%20Säften.pdf">
-Verabreichung von Tropfen & Säften
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Verfahrensanleitung%20Mörsern%20von%20Medikamenten.pdf">
-Verfahrensanleitung Mörsern von Medikamenten
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Verfahrensanleitung%20Stellen%20von%20Medikamenten.pdf">
-Verfahrensanleitung Stellen von Medikamenten
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Verfahrensanleitung%20Umgang%20mit%20BTM.pdf">
-Verfahrensanleitung Umgang mit BTM
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="VA%20Behandlungspflege/Übersicht%20Verfahrensanweisungen%20%26%20grundsätzkiche%20Festlegungen.pdf">
-Übersicht Verfahrensanweisungen & grundsätzliche Festlegungen
-</a>
-
-</div>
-
-
-<br>
-
-
-<!-- PDL ANWEISUNGEN -->
-
-<div class="item folder"
-onclick="toggleFolder('pdl')">
-
-<div class="folder-icon">📁</div>
-
-<div>
-<div class="folder-title">
-Anweisungen von PDL an Mitarbeiter
-</div>
-
-<div class="folder-description">
-Dienstanweisungen und interne Anweisungen
-</div>
-
-</div>
-</div>
-
-
-<div id="pdl" class="file-list">
-
-<h3>👥 Anweisungen von PDL an Mitarbeiter</h3>
-
-
-<a class="file-button" target="_blank"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Anweisung%20Urlaubplanung%20für%202026.pdf">
-Anweisung Urlaubplanung für 2026
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Belehrung%20über%20Nebentätigkeit%20im%20Pflegeunternehmen.pdf">
-Belehrung über Nebentätigkeit im Pflegeunternehmen
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Dienstanweisung%20Regelung%20zur%20Urlaubsplanung%2020.05.2025.pdf">
-Dienstanweisung Regelung zur Urlaubsplanung 20.05.2025
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Interne%20Anweisung%20Erstellung%20dokumentenechter%20Dienstpläne%2016.01.2026.pdf">
-Interne Anweisung Erstellung dokumentenechter Dienstpläne
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Krankmeldung%20Dienstanweisung%2020.05.2025.pdf">
-Krankmeldung Dienstanweisung 20.05.2025
-</a>
-<br><br>
-
-<a class="file-button" target="_blank"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Wunschfrei%20%26%20Dienstanweisung%20vom%2020.05.2025.pdf">
-Wunschfrei & Dienstanweisung vom 20.05.2025
-</a>
-
-</div>
-
-</section>
-
-
-
-<!-- CHECKLISTEN -->
-
-<section id="checklisten" class="card">
-
-<h2>✅ Checklisten</h2>
 
 <div class="grid2">
 
-<div class="item">
-<strong>☐ Checkliste – Bereich 1</strong>
+
+<div class="item folder">
+
+<div class="folder-icon">📁</div>
+
+<strong>VA Behandlungspflege</strong>
+
 <span class="muted">
-Dokument kann hier ergänzt werden.
+Verfahrensanweisungen, Dokumentationen,
+Medikamente, Wundversorgung und weitere
+Behandlungspflege.
 </span>
+
+<a class="button" href="#behandlungspflege">
+Ordner öffnen
+</a>
+
 </div>
 
-<div class="item">
-<strong>☐ Checkliste – Bereich 2</strong>
+
+<div class="item folder">
+
+<div class="folder-icon">📁</div>
+
+<strong>Chronische Wunden</strong>
+
 <span class="muted">
-Dokument kann hier ergänzt werden.
+Verfahrensanweisungen und Unterlagen zur
+Versorgung chronischer Wunden.
 </span>
+
+<a class="button"
+target="_blank"
+href="https://christiandiebner86-cpu.github.io/dokumente/VA%20chronische%20Wunden%20IH.pdf">
+Dokument öffnen
+</a>
+
 </div>
+
 
 </div>
 
@@ -1039,58 +590,63 @@ Dokument kann hier ergänzt werden.
 
 
 
-<!-- TEAMS -->
+<!-- BEHANDLUNGSPFLEGE -->
 
-<section id="teams" class="card">
+<section id="behandlungspflege" class="card">
 
-<h2>👥 Teams</h2>
+<a class="back" href="#standards">← Zurück zu Standards</a>
 
-<div class="grid2">
-
-<div class="item">
-
-<strong>TEAM SÜD</strong>
-
-<div>
-1:1 Team Petersberg / OT Wallwitz
-</div>
-
-<div>
-Klingner / Jungck
-</div>
-
-</div>
-
-
-<div class="item">
-
-<strong>TEAM NORD</strong>
-
-<div>
-1:1 Team Wolfsburg / Wollscheid
-</div>
-
-<div>
-1:1 Team Bernburg / Barchend
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-
-
-<!-- FORMULARE -->
-
-<section id="formulare" class="card">
-
-<h2>📝 Formulare</h2>
+<h2>💉 VA Behandlungspflege</h2>
 
 <p class="muted">
-Bereich für freigegebene Formulare.
+Verfahrensanweisungen und Dokumente der Behandlungspflege.
 </p>
+
+<input
+class="search"
+placeholder="Dokument suchen …"
+oninput="filterDocuments(this,'behandlungDocs')"
+>
+
+<div class="grid" id="behandlungDocs"></div>
+
+</section>
+
+
+
+<!-- PDL -->
+
+<section id="pdl" class="card">
+
+<h2>👥 Anweisungen von PDL an Mitarbeiter</h2>
+
+<p class="muted">
+Dienstanweisungen und interne Anweisungen der Pflegedienstleitung.
+</p>
+
+<input
+class="search"
+placeholder="PDL-Dokument suchen …"
+oninput="filterDocuments(this,'pdlDocs')"
+>
+
+<div class="grid" id="pdlDocs"></div>
+
+</section>
+
+
+
+<!-- BILDERLAUBNIS -->
+
+<section id="bilder" class="card">
+
+<h2>🖼️ Bilderlaubnis</h2>
+
+<p class="muted">
+Formulare und Unterlagen zur Bild- und Videonutzung.
+</p>
+
+<div class="grid" id="bilderDocs"></div>
 
 </section>
 
@@ -1103,176 +659,10 @@ Bereich für freigegebene Formulare.
 <h2>🎓 Schulungen & Unterweisungen</h2>
 
 <p class="muted">
-Schulungsunterlagen und Fortbildungen.
+Fortbildungen und Schulungsunterlagen.
 </p>
 
-
-<div class="item folder"
-onclick="toggleFolder('schulungsdateien')">
-
-<div class="folder-icon">📁</div>
-
-<div>
-<div class="folder-title">
-Fortbildungen (FOB)
-</div>
-
-<div class="folder-description">
-Fortbildungsunterlagen 2022–2026
-</div>
-
-</div>
-</div>
-
-
-<div id="schulungsdateien" class="file-list">
-
-<h3>🎓 Fortbildungen</h3>
-
-
-<a class="file-button"
-href="Schulungen/FOB%202022.pdf"
-target="_blank">
-FOB 2022
-</a>
-<br><br>
-
-<a class="file-button"
-href="Schulungen/FOB%202023.pdf"
-target="_blank">
-FOB 2023
-</a>
-<br><br>
-
-<a class="file-button"
-href="Schulungen/FOB%202024.pdf"
-target="_blank">
-FOB 2024
-</a>
-<br><br>
-
-<a class="file-button"
-href="Schulungen/FOB%202025.pdf"
-target="_blank">
-FOB 2025
-</a>
-<br><br>
-
-<a class="file-button"
-href="Schulungen/FOB%202026.pdf"
-target="_blank">
-FOB 2026
-</a>
-
-</div>
-
-</section>
-
-
-
-<!-- BILDERLAUBNIS -->
-
-<section id="bilder" class="card">
-
-<h2>📷 Bilderlaubnis</h2>
-
-<p class="muted">
-Unterlagen zur Einwilligung und Nutzung von Bildern und Videos.
-</p>
-
-
-<div class="item folder"
-onclick="toggleFolder('bilderdateien')">
-
-<div class="folder-icon">📁</div>
-
-<div>
-<div class="folder-title">
-Bilderlaubnis
-</div>
-
-<div class="folder-description">
-Mitarbeiter und Klienten
-</div>
-
-</div>
-</div>
-
-
-<div id="bilderdateien" class="file-list">
-
-<h3>📷 Bilderlaubnis</h3>
-
-
-<a class="file-button"
-href="Bilderlaubnis/Bilderlaubnis%20Anschreiben%20Mitarbeiter.pdf"
-target="_blank">
-Bilderlaubnis Anschreiben Mitarbeiter
-</a>
-<br><br>
-
-<a class="file-button"
-href="Bilderlaubnis/Einverständniserklärung%20zur%20Bildnutzung%20(Klient)%20Stand%2011.08.2021.pdf"
-target="_blank">
-Einverständniserklärung zur Bildnutzung – Klient
-</a>
-<br><br>
-
-<a class="file-button"
-href="Bilderlaubnis/Einwilligungserlaubnis%20Mitarbeiter%20Bilder%20%26%20Video.pdf"
-target="_blank">
-Einwilligungserlaubnis Mitarbeiter Bilder & Video
-</a>
-
-</div>
-
-</section>
-
-
-
-<!-- DOKUMENTE -->
-
-<section class="card">
-
-<h2>📂 Weitere QM-Dokumente</h2>
-
-<p class="muted">
-Weitere Dokumente aus dem Hauptordner „dokumente“.
-</p>
-
-
-<a class="file-button"
-href="dokumente/IH%20PDF%20Flussdiagramm%2015.01.2026.pdf"
-target="_blank">
-IH PDF Flussdiagramm 15.01.2026
-</a>
-
-<br><br>
-
-
-<a class="file-button"
-href="dokumente/VA%20chronische%20Wunden%20IH.pdf"
-target="_blank">
-VA chronische Wunden IH
-</a>
-
-<br><br>
-
-
-<a class="file-button"
-href="dokumente/VA%20chronische%20Wunden%20IH%20(1).pdf"
-target="_blank">
-VA chronische Wunden IH (1)
-</a>
-
-<br><br>
-
-
-<a class="file-button"
-href="dokumente/chronische%20wunden%20Anlagen%20IH.pdf"
-target="_blank">
-Chronische Wunden – Anlagen IH
-</a>
+<div class="grid" id="schulungsDocs"></div>
 
 </section>
 
@@ -1280,47 +670,20 @@ Chronische Wunden – Anlagen IH
 
 <!-- KONTAKT -->
 
-<section id="kontakt" class="card contact">
+<section id="kontakt" class="card">
 
 <h2>📞 Kontakt</h2>
 
 <p>
-
 <strong>Intensivpflege-Halle-GmbH</strong><br>
-
-Wilhelm-von-Klewiz-Straße 11<br>
-
+Wilhelm-von-Klewiz-Str. 11<br>
 06132 Halle (Saale)
-
 </p>
 
-
 <p>
-
-Telefon:
-+49 (0)3493 82 38 868<br>
-
-Fax:
-+49 (0)3493 82 39 882<br>
-
-E-Mail:
-<a href="mailto:intensivpflegehalle@gmail.com">
-intensivpflegehalle@gmail.com
-</a>
-
-</p>
-
-
-<p>
-
-<a
-href="https://www.intensivpflege-halle.de/"
-target="_blank">
-
-🌐 Unternehmenswebsite
-
-</a>
-
+Telefon: +49 (0)3493–82 38 868<br>
+Fax: +49 (0)3493-82 39 882<br>
+E-Mail: intensivpflegehalle@gmail.com
 </p>
 
 </section>
@@ -1329,23 +692,10 @@ target="_blank">
 </main>
 
 
-
 <footer>
 
 <div class="wrap small">
-
-<strong>Internes QM-Portal · Intensivpflege-Halle-GmbH</strong>
-
-<br><br>
-
-Bitte beachten:
-Die Dokumente sind nur für den vorgesehenen internen
-Personenkreis bestimmt.
-
-<br><br>
-
-© Intensivpflege-Halle-GmbH
-
+Internes QM-Portal · Intensivpflege-Halle-GmbH
 </div>
 
 </footer>
@@ -1354,52 +704,221 @@ Personenkreis bestimmt.
 
 <script>
 
-function toggleFolder(id){
+/* =========================================================
+   PROPHYLAXEN
+========================================================= */
 
-const element=document.getElementById(id);
+const prophylaxenFiles = [
 
-if(element){
+"Deckblatt Prophylaxen & Expertenstandards.pdf",
 
-element.classList.toggle("open");
+"Deckblatt Sturprohylaxe.pdf",
 
-}
+"Mangelernährung.pdf",
 
-}
+"Standard Dehydration.pdf",
+
+"VA - 17 Förderung der Harnkonzinenz Anlehnung Expertenstandards.pdf",
+
+"VA - 18 Obstipationsprophylaxe.pdf",
+
+"VA - 19 Pneumonieprophylaxe.pdf",
+
+"VA - 20 Feststellung des Kontrakturrisiko & Maßnahme der Kontrakturenprophylaxe.pdf",
+
+"VA - 21 Intertrigoprophylaxe.pdf",
+
+"VA - 22 Dekubitusprophylaxe in der Pflege.pdf",
+
+"VA - 23 Sturzprophylaxe in der Pflege.pdf",
+
+"VA - 24 Thromboseprophylaxe.pdf",
+
+"VA - 25 Anlage Berechnungsformeln (Oberarmumfangs).pdf",
+
+"VA - 25 Dehydrationsproghylaxe _ Ernährung in der Pflege.pdf"
+
+];
+
+createDocuments(
+prophylaxenFiles,
+"QM-Handbuch/Prevention Prophylaxen & Expertenstandards",
+"prophylaxenDocs"
+);
 
 
-const input=document.getElementById("search");
+
+/* =========================================================
+   BEHANDLUNGSPFLEGE
+========================================================= */
+
+const behandlungFiles = [
+
+"Deckblatt Behandlungspflege 8-30.pdf",
+
+"Deckblatt Medikamentengabe.pdf",
+
+"Deckblatt VA (MA) Grundpflege_Behandlungspflege_Prophylaxen & Expertenstandards.pdf",
+
+"Delegation ärztlicher Tätigkeiten_Anordnung Medikation.pdf",
+
+"Dokumentation BTM.pdf",
+
+"Dokumentation Blutzucker.pdf",
+
+"Dokumentation Ärzliche Verordnung.pdf",
+
+"Dokumentation Ärztliche Kommunikation.pdf",
+
+"Pulsioximetrie.pdf",
+
+"Umgang mit Arzneimitteln.pdf",
+
+"VA - 08 Kontrolle & Messungen des Blutdrucks.pdf",
+
+"VA - 09 Katheterisieren der Harnblase.pdf",
+
+"VA - 10 Intramuskuläre Injektiion nach von Hochstetter.pdf",
+
+"VA - 11 Subkutane Injektion.pdf",
+
+"VA - 12 Verbandswechsel einer aseptischen Wunde.pdf",
+
+"VA - 13 Verbandswechsel eienr septischen Wunde.pdf",
+
+"VA - 14 Verbandswechsel bei PEG.pdf",
+
+"VA - 15 Verabrechen von Sondennahrung.pdf",
+
+"VA - 28 Messen des Blutzuckers.pdf",
+
+"VA - 29 (NEU) Stand 30.03.2023 Standard Mobilität.pdf",
+
+"VA - 30 Regelung zur Umsetzung der speziellen Krankenbeobachtung.pdf",
+
+"VA Fehlmedikation.pdf",
+
+"Verabreichung von Tropfen & Säften.pdf",
+
+"Verfahrensanleitung Mörsern von Medikamenten.pdf",
+
+"Verfahrensanleitung Stellen von Medikamenten.pdf",
+
+"Verfahrensanleitung Umgang mit BTM.pdf",
+
+"Übersicht Verfahrensanweisungen & grundsätzkiche Festlegungen.pdf"
+
+];
+
+createDocuments(
+behandlungFiles,
+"VA Behandlungspflege",
+"behandlungDocs"
+);
 
 
-if(input){
 
-input.addEventListener("input",function(){
+/* =========================================================
+   PDL
+========================================================= */
 
-const q=input.value.toLowerCase().trim();
+const pdlFiles = [
 
-document.querySelectorAll(".file-list .file-button").forEach(function(button){
+"Anweisung Urlaubplanung für 2026.pdf",
 
-const text=button.innerText.toLowerCase();
+"Belehrung über Nebentätigkeit im Pflegeunternehmen.pdf",
 
-const parent=button.parentElement;
+"Dienstanweisung Regelung zur Urlaubsplanung 20.05.2025.pdf",
 
-if(q===""){
+"Interne Anweisung Erstellung dokumentenechter Dienstpläne 16.01.2026.pdf",
 
-parent.style.display="";
+"Krankmeldung Dienstanweisung 20.05.2025.pdf",
 
-}else{
+"Wunschfrei & Dienstanweisung vom 20.05.2025.pdf"
 
-parent.style.display=text.includes(q) ? "" : "none";
+];
 
-}
+createDocuments(
+pdlFiles,
+"dokumente/Anweisungen von PDL an Mitarbeiter",
+"pdlDocs"
+);
 
-});
+
+
+/* =========================================================
+   BILDERLAUBNIS
+========================================================= */
+
+const bilderFiles = [
+
+"Bilderlaubnis Anschreiben Mitarbeiter.pdf",
+
+"Einverständniserklärung zur Bildnutzung (Klient) Stand 11.08.2021.pdf",
+
+"Einwilligungserlaubnis Mitarbeiter Bilder & Video.pdf"
+
+];
+
+createDocuments(
+bilderFiles,
+"Bilderlaubnis",
+"bilderDocs"
+);
+
+
+
+/* =========================================================
+   SCHULUNGEN
+========================================================= */
+
+const schulungsFiles = [
+
+"FOB 2022.pdf",
+
+"FOB 2023.pdf",
+
+"FOB 2024.pdf",
+
+"FOB 2025.pdf",
+
+"FOB 2026.pdf"
+
+];
+
+createDocuments(
+schulungsFiles,
+"Schulungen",
+"schulungsDocs"
+);
+
+
+
+/* =========================================================
+   SUCHE
+========================================================= */
+
+function filterDocuments(input,id){
+
+const q=input.value.toLowerCase();
+
+document
+.getElementById(id)
+.querySelectorAll(".item")
+.forEach(item=>{
+
+item.style.display =
+item.innerText
+.toLowerCase()
+.includes(q)
+? "flex"
+: "none";
 
 });
 
 }
 
 </script>
-
 
 </body>
 </html>
