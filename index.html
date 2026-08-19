@@ -2,7 +2,9 @@
 <html lang="de">
 
 <head>
+
 <meta charset="utf-8">
+
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>QM-Portal – Intensivpflege-Halle-GmbH</title>
@@ -11,7 +13,7 @@
 
 :root{
     --bg:#f4f7f8;
-    --card:#fff;
+    --card:#ffffff;
     --text:#17313a;
     --muted:#61747b;
     --accent:#167c80;
@@ -262,6 +264,7 @@ footer{
 }
 
 </style>
+
 </head>
 
 
@@ -364,6 +367,12 @@ Schnellzugriff
 </h3>
 
 <p>
+<a href="#qm">
+📘 QM-Handbuch
+</a>
+</p>
+
+<p>
 <a href="#anweisungen">
 📁 Anweisungen von PDL an Mitarbeiter
 </a>
@@ -413,15 +422,557 @@ style="margin-top:16px"
 </h2>
 
 <p class="muted">
-Bereich für das QM-Handbuch und freigegebene
-Qualitätsmanagement-Unterlagen.
+QM-Handbuch und zugehörige Fachbereiche.
 </p>
+
+
+<!-- HYGIENE ORDNER -->
+
+<div
+id="qmOverview"
+class="folder-grid"
+>
+
+<div class="item">
+
+<div class="folder-icon">
+📁
+</div>
+
+<h3>
+Hygiene
+</h3>
+
+<p class="muted">
+24 Dokumente
+</p>
+
+<p>
+Hygienepläne, Hygienevorschriften,
+Merkblätter und Prüfdokumente.
+</p>
+
+<button
+class="button folder-button"
+onclick="openHygiene()"
+>
+Ordner öffnen
+</button>
+
+</div>
+
+</div>
+
+
+<!-- HYGIENE DOKUMENTE -->
+
+<div
+id="hygieneContent"
+class="folder-content"
+>
+
+<div class="folder-header">
+
+<h3>
+📁 Hygiene
+</h3>
+
+<p class="muted">
+24 Dokumente verfügbar
+</p>
+
+<button
+class="button back-button"
+onclick="closeHygiene()"
+>
+← Zurück zum QM-Handbuch
+</button>
+
+</div>
+
+
+<input
+class="search"
+id="hygieneSearch"
+placeholder="Hygiene-Dokument suchen …"
+>
+
+
+<div
+class="grid"
+id="hygieneDocuments"
+>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+1. Anlage 3 Reinigungs-& Desinfektionsplan
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/1.%20Anlage%203%20Reinigungs-%26%20Desinfektionsplan.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+2. Rahmenhygieneplan für ambulante Pflegedienste
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/2.%20Rahmenhygieneplan%20f%C3%BCr%20ambulante%20Pflegedienste.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+3. Anlage 5 Regelung zum Umgang mit Schmuck, Piercings und künstlichen Fingernägeln
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/3.%20Anlage%205%20Regelung%20zum%20Umgang%20mit%20Schmuck%2C%20Piercings%20und%20k%C3%BCnstlichen%20Fingern%C3%A4geln.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+4. Handlungsanleitung zum Umgang mit Coronaviren (COVID-19)
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/4.%20Handlungsanleitung%20zum%20Umgang%20mit%20Coronaviren%20%28COVID-19%29.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+5. Hygieneplan in Anlehnung an dem RHP inkl. Regelung zum Umgang mit MRE, Noro-Vireen,Influenza
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/5.%20Hygieneplan%20in%20Anlehnung%20an%20dem%20RHP%20inkl.%20Regelung%20zum%20Umgang%20mit%20MRE%2C%20Noro-Vireen%2CInfluenza.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+6. Anlage 4 Regelungen zum Umgang mit Noro-Viren
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/6.%20Anlage%204%20Regelungen%20zum%20Umgang%20mit%20Noro-Viren.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+7. Informationsblatt Noro-Viren
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/7.%20Informationsblatt%20Noro-Viren.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+8. Anlage 3 Influenza - Präventions- & Bekämpfungsplan
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/8.%20Anlage%203%20Influenza%20-%20Pr%C3%A4ventions-%20%26%20Bek%C3%A4mpfungsplan.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+9. Anlage 1 Hygienemaßnahmen beim Auftreten MRE & MRSA
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/9.%20Anlage%201%20Hygienema%C3%9Fnahmen%20beim%20Auftreten%20MRE%20%26%20MRSA.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+9. Bekanntmachungen - Amtliche Empfehlungen
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/9.%20Bekanntmachungen%20-%20Amtliche%20Empfehlungen.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+9. Belehrungsblatt MRSA
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/9.%20Belehrungsblatt%20MRSA.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+9. HYSA Merkblatt zum Umgang mit Patienten mit 3MRGN und 4MRGN in Rehaeinrichtungen
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/9.%20HYSA%20Merkblatt%20zum%20Umgang%20mit%20Patienten%20mit%203MRGN%20und%204MRGN%20in%20Rehaeinrichtungen.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+9. Hysa Merkblatt MRSA im ambulanten Pflegedienst
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/9.%20Hysa%20Merkblatt%20MRSA%20im%20ambulanten%20Pflegedienst.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+10. Anlage 1 Erkärung gem. § 43 Abs. 1 Nr. 2 Infektionsschutzgesetz
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/10.%20Anlage%201%20Erk%C3%A4rung%20gem.%20%C2%A7%2043%20Abs.%201%20Nr.%202%20Infektionsschutzgesetz.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+10. Anlage 2 Bescheinigung des Gesundheitsamtes gem. § 43 Abs. 1 Nr. 1 Infektionsschutzgesetz
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/10.%20Anlage%202%20Bescheinigung%20des%20Gesundheitsamtes%20gem.%20%C2%A7%2043%20Abs.%201%20Nr.%201%20Infektionsschutzgesetz.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+10. Infektionsschutzgesetz Belehrung
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/10.%20Infektionsschutzgesetz%20Belehrung.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+11. Anforderungen an die Hygiene bei der Reingiung und Desinfektion von Flächen
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/11.%20Anforderungen%20an%20die%20Hygiene%20bei%20der%20Reingiung%20und%20Desinfektion%20von%20Fl%C3%A4chen.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+12. Händehygiene in Einrichtungen des Gesundheitswesens
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/12.%20H%C3%A4ndehygiene%20in%20Einrichtungen%20des%20Gesundheitswesens.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+13. Prüfbogen Hygienebegehung im Wohnungsbereich
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/13.%20Pr%C3%BCfbogen%20Hygienebegehung%20im%20Wohnungsbereich.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+14. Averosa - Prüfprotokoll Hygieneplan - Ambulant gem. Rahmenhygieneplan
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/14.%20Averosa%20-%20Pr%C3%BCfprotokoll%20Hygieneplan%20-%20Ambulant%20gem.%20Rahmenhygieneplan.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+15. Prävention und Kontrolle Katheter-assoziierter Harnwegsinfektion
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/15.%20Pr%C3%A4vention%20und%20Kontrolle%20Katheter-assoziierter%20Harnwegsinfektion.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+Auflistung Hygiene 1-15
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/Auflistung%20Hygiene%201-15.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+<div class="item">
+
+<div class="file-icon">📄</div>
+
+<strong>
+Deckblatt Hygiene
+</strong>
+
+<a
+class="button"
+href="QM-Handbuch/Hygiene/Deckblatt%20Hygiene.pdf"
+target="_blank"
+rel="noopener"
+>
+PDF öffnen
+</a>
+
+</div>
+
+
+</div>
+
+</div>
 
 </section>
 
 
 <!-- =========================================
-     PDL-ANWEISUNGEN
+     ANWEISUNGEN PDL
 ========================================= -->
 
 <section
@@ -439,8 +990,6 @@ Interne Anweisungen und Dienstanweisungen
 der Pflegedienstleitung.
 </p>
 
-
-<!-- ORDNER -->
 
 <div
 id="pdlOverview"
@@ -472,8 +1021,6 @@ Ordner öffnen
 
 </div>
 
-
-<!-- DOKUMENTE -->
 
 <div
 id="pdlContent"
@@ -660,8 +1207,6 @@ zur Nutzung von Bildern und Videos.
 </p>
 
 
-<!-- ORDNER -->
-
 <div
 id="bilderOverview"
 class="folder-grid"
@@ -692,8 +1237,6 @@ Ordner öffnen
 
 </div>
 
-
-<!-- DOKUMENTE -->
 
 <div
 id="bilderContent"
@@ -741,10 +1284,6 @@ id="bilderDocuments"
 Bilderlaubnis Anschreiben Mitarbeiter
 </strong>
 
-<p class="muted">
-Anschreiben für Mitarbeiter.
-</p>
-
 <a
 class="button"
 href="Bilderlaubnis/Bilderlaubnis%20Anschreiben%20Mitarbeiter.pdf"
@@ -762,12 +1301,8 @@ PDF öffnen
 <div class="file-icon">📄</div>
 
 <strong>
-Einverständniserklärung zur Bildnutzung (Klient)
+Einverständniserklärung zur Bildnutzung (Klient) Stand 11.08.2021
 </strong>
-
-<p class="muted">
-Stand 11.08.2021
-</p>
 
 <a
 class="button"
@@ -788,10 +1323,6 @@ PDF öffnen
 <strong>
 Einwilligungserlaubnis Mitarbeiter Bilder & Video
 </strong>
-
-<p class="muted">
-Einwilligungserklärung für Mitarbeiter.
-</p>
 
 <a
 class="button"
@@ -830,6 +1361,48 @@ style="margin-top:16px"
 Bereich für freigegebene Standards,
 Verfahrensanweisungen und Arbeitsanweisungen.
 </p>
+
+<div class="grid">
+
+<div class="item">
+
+<strong>
+Pflege-Standards
+</strong>
+
+<span class="muted">
+Platzhalter für freigegebene Standards.
+</span>
+
+</div>
+
+
+<div class="item">
+
+<strong>
+Verfahrensanweisungen
+</strong>
+
+<span class="muted">
+Platzhalter für freigegebene Verfahrensanweisungen.
+</span>
+
+</div>
+
+
+<div class="item">
+
+<strong>
+Arbeitsanweisungen
+</strong>
+
+<span class="muted">
+Platzhalter für freigegebene Arbeitsanweisungen.
+</span>
+
+</div>
+
+</div>
 
 </section>
 
@@ -975,8 +1548,6 @@ für die Mitarbeiter.
 </p>
 
 
-<!-- ORDNER -->
-
 <div
 id="schulungOverview"
 class="folder-grid"
@@ -1007,8 +1578,6 @@ Ordner öffnen
 
 </div>
 
-
-<!-- DOKUMENTE -->
 
 <div
 id="schulungContent"
@@ -1056,10 +1625,6 @@ id="schulungDocuments"
 FOB 2022
 </strong>
 
-<p class="muted">
-Fortbildungsunterlagen 2022
-</p>
-
 <a
 class="button"
 href="Schulungen/FOB%202022.pdf"
@@ -1079,10 +1644,6 @@ PDF öffnen
 <strong>
 FOB 2023
 </strong>
-
-<p class="muted">
-Fortbildungsunterlagen 2023
-</p>
 
 <a
 class="button"
@@ -1104,10 +1665,6 @@ PDF öffnen
 FOB 2024
 </strong>
 
-<p class="muted">
-Fortbildungsunterlagen 2024
-</p>
-
 <a
 class="button"
 href="Schulungen/FOB%202024.pdf"
@@ -1128,10 +1685,6 @@ PDF öffnen
 FOB 2025
 </strong>
 
-<p class="muted">
-Fortbildungsunterlagen 2025
-</p>
-
 <a
 class="button"
 href="Schulungen/FOB%202025.pdf"
@@ -1151,10 +1704,6 @@ PDF öffnen
 <strong>
 FOB 2026
 </strong>
-
-<p class="muted">
-Fortbildungsunterlagen 2026
-</p>
 
 <a
 class="button"
@@ -1248,6 +1797,65 @@ Internes QM-Portal · Intensivpflege-Halle-GmbH
 ========================================= -->
 
 <script>
+
+
+/* =========================================
+   HYGIENE
+========================================= */
+
+function openHygiene(){
+
+    document
+        .getElementById("qmOverview")
+        .style.display="none";
+
+    document
+        .getElementById("hygieneContent")
+        .classList.add("active");
+
+}
+
+
+function closeHygiene(){
+
+    document
+        .getElementById("hygieneContent")
+        .classList.remove("active");
+
+    document
+        .getElementById("qmOverview")
+        .style.display="grid";
+
+}
+
+
+const hygieneSearch =
+    document.getElementById("hygieneSearch");
+
+
+hygieneSearch.addEventListener(
+    "input",
+    function(){
+
+        const query =
+            this.value.toLowerCase();
+
+        document
+            .querySelectorAll("#hygieneDocuments .item")
+            .forEach(function(item){
+
+                const text =
+                    item.innerText.toLowerCase();
+
+                item.style.display =
+                    text.includes(query)
+                    ? "block"
+                    : "none";
+
+            });
+
+    }
+);
 
 
 /* =========================================
