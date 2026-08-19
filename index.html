@@ -34,14 +34,8 @@ body{
     color:var(--text);
 }
 
-/* HEADER */
-
 header{
-    background:linear-gradient(
-        135deg,
-        var(--accent2),
-        var(--accent)
-    );
+    background:linear-gradient(135deg,var(--accent2),var(--accent));
     color:white;
     padding:34px 20px;
 }
@@ -78,9 +72,6 @@ header{
     font-weight:700;
 }
 
-
-/* NAVIGATION */
-
 nav{
     background:white;
     border-bottom:1px solid var(--line);
@@ -107,9 +98,6 @@ nav a{
 nav a:hover{
     background:#eaf5f5;
 }
-
-
-/* MAIN */
 
 main{
     padding:30px 16px;
@@ -147,9 +135,6 @@ h3{
     color:var(--muted);
 }
 
-
-/* GRID */
-
 .grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
@@ -161,9 +146,6 @@ h3{
     grid-template-columns:repeat(2,1fr);
     gap:18px;
 }
-
-
-/* DOKUMENT-KARTEN */
 
 .item{
     padding:18px;
@@ -187,9 +169,6 @@ h3{
     margin-bottom:10px;
 }
 
-
-/* BUTTONS */
-
 .button{
     display:inline-block;
     border:0;
@@ -200,6 +179,7 @@ h3{
     cursor:pointer;
     text-decoration:none;
     margin-top:12px;
+    font-size:14px;
 }
 
 .button:hover{
@@ -214,9 +194,6 @@ h3{
     background:var(--accent);
 }
 
-
-/* SUCHFELD */
-
 .search{
     width:100%;
     padding:13px 15px;
@@ -225,9 +202,6 @@ h3{
     font-size:16px;
     margin:10px 0 18px;
 }
-
-
-/* ORDNER-INHALT */
 
 .folder-content{
     display:none;
@@ -254,8 +228,9 @@ h3{
     background:#17313a;
 }
 
-
-/* FOOTER */
+section{
+    scroll-margin-top:70px;
+}
 
 footer{
     margin-top:30px;
@@ -267,9 +242,6 @@ footer{
 .small{
     font-size:14px;
 }
-
-
-/* MOBILE */
 
 @media(max-width:750px){
 
@@ -286,6 +258,7 @@ footer{
     .brand .badge{
         margin-top:15px;
     }
+
 }
 
 </style>
@@ -332,41 +305,25 @@ Interne QM-Übersicht
 
 <div class="wrap">
 
-<a href="#start">
-Start
-</a>
+<a href="#start">Start</a>
 
-<a href="#qm">
-QM-Handbuch
-</a>
+<a href="#qm">QM-Handbuch</a>
 
-<a href="#anweisungen">
-Anweisungen
-</a>
+<a href="#anweisungen">Anweisungen</a>
 
-<a href="#standards">
-Standards
-</a>
+<a href="#bilderlaubnis">Bilderlaubnis</a>
 
-<a href="#checklisten">
-Checklisten
-</a>
+<a href="#standards">Standards</a>
 
-<a href="#teams">
-Teams
-</a>
+<a href="#checklisten">Checklisten</a>
 
-<a href="#formulare">
-Formulare
-</a>
+<a href="#teams">Teams</a>
 
-<a href="#schulungen">
-Schulungen
-</a>
+<a href="#formulare">Formulare</a>
 
-<a href="#kontakt">
-Kontakt
-</a>
+<a href="#schulungen">Schulungen</a>
+
+<a href="#kontakt">Kontakt</a>
 
 </div>
 
@@ -417,6 +374,12 @@ Schnellzugriff
 </p>
 
 <p>
+<a href="#bilderlaubnis">
+📁 Bilderlaubnis
+</a>
+</p>
+
+<p>
 <a href="#standards">
 📋 Standards
 </a>
@@ -428,16 +391,9 @@ Schnellzugriff
 </a>
 </p>
 
-<p>
-<a href="#kontakt">
-📞 Ansprechpartner
-</a>
-</p>
-
 </div>
 
 </section>
-
 
 
 <!-- =====================================
@@ -451,7 +407,7 @@ style="margin-top:16px"
 >
 
 <h2>
-QM-Handbuch
+📘 QM-Handbuch
 </h2>
 
 <p class="muted">
@@ -462,9 +418,8 @@ Qualitätsmanagement-Unterlagen.
 </section>
 
 
-
 <!-- =====================================
-     ANWEISUNGEN VON PDL
+     ANWEISUNGEN
 ===================================== -->
 
 <section
@@ -478,18 +433,11 @@ style="margin-top:16px"
 </h2>
 
 <p class="muted">
-Hier befinden sich interne Anweisungen und
-Dienstanweisungen der Pflegedienstleitung.
+Interne Anweisungen und Dienstanweisungen
+der Pflegedienstleitung.
 </p>
 
-
-<!-- ORDNER -->
-
-<div
-id="folderOverview"
-class="folder-grid"
->
-
+<div class="folder-grid">
 
 <div class="item">
 
@@ -505,14 +453,67 @@ Anweisungen von PDL an Mitarbeiter
 6 Dokumente
 </p>
 
+<a
+class="button folder-button"
+href="#pdl-dokumente"
+>
+Ordner öffnen
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================
+     BILDERLAUBNIS
+===================================== -->
+
+<section
+id="bilderlaubnis"
+class="card"
+style="margin-top:16px"
+>
+
+<h2>
+📁 Bilderlaubnis
+</h2>
+
+<p class="muted">
+Dokumente und Einverständniserklärungen
+zur Nutzung von Bildern und Videos.
+</p>
+
+
+<div
+id="bilderlaubnis-overview"
+class="folder-grid"
+>
+
+<div class="item">
+
+<div class="folder-icon">
+📁
+</div>
+
+<h3>
+Bilderlaubnis
+</h3>
+
+<p class="muted">
+3 Dokumente
+</p>
+
 <p>
-Hier findest du alle aktuellen Anweisungen
-und Dienstanweisungen für Mitarbeiter.
+Hier befinden sich die aktuellen Unterlagen
+zur Bilder- und Videonutzung.
 </p>
 
 <button
 class="button folder-button"
-onclick="openFolder()"
+onclick="openBilderlaubnis()"
 >
 Ordner öffnen
 </button>
@@ -522,30 +523,28 @@ Ordner öffnen
 </div>
 
 
-
 <!-- =====================================
-     DOKUMENTE IM ORDNER
+     BILDERLAUBNIS DOKUMENTE
 ===================================== -->
 
 <div
-id="folderContent"
+id="bilderlaubnis-content"
 class="folder-content"
 >
-
 
 <div class="folder-header">
 
 <h3>
-📁 Anweisungen von PDL an Mitarbeiter
+📁 Bilderlaubnis
 </h3>
 
 <p class="muted">
-6 Dokumente verfügbar
+3 Dokumente verfügbar
 </p>
 
 <button
 class="button back-button"
-onclick="closeFolder()"
+onclick="closeBilderlaubnis()"
 >
 ← Zurück zum Ordner
 </button>
@@ -555,20 +554,18 @@ onclick="closeFolder()"
 
 <input
 class="search"
-id="documentSearch"
+id="bilderlaubnisSearch"
 placeholder="Dokument suchen …"
 >
 
 
 <div
 class="grid"
-id="pdlDocuments"
+id="bilderlaubnisDocuments"
 >
 
 
-<!-- =====================================
-     PDF 1
-===================================== -->
+<!-- PDF 1 -->
 
 <div class="item">
 
@@ -577,18 +574,18 @@ id="pdlDocuments"
 </div>
 
 <strong>
-Anweisung Urlaubplanung für 2026
+Bilderlaubnis Anschreiben Mitarbeiter
 </strong>
 
 <span class="muted">
-Anweisung zur Urlaubsplanung für das Jahr 2026.
+Anschreiben für Mitarbeiter.
 </span>
 
 <br>
 
 <a
 class="button"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Anweisung%20Urlaubplanung%20f%C3%BCr%202026.pdf"
+href="Bilderlaubnis/Bilderlaubnis%20Anschreiben%20Mitarbeiter.pdf"
 target="_blank"
 rel="noopener"
 >
@@ -598,9 +595,7 @@ PDF öffnen
 </div>
 
 
-<!-- =====================================
-     PDF 2
-===================================== -->
+<!-- PDF 2 -->
 
 <div class="item">
 
@@ -609,18 +604,18 @@ PDF öffnen
 </div>
 
 <strong>
-Belehrung über Nebentätigkeit im Pflegeunternehmen
+Einverständniserklärung zur Bildnutzung (Klient)
 </strong>
 
 <span class="muted">
-Belehrung für Mitarbeiter über Nebentätigkeiten.
+Stand 11.08.2021
 </span>
 
 <br>
 
 <a
 class="button"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Belehrung%20%C3%BCber%20Nebent%C3%A4tigkeit%20%20im%20Pflegeunternehmen.pdf"
+href="Bilderlaubnis/Einverst%C3%A4ndniserkl%C3%A4rung%20zur%20Bildnutzung%20%28Klient%29%20Stand%2011.08.2021.pdf"
 target="_blank"
 rel="noopener"
 >
@@ -630,9 +625,7 @@ PDF öffnen
 </div>
 
 
-<!-- =====================================
-     PDF 3
-===================================== -->
+<!-- PDF 3 -->
 
 <div class="item">
 
@@ -641,114 +634,18 @@ PDF öffnen
 </div>
 
 <strong>
-Dienstanweisung Regelung zur Urlaubsplanung 20.05.2025
+Einwilligungserlaubnis Mitarbeiter Bilder & Video
 </strong>
 
 <span class="muted">
-Dienstanweisung zur Regelung der Urlaubsplanung.
+Einwilligungserklärung für Mitarbeiter.
 </span>
 
 <br>
 
 <a
 class="button"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Dienstanweisung%20Regelung%20zur%20Urlaubsplanung%2020.05.2025.pdf"
-target="_blank"
-rel="noopener"
->
-PDF öffnen
-</a>
-
-</div>
-
-
-<!-- =====================================
-     PDF 4
-===================================== -->
-
-<div class="item">
-
-<div class="file-icon">
-📄
-</div>
-
-<strong>
-Interne Anweisung Erstellung dokumentenechter Dienstpläne 16.01.2026
-</strong>
-
-<span class="muted">
-Interne Anweisung zur Erstellung dokumentenechter Dienstpläne.
-</span>
-
-<br>
-
-<a
-class="button"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Interne%20Anweisung%20Erstellung%20dokumentenechter%20Dienstpl%C3%A4ne%2016.01.2026.pdf"
-target="_blank"
-rel="noopener"
->
-PDF öffnen
-</a>
-
-</div>
-
-
-<!-- =====================================
-     PDF 5
-===================================== -->
-
-<div class="item">
-
-<div class="file-icon">
-📄
-</div>
-
-<strong>
-Krankmeldung Dienstanweisung 20.05.2025
-</strong>
-
-<span class="muted">
-Dienstanweisung zur Krankmeldung.
-</span>
-
-<br>
-
-<a
-class="button"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Krankmeldung%20Dienstanweisung%2020.05.2025.pdf"
-target="_blank"
-rel="noopener"
->
-PDF öffnen
-</a>
-
-</div>
-
-
-<!-- =====================================
-     PDF 6
-===================================== -->
-
-<div class="item">
-
-<div class="file-icon">
-📄
-</div>
-
-<strong>
-Wunschfrei & Dienstanweisung vom 20.05.2025
-</strong>
-
-<span class="muted">
-Dienstanweisung zum Thema Wunschfrei.
-</span>
-
-<br>
-
-<a
-class="button"
-href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Wunschfrei%20%26%20Dienstanweisung%20vom%2020.05.2025.pdf"
+href="Bilderlaubnis/Einwilligungserlaubnis%20Mitarbeiter%20Bilder%20%26%20Video.pdf"
 target="_blank"
 rel="noopener"
 >
@@ -764,6 +661,61 @@ PDF öffnen
 
 </section>
 
+
+<!-- =====================================
+     PDL DOKUMENTE
+===================================== -->
+
+<section
+id="pdl-dokumente"
+class="card"
+style="margin-top:16px"
+>
+
+<h2>
+📄 Anweisungen von PDL – Dokumente
+</h2>
+
+<p class="muted">
+Hier können die sechs PDFs der PDL-Anweisungen
+angezeigt werden.
+</p>
+
+<div class="grid">
+
+<div class="item">
+<strong>Anweisung Urlaubplanung für 2026</strong>
+<a class="button" href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Anweisung%20Urlaubplanung%20f%C3%BCr%202026.pdf" target="_blank" rel="noopener">PDF öffnen</a>
+</div>
+
+<div class="item">
+<strong>Belehrung über Nebentätigkeit im Pflegeunternehmen</strong>
+<a class="button" href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Belehrung%20%C3%BCber%20Nebent%C3%A4tigkeit%20%20im%20Pflegeunternehmen.pdf" target="_blank" rel="noopener">PDF öffnen</a>
+</div>
+
+<div class="item">
+<strong>Dienstanweisung Regelung zur Urlaubsplanung 20.05.2025</strong>
+<a class="button" href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Dienstanweisung%20Regelung%20zur%20Urlaubsplanung%2020.05.2025.pdf" target="_blank" rel="noopener">PDF öffnen</a>
+</div>
+
+<div class="item">
+<strong>Interne Anweisung Erstellung dokumentenechter Dienstpläne 16.01.2026</strong>
+<a class="button" href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Interne%20Anweisung%20Erstellung%20dokumentenechter%20Dienstpl%C3%A4ne%2016.01.2026.pdf" target="_blank" rel="noopener">PDF öffnen</a>
+</div>
+
+<div class="item">
+<strong>Krankmeldung Dienstanweisung 20.05.2025</strong>
+<a class="button" href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Krankmeldung%20Dienstanweisung%2020.05.2025.pdf" target="_blank" rel="noopener">PDF öffnen</a>
+</div>
+
+<div class="item">
+<strong>Wunschfrei & Dienstanweisung vom 20.05.2025</strong>
+<a class="button" href="dokumente/Anweisungen%20von%20PDL%20an%20Mitarbeiter/Wunschfrei%20%26%20Dienstanweisung%20vom%2020.05.2025.pdf" target="_blank" rel="noopener">PDF öffnen</a>
+</div>
+
+</div>
+
+</section>
 
 
 <!-- =====================================
@@ -781,12 +733,11 @@ style="margin-top:16px"
 </h2>
 
 <p class="muted">
-Hier können weitere freigegebene Standards
-und Verfahrensanweisungen abgelegt werden.
+Bereich für freigegebene Standards
+und Verfahrensanweisungen.
 </p>
 
 </section>
-
 
 
 <!-- =====================================
@@ -833,7 +784,6 @@ Dokument hier ergänzen.
 </div>
 
 </section>
-
 
 
 <!-- =====================================
@@ -890,7 +840,6 @@ TEAM NORD
 </section>
 
 
-
 <!-- =====================================
      FORMULARE
 ===================================== -->
@@ -910,7 +859,6 @@ Bereich für freigegebene Formulare.
 </p>
 
 </section>
-
 
 
 <!-- =====================================
@@ -933,7 +881,6 @@ und Unterweisungsunterlagen.
 </p>
 
 </section>
-
 
 
 <!-- =====================================
@@ -966,7 +913,6 @@ Wilhelm-von-Klewiz-Str. 11
 
 </p>
 
-
 <p>
 
 Telefon:
@@ -990,7 +936,6 @@ intensivpflegehalle@gmail.com
 </main>
 
 
-
 <!-- =====================================
      FOOTER
 ===================================== -->
@@ -1006,44 +951,43 @@ Internes QM-Portal · Intensivpflege-Halle-GmbH
 </footer>
 
 
-
 <!-- =====================================
      JAVASCRIPT
 ===================================== -->
 
 <script>
 
-function openFolder(){
+function openBilderlaubnis(){
 
     document
-        .getElementById("folderOverview")
-        .style.display = "none";
+        .getElementById("bilderlaubnis-overview")
+        .style.display="none";
 
     document
-        .getElementById("folderContent")
+        .getElementById("bilderlaubnis-content")
         .classList.add("active");
 
 }
 
 
-function closeFolder(){
+function closeBilderlaubnis(){
 
     document
-        .getElementById("folderContent")
+        .getElementById("bilderlaubnis-content")
         .classList.remove("active");
 
     document
-        .getElementById("folderOverview")
-        .style.display = "grid";
+        .getElementById("bilderlaubnis-overview")
+        .style.display="grid";
 
 }
 
 
-const search =
-    document.getElementById("documentSearch");
+const bilderSearch =
+    document.getElementById("bilderlaubnisSearch");
 
 
-search.addEventListener(
+bilderSearch.addEventListener(
     "input",
     function(){
 
@@ -1051,21 +995,16 @@ search.addEventListener(
             this.value.toLowerCase();
 
         document
-            .querySelectorAll("#pdlDocuments .item")
-            .forEach(function(document){
+            .querySelectorAll("#bilderlaubnisDocuments .item")
+            .forEach(function(item){
 
                 const text =
-                    document.innerText.toLowerCase();
+                    item.innerText.toLowerCase();
 
-                if(text.includes(query)){
-
-                    document.style.display = "block";
-
-                }else{
-
-                    document.style.display = "none";
-
-                }
+                item.style.display =
+                    text.includes(query)
+                    ? "block"
+                    : "none";
 
             });
 
