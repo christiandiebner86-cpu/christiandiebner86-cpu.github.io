@@ -60,14 +60,6 @@ header{
   opacity:.9;
 }
 
-.logo{
-  max-height:70px;
-  max-width:230px;
-  background:white;
-  padding:8px;
-  border-radius:10px;
-}
-
 .badge{
   display:inline-block;
   background:#d9eeee;
@@ -109,13 +101,6 @@ main{
   padding:30px 16px;
 }
 
-.hero{
-  display:grid;
-  grid-template-columns:1.5fr 1fr;
-  gap:20px;
-  margin-bottom:22px;
-}
-
 .card{
   background:var(--card);
   border:1px solid var(--line);
@@ -123,6 +108,13 @@ main{
   padding:22px;
   margin-bottom:18px;
   box-shadow:0 4px 18px rgba(22,52,58,.06);
+}
+
+.hero{
+  display:grid;
+  grid-template-columns:1.5fr 1fr;
+  gap:20px;
+  margin-bottom:22px;
 }
 
 .hero .card:first-child{
@@ -145,30 +137,20 @@ h3{
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:15px;
+  gap:16px;
 }
 
 .grid2{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:15px;
-}
-
-.item{
-  padding:17px;
-  border:1px solid var(--line);
-  border-radius:11px;
-  background:#fff;
-}
-
-.item strong{
-  display:block;
-  margin-bottom:7px;
+  gap:16px;
 }
 
 .folder{
   background:#f8fbfb;
   border:2px solid #d8e9ea;
+  border-radius:14px;
+  padding:20px;
   transition:.2s;
 }
 
@@ -178,20 +160,33 @@ h3{
 }
 
 .folder-icon{
-  font-size:32px;
-  margin-bottom:8px;
+  font-size:40px;
+  margin-bottom:10px;
+}
+
+.folder strong{
+  display:block;
+  font-size:18px;
+  margin-bottom:7px;
 }
 
 .document{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:17px;
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
-  min-height:145px;
+  min-height:150px;
 }
 
 .document-icon{
-  font-size:26px;
-  margin-bottom:7px;
+  font-size:28px;
+  margin-bottom:8px;
+}
+
+.document strong{
+  line-height:1.4;
 }
 
 .search{
@@ -203,27 +198,57 @@ h3{
   margin:10px 0 18px;
 }
 
-button,
 .button{
   display:inline-block;
-  border:0;
   background:var(--accent);
-  color:#fff;
+  color:white;
+  text-decoration:none;
   padding:10px 14px;
   border-radius:8px;
-  cursor:pointer;
-  text-decoration:none;
+  margin-top:12px;
   font-size:14px;
-  margin-top:10px;
+  text-align:center;
 }
 
-button:hover,
 .button:hover{
   background:var(--accent2);
 }
 
 .open{
   margin-top:auto;
+}
+
+.back{
+  display:inline-block;
+  margin-bottom:15px;
+  color:var(--accent2);
+  text-decoration:none;
+  font-weight:600;
+}
+
+.back:hover{
+  text-decoration:underline;
+}
+
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.count{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.quick a{
+  color:var(--accent2);
+  text-decoration:none;
+}
+
+.quick a:hover{
+  text-decoration:underline;
 }
 
 footer{
@@ -237,27 +262,12 @@ footer{
   font-size:14px;
 }
 
-.back{
-  display:inline-block;
-  margin-bottom:12px;
-  color:var(--accent2);
-  text-decoration:none;
-  font-weight:600;
-}
-
-.section-title{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-}
-
-.count{
-  color:var(--muted);
-  font-size:14px;
+.hidden{
+  display:none;
 }
 
 @media(max-width:800px){
+
   .hero,
   .grid,
   .grid2{
@@ -268,8 +278,8 @@ footer{
     display:block;
   }
 
-  .logo{
-    margin-top:20px;
+  .badge{
+    margin-top:15px;
   }
 }
 </style>
@@ -278,6 +288,7 @@ footer{
 <body>
 
 <header>
+
 <div class="wrap brand">
 
 <div>
@@ -285,17 +296,19 @@ footer{
 <p>Qualitätsmanagement · Intensivpflege-Halle-GmbH</p>
 </div>
 
-<!-- Falls du später das Logo direkt einbauen möchtest,
-     kannst du hier die Logo-Datei verlinken. -->
-
-<span class="badge">Interne QM-Übersicht</span>
+<span class="badge">
+Interne QM-Übersicht
+</span>
 
 </div>
+
 </header>
 
 
 <nav>
+
 <div class="wrap">
+
 <a href="#start">Start</a>
 <a href="#qm">QM-Handbuch</a>
 <a href="#standards">Standards</a>
@@ -303,16 +316,18 @@ footer{
 <a href="#bilder">Bilderlaubnis</a>
 <a href="#schulungen">Schulungen</a>
 <a href="#kontakt">Kontakt</a>
+
 </div>
+
 </nav>
 
 
-<main class="wrap" id="start">
+<main class="wrap">
 
 
 <!-- START -->
 
-<section class="hero">
+<section id="start" class="hero">
 
 <div class="card">
 
@@ -324,20 +339,25 @@ Qualitätsmanagement-Dokumentation der Intensivpflege-Halle-GmbH.
 </p>
 
 <p class="muted">
-Alle bereitgestellten Dokumente können direkt im Browser geöffnet werden.
+Wählen Sie einen Bereich aus, um die darin enthaltenen
+Dokumente aufzurufen.
 </p>
 
 </div>
 
 
-<div class="card">
+<div class="card quick">
 
 <h3>Schnellzugriff</h3>
 
 <p>📘 <a href="#qm">QM-Handbuch</a></p>
+
 <p>📋 <a href="#standards">Standards & Verfahrensanweisungen</a></p>
-<p>👥 <a href="#pdl">Anweisungen der PDL</a></p>
+
+<p>👥 <a href="#pdl">Anweisungen von PDL</a></p>
+
 <p>🖼️ <a href="#bilder">Bilderlaubnis</a></p>
+
 <p>🎓 <a href="#schulungen">Schulungen</a></p>
 
 </div>
@@ -346,17 +366,22 @@ Alle bereitgestellten Dokumente können direkt im Browser geöffnet werden.
 
 
 
-<!-- QM HANDBUCH -->
+<!-- =====================================================
+     QM HANDBUCH
+===================================================== -->
 
 <section id="qm" class="card">
 
-<div class="section-title">
+<div class="section-head">
+
 <h2>📘 QM-Handbuch</h2>
-<span class="count">2 Bereiche</span>
+
+<span class="count">2 Ordner</span>
+
 </div>
 
 <p class="muted">
-Bereiche des QM-Handbuchs.
+Wählen Sie einen Ordner aus.
 </p>
 
 
@@ -365,19 +390,19 @@ Bereiche des QM-Handbuchs.
 
 <!-- HYGIENE -->
 
-<div class="item folder">
+<div class="folder">
 
 <div class="folder-icon">📁</div>
 
 <strong>Hygiene</strong>
 
-<span class="muted">
-Hygienepläne, Infektionsschutz, MRE/MRSA,
-Händehygiene und weitere Hygieneunterlagen.
-</span>
+<p class="muted">
+Hygienepläne, Infektionsschutz,
+MRE/MRSA, Händehygiene und weitere
+Hygieneunterlagen.
+</p>
 
-<a class="button"
-href="#hygiene">
+<a class="button" href="#hygiene">
 Ordner öffnen
 </a>
 
@@ -386,7 +411,7 @@ Ordner öffnen
 
 <!-- PROPHYLAXEN -->
 
-<div class="item folder">
+<div class="folder">
 
 <div class="folder-icon">📁</div>
 
@@ -394,13 +419,11 @@ Ordner öffnen
 Prevention Prophylaxen & Expertenstandards
 </strong>
 
-<span class="muted">
-Prophylaxen, Expertenstandards und
-entsprechende Verfahrensanweisungen.
-</span>
+<p class="muted">
+Prophylaxen und Expertenstandards.
+</p>
 
-<a class="button"
-href="#prophylaxen">
+<a class="button" href="#prophylaxen">
 Ordner öffnen
 </a>
 
@@ -413,114 +436,56 @@ Ordner öffnen
 
 
 
-<!-- HYGIENE -->
+<!-- =====================================================
+     HYGIENE
+===================================================== -->
 
 <section id="hygiene" class="card">
 
-<a class="back" href="#qm">← Zurück zum QM-Handbuch</a>
+<a class="back" href="#qm">
+← Zurück zum QM-Handbuch
+</a>
+
+<div class="section-head">
 
 <h2>🧼 Hygiene</h2>
 
-<p class="muted">
-Alle Dokumente des Hygiene-Ordners.
-</p>
+<span class="count">22 Dokumente</span>
+
+</div>
 
 <input
 class="search"
-placeholder="Hygiene-Dokument suchen …"
+type="text"
+placeholder="Dokument suchen …"
 oninput="filterDocuments(this,'hygieneDocs')"
 >
 
-
-<div class="grid" id="hygieneDocs">
-
-
-<script>
-const hygieneFiles = [
-"1. Anlage 3 Reinigungs-& Desinfektionsplan.pdf",
-"10. Anlage 1 Erkärung gem. § 43 Abs. 1 Nr. 2 Infektionsschutzgesetz.pdf",
-"10. Anlage 2 Bescheinigung des Gesundheitsamtes gem. § 43 Abs. 1 Nr. 1 Infektionsschutzgesetz.pdf",
-"10. Infektionsschutzgesetz Belehrung.pdf",
-"11. Anforderungen an die Hygiene bei der Reingiung und Desinfektion von Flächen.pdf",
-"12. Händehygiene in Einrichtungen des Gesundheitswesens.pdf",
-"13. Prüfbogen Hygienebegehung im Wohnungsbereich.pdf",
-"14. Averosa - Prüfprotokoll Hygieneplan - Ambulant gem. Rahmenhygieneplan.pdf",
-"15. Prävention und Kontrolle Katheter-assoziierter Harnwegsinfektion.pdf",
-"2. Rahmenhygieneplan für ambulante Pflegedienste.pdf",
-"3. Anlage 5 Regelung zum Umgang mit Schmuck, Piercings und künstlichen Fingernägeln.pdf",
-"4. Handlungsanleitung zum Umgang mit Coronaviren (COVID-19).pdf",
-"5. Hygieneplan in Anlehnung an dem RHP inkl. Regelung zum Umgang mit MRE, Noro-Vireen,Influenza.pdf",
-"6. Anlage 4 Regelungen zum Umgang mit Noro-Viren.pdf",
-"7. Informationsblatt Noro-Viren.pdf",
-"8. Anlage 3 Influenza - Präventions- & Bekämpfungsplan.pdf",
-"9. Anlage 1 Hygienemaßnahmen beim Auftreten MRE & MRSA.pdf",
-"9. Bekanntmachungen - Amtliche Empfehlungen.pdf",
-"9. Belehrungsblatt MRSA.pdf",
-"9. HYSA Merkblatt zum Umgang mit Patienten mit 3MRGN und 4MRGN in Rehaeinrichtungen.pdf",
-"9. Hysa Merkblatt MRSA im ambulanten Pflegedienst.pdf",
-"Auflistung Hygiene 1-15.pdf",
-"Deckblatt Hygiene.pdf"
-];
-
-function encodePath(path){
-return path.split('/').map(encodeURIComponent).join('/');
-}
-
-function createDocuments(files,folder,id){
-
-const container=document.getElementById(id);
-
-files.forEach(file=>{
-
-const div=document.createElement("div");
-div.className="item document";
-
-const url=
-"https://christiandiebner86-cpu.github.io/"
-+encodePath(folder)
-+"/"
-+encodeURIComponent(file);
-
-div.innerHTML=
-'<div>'+
-'<div class="document-icon">📄</div>'+
-'<strong>'+file+'</strong>'+
-'</div>'+
-'<a class="button open" target="_blank" href="'+url+'">Dokument öffnen</a>';
-
-container.appendChild(div);
-
-});
-
-}
-
-createDocuments(
-hygieneFiles,
-"QM-Handbuch/Hygiene",
-"hygieneDocs"
-);
-</script>
-
-</div>
+<div class="grid" id="hygieneDocs"></div>
 
 </section>
 
 
 
-<!-- PROPHYLAXEN -->
+<!-- =====================================================
+     PROPHYLAXEN
+===================================================== -->
 
 <section id="prophylaxen" class="card">
 
-<a class="back" href="#qm">← Zurück zum QM-Handbuch</a>
+<a class="back" href="#qm">
+← Zurück zum QM-Handbuch
+</a>
+
+<div class="section-head">
 
 <h2>🛡️ Prevention Prophylaxen & Expertenstandards</h2>
 
-<p class="muted">
-Alle Dokumente des Ordners.
-</p>
+</div>
 
 <input
 class="search"
+type="text"
 placeholder="Dokument suchen …"
 oninput="filterDocuments(this,'prophylaxenDocs')"
 >
@@ -531,31 +496,41 @@ oninput="filterDocuments(this,'prophylaxenDocs')"
 
 
 
-<!-- STANDARDS -->
+<!-- =====================================================
+     STANDARDS
+===================================================== -->
 
 <section id="standards" class="card">
 
+<div class="section-head">
+
 <h2>📋 Standards & Verfahrensanweisungen</h2>
 
+<span class="count">2 Ordner</span>
+
+</div>
+
 <p class="muted">
-Verfahrensanweisungen und Standards der Behandlungspflege.
+Wählen Sie einen Bereich aus.
 </p>
 
 
 <div class="grid2">
 
 
-<div class="item folder">
+<!-- BEHANDLUNGSPFLEGE -->
+
+<div class="folder">
 
 <div class="folder-icon">📁</div>
 
 <strong>VA Behandlungspflege</strong>
 
-<span class="muted">
+<p class="muted">
 Verfahrensanweisungen, Dokumentationen,
 Medikamente, Wundversorgung und weitere
-Behandlungspflege.
-</span>
+Unterlagen der Behandlungspflege.
+</p>
 
 <a class="button" href="#behandlungspflege">
 Ordner öffnen
@@ -564,21 +539,21 @@ Ordner öffnen
 </div>
 
 
-<div class="item folder">
+<!-- CHRONISCHE WUNDEN -->
+
+<div class="folder">
 
 <div class="folder-icon">📁</div>
 
 <strong>Chronische Wunden</strong>
 
-<span class="muted">
-Verfahrensanweisungen und Unterlagen zur
-Versorgung chronischer Wunden.
-</span>
+<p class="muted">
+Unterlagen und Verfahrensanweisungen
+zur Versorgung chronischer Wunden.
+</p>
 
-<a class="button"
-target="_blank"
-href="https://christiandiebner86-cpu.github.io/dokumente/VA%20chronische%20Wunden%20IH.pdf">
-Dokument öffnen
+<a class="button" href="#chronische-wunden">
+Ordner öffnen
 </a>
 
 </div>
@@ -590,20 +565,25 @@ Dokument öffnen
 
 
 
-<!-- BEHANDLUNGSPFLEGE -->
+<!-- =====================================================
+     BEHANDLUNGSPFLEGE
+===================================================== -->
 
 <section id="behandlungspflege" class="card">
 
-<a class="back" href="#standards">← Zurück zu Standards</a>
+<a class="back" href="#standards">
+← Zurück zu Standards
+</a>
+
+<div class="section-head">
 
 <h2>💉 VA Behandlungspflege</h2>
 
-<p class="muted">
-Verfahrensanweisungen und Dokumente der Behandlungspflege.
-</p>
+</div>
 
 <input
 class="search"
+type="text"
 placeholder="Dokument suchen …"
 oninput="filterDocuments(this,'behandlungDocs')"
 >
@@ -614,19 +594,91 @@ oninput="filterDocuments(this,'behandlungDocs')"
 
 
 
-<!-- PDL -->
+<!-- =====================================================
+     CHRONISCHE WUNDEN
+===================================================== -->
+
+<section id="chronische-wunden" class="card">
+
+<a class="back" href="#standards">
+← Zurück zu Standards
+</a>
+
+<h2>🩹 Chronische Wunden</h2>
+
+<p class="muted">
+Verfügbare Dokumente.
+</p>
+
+<div class="grid" id="wundenDocs"></div>
+
+</section>
+
+
+
+<!-- =====================================================
+     PDL
+===================================================== -->
 
 <section id="pdl" class="card">
 
+<div class="section-head">
+
 <h2>👥 Anweisungen von PDL an Mitarbeiter</h2>
 
+<span class="count">1 Ordner</span>
+
+</div>
+
+<div class="grid">
+
+<div class="folder">
+
+<div class="folder-icon">📁</div>
+
+<strong>
+Anweisungen von PDL an Mitarbeiter
+</strong>
+
 <p class="muted">
-Dienstanweisungen und interne Anweisungen der Pflegedienstleitung.
+Dienstanweisungen und interne Anweisungen
+der Pflegedienstleitung.
 </p>
+
+<a class="button" href="#pdl-dokumente">
+Ordner öffnen
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     PDL DOKUMENTE
+===================================================== -->
+
+<section id="pdl-dokumente" class="card">
+
+<a class="back" href="#pdl">
+← Zurück
+</a>
+
+<div class="section-head">
+
+<h2>📁 Anweisungen von PDL an Mitarbeiter</h2>
+
+<span class="count">6 Dokumente</span>
+
+</div>
 
 <input
 class="search"
-placeholder="PDL-Dokument suchen …"
+type="text"
+placeholder="Dokument suchen …"
 oninput="filterDocuments(this,'pdlDocs')"
 >
 
@@ -636,15 +688,56 @@ oninput="filterDocuments(this,'pdlDocs')"
 
 
 
-<!-- BILDERLAUBNIS -->
+<!-- =====================================================
+     BILDERLAUBNIS
+===================================================== -->
 
 <section id="bilder" class="card">
 
+<div class="section-head">
+
 <h2>🖼️ Bilderlaubnis</h2>
 
+<span class="count">1 Ordner</span>
+
+</div>
+
+<div class="grid">
+
+<div class="folder">
+
+<div class="folder-icon">📁</div>
+
+<strong>Bilderlaubnis</strong>
+
 <p class="muted">
-Formulare und Unterlagen zur Bild- und Videonutzung.
+Formulare und Unterlagen zur
+Bild- und Videonutzung.
 </p>
+
+<a class="button" href="#bilder-dokumente">
+Ordner öffnen
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     BILDER DOKUMENTE
+===================================================== -->
+
+<section id="bilder-dokumente" class="card">
+
+<a class="back" href="#bilder">
+← Zurück
+</a>
+
+<h2>📁 Bilderlaubnis</h2>
 
 <div class="grid" id="bilderDocs"></div>
 
@@ -652,15 +745,55 @@ Formulare und Unterlagen zur Bild- und Videonutzung.
 
 
 
-<!-- SCHULUNGEN -->
+<!-- =====================================================
+     SCHULUNGEN
+===================================================== -->
 
 <section id="schulungen" class="card">
 
+<div class="section-head">
+
 <h2>🎓 Schulungen & Unterweisungen</h2>
+
+<span class="count">1 Ordner</span>
+
+</div>
+
+<div class="grid">
+
+<div class="folder">
+
+<div class="folder-icon">📁</div>
+
+<strong>Schulungen</strong>
 
 <p class="muted">
 Fortbildungen und Schulungsunterlagen.
 </p>
+
+<a class="button" href="#schulungs-dokumente">
+Ordner öffnen
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     SCHULUNGS DOKUMENTE
+===================================================== -->
+
+<section id="schulungs-dokumente" class="card">
+
+<a class="back" href="#schulungen">
+← Zurück
+</a>
+
+<h2>📁 Schulungen</h2>
 
 <div class="grid" id="schulungsDocs"></div>
 
@@ -668,7 +801,9 @@ Fortbildungen und Schulungsunterlagen.
 
 
 
-<!-- KONTAKT -->
+<!-- =====================================================
+     KONTAKT
+===================================================== -->
 
 <section id="kontakt" class="card">
 
@@ -695,7 +830,9 @@ E-Mail: intensivpflegehalle@gmail.com
 <footer>
 
 <div class="wrap small">
+
 Internes QM-Portal · Intensivpflege-Halle-GmbH
+
 </div>
 
 </footer>
@@ -704,11 +841,149 @@ Internes QM-Portal · Intensivpflege-Halle-GmbH
 
 <script>
 
-/* =========================================================
-   PROPHYLAXEN
-========================================================= */
+/* =====================================================
+   HILFSFUNKTION
+===================================================== */
 
-const prophylaxenFiles = [
+function encodeFilePath(folder,file){
+
+return "https://christiandiebner86-cpu.github.io/"
++ folder.split("/").map(encodeURIComponent).join("/")
++ "/"
++ encodeURIComponent(file);
+
+}
+
+
+function createDocuments(files,folder,containerId){
+
+const container=document.getElementById(containerId);
+
+files.forEach(file=>{
+
+const url=encodeFilePath(folder,file);
+
+const item=document.createElement("div");
+
+item.className="document";
+
+item.innerHTML=`
+
+<div>
+
+<div class="document-icon">📄</div>
+
+<strong>${file}</strong>
+
+</div>
+
+<a
+class="button open"
+href="${url}"
+target="_blank"
+rel="noopener"
+>
+Dokument öffnen
+</a>
+
+`;
+
+container.appendChild(item);
+
+});
+
+}
+
+
+function filterDocuments(input,id){
+
+const search=input.value.toLowerCase();
+
+document
+.getElementById(id)
+.querySelectorAll(".document")
+.forEach(item=>{
+
+const text=item.innerText.toLowerCase();
+
+item.style.display=
+text.includes(search)
+?"flex"
+:"none";
+
+});
+
+}
+
+
+
+/* =====================================================
+   HYGIENE
+===================================================== */
+
+const hygieneFiles=[
+
+"1. Anlage 3 Reinigungs-& Desinfektionsplan.pdf",
+
+"10. Anlage 1 Erkärung gem. § 43 Abs. 1 Nr. 2 Infektionsschutzgesetz.pdf",
+
+"10. Anlage 2 Bescheinigung des Gesundheitsamtes gem. § 43 Abs. 1 Nr. 1 Infektionsschutzgesetz.pdf",
+
+"10. Infektionsschutzgesetz Belehrung.pdf",
+
+"11. Anforderungen an die Hygiene bei der Reingiung und Desinfektion von Flächen.pdf",
+
+"12. Händehygiene in Einrichtungen des Gesundheitswesens.pdf",
+
+"13. Prüfbogen Hygienebegehung im Wohnungsbereich.pdf",
+
+"14. Averosa - Prüfprotokoll Hygieneplan - Ambulant gem. Rahmenhygieneplan.pdf",
+
+"15. Prävention und Kontrolle Katheter-assoziierter Harnwegsinfektion.pdf",
+
+"2. Rahmenhygieneplan für ambulante Pflegedienste.pdf",
+
+"3. Anlage 5 Regelung zum Umgang mit Schmuck, Piercings und künstlichen Fingernägeln.pdf",
+
+"4. Handlungsanleitung zum Umgang mit Coronaviren (COVID-19).pdf",
+
+"5. Hygieneplan in Anlehnung an dem RHP inkl. Regelung zum Umgang mit MRE, Noro-Vireen,Influenza.pdf",
+
+"6. Anlage 4 Regelungen zum Umgang mit Noro-Viren.pdf",
+
+"7. Informationsblatt Noro-Viren.pdf",
+
+"8. Anlage 3 Influenza - Präventions- & Bekämpfungsplan.pdf",
+
+"9. Anlage 1 Hygienemaßnahmen beim Auftreten MRE & MRSA.pdf",
+
+"9. Bekanntmachungen - Amtliche Empfehlungen.pdf",
+
+"9. Belehrungsblatt MRSA.pdf",
+
+"9. HYSA Merkblatt zum Umgang mit Patienten mit 3MRGN und 4MRGN in Rehaeinrichtungen.pdf",
+
+"9. Hysa Merkblatt MRSA im ambulanten Pflegedienst.pdf",
+
+"Auflistung Hygiene 1-15.pdf",
+
+"Deckblatt Hygiene.pdf"
+
+];
+
+createDocuments(
+hygieneFiles,
+"QM-Handbuch/Hygiene",
+"hygieneDocs"
+);
+
+
+
+/* =====================================================
+   PROPHYLAXEN
+===================================================== */
+
+const prophylaxenFiles=[
 
 "Deckblatt Prophylaxen & Expertenstandards.pdf",
 
@@ -748,11 +1023,11 @@ prophylaxenFiles,
 
 
 
-/* =========================================================
+/* =====================================================
    BEHANDLUNGSPFLEGE
-========================================================= */
+===================================================== */
 
-const behandlungFiles = [
+const behandlungFiles=[
 
 "Deckblatt Behandlungspflege 8-30.pdf",
 
@@ -818,11 +1093,11 @@ behandlungFiles,
 
 
 
-/* =========================================================
+/* =====================================================
    PDL
-========================================================= */
+===================================================== */
 
-const pdlFiles = [
+const pdlFiles=[
 
 "Anweisung Urlaubplanung für 2026.pdf",
 
@@ -846,11 +1121,11 @@ pdlFiles,
 
 
 
-/* =========================================================
+/* =====================================================
    BILDERLAUBNIS
-========================================================= */
+===================================================== */
 
-const bilderFiles = [
+const bilderFiles=[
 
 "Bilderlaubnis Anschreiben Mitarbeiter.pdf",
 
@@ -868,20 +1143,16 @@ bilderFiles,
 
 
 
-/* =========================================================
+/* =====================================================
    SCHULUNGEN
-========================================================= */
+===================================================== */
 
-const schulungsFiles = [
+const schulungsFiles=[
 
 "FOB 2022.pdf",
-
 "FOB 2023.pdf",
-
 "FOB 2024.pdf",
-
 "FOB 2025.pdf",
-
 "FOB 2026.pdf"
 
 ];
@@ -894,29 +1165,32 @@ schulungsFiles,
 
 
 
-/* =========================================================
-   SUCHE
-========================================================= */
+/* =====================================================
+   CHRONISCHE WUNDEN
+===================================================== */
 
-function filterDocuments(input,id){
+/*
+   Hier bitte die tatsächlichen PDF-Dateien des Ordners
+   eintragen, sobald du sie mir nennst.
+*/
 
-const q=input.value.toLowerCase();
+const wundFiles=[
 
-document
-.getElementById(id)
-.querySelectorAll(".item")
-.forEach(item=>{
+"VA chronische Wunden IH.pdf",
 
-item.style.display =
-item.innerText
-.toLowerCase()
-.includes(q)
-? "flex"
-: "none";
+"VA chronische Wunden IH (1).pdf",
 
-});
+"chronische wunden Anlagen IH.pdf",
 
-}
+"IH PDF Flussdiagramm 15.01.2026.pdf"
+
+];
+
+createDocuments(
+wundFiles,
+"dokumente",
+"wundenDocs"
+);
 
 </script>
 
