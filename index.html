@@ -1,1228 +1,1537 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>QM-Portal – Intensivpflege-Halle-GmbH</title>
 
 <style>
-:root {
-    --primary: #0b6e4f;
-    --primary-dark: #075239;
-    --background: #f4f7f6;
-    --card: #ffffff;
-    --text: #243238;
-    --muted: #68777c;
-    --border: #e1e8e5;
-    --shadow: 0 8px 25px rgba(0,0,0,.08);
+:root{
+  --bg:#f3f7f6;
+  --card:#fff;
+  --text:#17313a;
+  --muted:#66777d;
+  --line:#dce7e4;
+  --green:#087f5b;
+  --green-dark:#075c43;
 }
 
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+html{
+  scroll-behavior:smooth;
 }
 
-html {
-    scroll-behavior: smooth;
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--background);
-    color: var(--text);
+/* ================= HEADER ================= */
+
+header{
+  background:linear-gradient(135deg,#075c43,#087f5b,#13a06f);
+  color:#fff;
+  padding:30px 18px;
+  box-shadow:0 5px 20px rgba(0,0,0,.15);
 }
 
-/* =========================
-   HEADER
-========================= */
-
-header {
-    background: linear-gradient(135deg, #075239, #0b6e4f, #169b70);
-    color: white;
-    padding: 28px 20px;
-    box-shadow: 0 4px 18px rgba(0,0,0,.15);
+.header-inner{
+  max-width:1200px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  gap:20px;
 }
 
-.header-inner {
-    max-width: 1250px;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    gap: 22px;
+.logo{
+  width:78px;
+  height:78px;
+  background:#fff;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  flex-shrink:0;
 }
 
-.logo {
-    width: 75px;
-    height: 75px;
-    background: white;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    flex-shrink: 0;
-    box-shadow: 0 5px 15px rgba(0,0,0,.15);
+.logo img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
 }
 
-.logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+.logo-fallback{
+  font-size:42px;
 }
 
-.logo-fallback {
-    font-size: 42px;
+.header-text h1{
+  margin:0 0 5px;
+  font-size:30px;
 }
 
-.header-title h1 {
-    margin: 0 0 6px;
-    font-size: 30px;
+.header-text p{
+  margin:0;
+  opacity:.9;
 }
 
-.header-title p {
-    margin: 0;
-    opacity: .9;
+/* ================= NAV ================= */
+
+nav{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
 }
 
-/* =========================
-   NAVIGATION
-========================= */
-
-nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: white;
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+.nav-inner{
+  max-width:1200px;
+  margin:auto;
+  display:flex;
+  gap:7px;
+  padding:10px 14px;
+  overflow-x:auto;
 }
 
-.nav-inner {
-    max-width: 1250px;
-    margin: auto;
-    display: flex;
-    gap: 8px;
-    padding: 10px 15px;
-    overflow-x: auto;
+nav a{
+  color:var(--text);
+  text-decoration:none;
+  padding:10px 14px;
+  border-radius:10px;
+  white-space:nowrap;
+  font-weight:700;
 }
 
-nav a {
-    text-decoration: none;
-    color: var(--text);
-    padding: 10px 15px;
-    border-radius: 10px;
-    white-space: nowrap;
-    font-weight: bold;
+nav a:hover{
+  background:#e5f4ee;
+  color:var(--green-dark);
 }
 
-nav a:hover {
-    background: #e8f4ef;
-    color: var(--primary);
+/* ================= MAIN ================= */
+
+main{
+  max-width:1200px;
+  margin:auto;
+  padding:32px 16px 70px;
 }
 
-/* =========================
-   MAIN
-========================= */
-
-main {
-    max-width: 1250px;
-    margin: auto;
-    padding: 35px 18px 70px;
+.hero{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:32px;
+  box-shadow:0 7px 25px rgba(0,0,0,.07);
+  margin-bottom:35px;
 }
 
-.hero {
-    background: white;
-    border-radius: 22px;
-    padding: 35px;
-    box-shadow: var(--shadow);
-    margin-bottom: 35px;
+.hero h2{
+  margin-top:0;
+  font-size:29px;
 }
 
-.hero h2 {
-    margin-top: 0;
-    font-size: 30px;
+.hero p{
+  color:var(--muted);
+  line-height:1.7;
 }
 
-.hero p {
-    color: var(--muted);
-    line-height: 1.7;
+/* ================= SECTIONS ================= */
+
+.section{
+  margin-top:42px;
+  scroll-margin-top:80px;
 }
 
-/* =========================
-   BEREICHE
-========================= */
-
-.section {
-    margin-top: 45px;
-    scroll-margin-top: 80px;
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
 }
 
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
+.section-title-icon{
+  font-size:34px;
 }
 
-.section-title h2 {
-    margin: 0;
-    font-size: 25px;
+.section-title h2{
+  margin:0;
+  font-size:25px;
 }
 
-.section-title .section-icon {
-    font-size: 34px;
+/* ================= FOLDER GRID ================= */
+
+.folder-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(235px,1fr));
+  gap:18px;
 }
 
-/* =========================
-   KACHELN
-========================= */
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
+.folder-card{
+  position:relative;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:23px 20px 20px;
+  min-height:190px;
+  cursor:pointer;
+  overflow:hidden;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
 }
 
-.folder-card {
-    position: relative;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 25px 22px;
-    cursor: pointer;
-    transition: .2s ease;
-    box-shadow: 0 5px 15px rgba(0,0,0,.05);
-    overflow: hidden;
+.folder-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 13px 30px rgba(0,0,0,.13);
 }
 
-.folder-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 28px rgba(0,0,0,.13);
+.folder-card:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:7px;
+  background:var(--folder-color,#087f5b);
 }
 
-.folder-card::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 7px;
-    height: 100%;
-    background: var(--folder-color, #0b6e4f);
+.folder-icon{
+  font-size:56px;
+  line-height:1;
+  margin-bottom:18px;
 }
 
-.folder-icon {
-    font-size: 55px;
-    margin-bottom: 12px;
+.folder-name{
+  font-size:18px;
+  font-weight:800;
+  line-height:1.35;
+  overflow-wrap:anywhere;
 }
 
-.folder-name {
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 1.3;
+.folder-description{
+  margin-top:8px;
+  font-size:14px;
+  color:var(--muted);
 }
 
-.folder-info {
-    color: var(--muted);
-    margin-top: 7px;
-    font-size: 14px;
+/* ================= CONTENT PANEL ================= */
+
+#contentPanel{
+  display:none;
+  margin-top:35px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:25px;
+  box-shadow:0 8px 25px rgba(0,0,0,.08);
+  scroll-margin-top:80px;
 }
 
-/* =========================
-   INHALTE
-========================= */
-
-.content-panel {
-    display: none;
-    margin-top: 25px;
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: var(--shadow);
+#contentPanel.active{
+  display:block;
 }
 
-.content-panel.active {
-    display: block;
+.back-button{
+  border:0;
+  background:#e5f4ee;
+  color:var(--green-dark);
+  padding:10px 15px;
+  border-radius:10px;
+  font-weight:800;
+  cursor:pointer;
+  margin-bottom:18px;
 }
 
-.back-button {
-    border: none;
-    background: #e8f4ef;
-    color: var(--primary-dark);
-    padding: 10px 16px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 20px;
+.back-button:hover{
+  background:#d4ede4;
 }
 
-.back-button:hover {
-    background: #d8eee5;
+.breadcrumb{
+  color:var(--muted);
+  font-size:14px;
+  margin-bottom:20px;
 }
 
-.breadcrumb {
-    color: var(--muted);
-    margin-bottom: 20px;
-    font-size: 14px;
+/* ================= FILES ================= */
+
+.file-list{
+  display:grid;
+  gap:11px;
 }
 
-/* =========================
-   PDF KARTEN
-========================= */
-
-.file-list {
-    display: grid;
-    gap: 12px;
+.file-card{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  padding:15px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#fff;
+  color:var(--text);
+  text-decoration:none;
+  transition:.18s ease;
 }
 
-.file-card {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 16px;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    text-decoration: none;
-    color: var(--text);
-    background: #fff;
-    transition: .2s ease;
+.file-card:hover{
+  background:#f0f8f5;
+  border-color:#b6d8ca;
+  transform:translateX(3px);
 }
 
-.file-card:hover {
-    background: #f1f8f5;
-    border-color: #b8d9cc;
-    transform: translateX(3px);
+.file-icon{
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:11px;
+  background:#ffe7e7;
+  font-size:25px;
+  flex-shrink:0;
 }
 
-.pdf-icon {
-    font-size: 34px;
-    flex-shrink: 0;
+.file-name{
+  font-weight:750;
+  line-height:1.4;
+  overflow-wrap:anywhere;
 }
 
-.file-name {
-    font-weight: bold;
-    line-height: 1.4;
+.file-info{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:13px;
 }
 
-.file-type {
-    color: var(--muted);
-    font-size: 13px;
-    margin-top: 3px;
+/* ================= SUBFOLDERS ================= */
+
+.subfolder-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+  margin-bottom:30px;
 }
 
-/* =========================
-   LOADING
-========================= */
-
-.loading {
-    text-align: center;
-    padding: 35px;
-    color: var(--muted);
+.subfolder-card{
+  background:#f8fbfa;
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:18px;
+  cursor:pointer;
+  transition:.18s ease;
 }
 
-.spinner {
-    width: 38px;
-    height: 38px;
-    border: 4px solid #dce8e3;
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 15px;
+.subfolder-card:hover{
+  background:#edf7f3;
+  transform:translateY(-2px);
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+.subfolder-icon{
+  font-size:42px;
+  margin-bottom:10px;
 }
 
-.error {
-    background: #fff1f1;
-    border: 1px solid #f0caca;
-    color: #9a3030;
-    padding: 18px;
-    border-radius: 12px;
+.subfolder-name{
+  font-weight:800;
+  line-height:1.35;
+  overflow-wrap:anywhere;
 }
 
-/* =========================
-   FOOTER
-========================= */
+/* ================= LOADING ================= */
 
-footer {
-    background: #16332b;
-    color: white;
-    text-align: center;
-    padding: 30px 20px;
+.loading{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:30px;
+  text-align:center;
+  color:var(--muted);
 }
 
-footer p {
-    margin: 5px;
-    opacity: .85;
+.spinner{
+  width:36px;
+  height:36px;
+  border:4px solid #dceae4;
+  border-top-color:var(--green);
+  border-radius:50%;
+  animation:spin .9s linear infinite;
+  margin:0 auto 14px;
 }
 
-/* =========================
-   MOBILE
-========================= */
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
 
-@media (max-width: 650px) {
+.error{
+  background:#fff1f1;
+  border:1px solid #edcaca;
+  color:#8c2929;
+  padding:18px;
+  border-radius:12px;
+}
 
-    .header-inner {
-        align-items: flex-start;
-    }
+/* ================= FOOTER ================= */
 
-    .logo {
-        width: 58px;
-        height: 58px;
-    }
+footer{
+  background:#17313a;
+  color:#fff;
+  text-align:center;
+  padding:28px 15px;
+}
 
-    .header-title h1 {
-        font-size: 22px;
-    }
+footer p{
+  margin:5px;
+  opacity:.85;
+}
 
-    .header-title p {
-        font-size: 14px;
-    }
+/* ================= MOBILE ================= */
 
-    .hero {
-        padding: 25px;
-    }
+@media(max-width:650px){
 
-    .hero h2 {
-        font-size: 24px;
-    }
+  .header-inner{
+    align-items:flex-start;
+  }
 
-    .grid {
-        grid-template-columns: 1fr;
-    }
+  .logo{
+    width:60px;
+    height:60px;
+  }
+
+  .header-text h1{
+    font-size:23px;
+  }
+
+  .header-text p{
+    font-size:14px;
+  }
+
+  .hero{
+    padding:24px;
+  }
+
+  .hero h2{
+    font-size:24px;
+  }
+
+  .folder-grid{
+    grid-template-columns:1fr;
+  }
 
 }
 </style>
 </head>
 
+
 <body>
 
 <header>
-    <div class="header-inner">
 
-        <div class="logo">
-            <!-- Falls kein Logo geladen werden kann, bleibt das Pflege-Icon sichtbar -->
-            <img
-                src="https://www.intensivpflege-halle.de/wp-content/uploads/2021/01/cropped-logo.png"
-                alt="Intensivpflege-Halle-GmbH Logo"
-                onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';"
-            >
-            <span id="logoFallback" class="logo-fallback" style="display:none;">❤️</span>
-        </div>
+  <div class="header-inner">
 
-        <div class="header-title">
-            <h1>QM-Portal</h1>
-            <p>Qualitätsmanagement · Intensivpflege-Halle-GmbH</p>
-        </div>
+    <div class="logo">
+
+      <img
+        src="https://www.intensivpflege-halle.de/wp-content/uploads/2021/01/cropped-logo.png"
+        alt="Intensivpflege-Halle-GmbH"
+        onerror="
+          this.style.display='none';
+          document.getElementById('logoFallback').style.display='block';
+        "
+      >
+
+      <span
+        id="logoFallback"
+        class="logo-fallback"
+        style="display:none"
+      >
+        ❤️
+      </span>
 
     </div>
+
+    <div class="header-text">
+      <h1>QM-Portal</h1>
+      <p>Qualitätsmanagement · Intensivpflege-Halle-GmbH</p>
+    </div>
+
+  </div>
+
 </header>
 
+
 <nav>
-    <div class="nav-inner">
-        <a href="#start">🏠 Start</a>
-        <a href="#qm">📚 QM-Handbuch</a>
-        <a href="#standards">📋 Standards</a>
-        <a href="#schulungen">🎓 Schulungen</a>
-        <a href="#bilder">📷 Bilderlaubnis</a>
-        <a href="#pdl">👩‍⚕️ PDL-Anweisungen</a>
-    </div>
+
+  <div class="nav-inner">
+
+    <a href="#start">🏠 Start</a>
+    <a href="#qm">📚 QM-Handbuch</a>
+    <a href="#standards">📋 Standards</a>
+    <a href="#schulungen">🎓 Schulungen</a>
+    <a href="#bilder">📷 Bilderlaubnis</a>
+    <a href="#pdl">👩‍⚕️ PDL-Anweisungen</a>
+
+  </div>
+
 </nav>
+
 
 <main>
 
+<!-- ================= START ================= -->
+
 <section id="start" class="hero">
-    <h2>Willkommen im QM-Portal</h2>
 
-    <p>
-        Diese Website dient als zentrale Oberfläche für die interne
-        Qualitätsmanagement-Dokumentation der Intensivpflege-Halle-GmbH.
-    </p>
+  <h2>Willkommen im QM-Portal</h2>
 
-    <p>
-        Die Ordner und Unterordner werden automatisch aus dem
-        GitHub-Repository geladen. Neue Ordner und PDF-Dateien können dadurch
-        später hinzugefügt werden, ohne dass die <strong>index.html</strong>
-        jedes Mal geändert werden muss.
-    </p>
+  <p>
+    Diese Website dient als zentrale Oberfläche für die interne
+    Qualitätsmanagement-Dokumentation der Intensivpflege-Halle-GmbH.
+  </p>
+
+  <p>
+    Die Ordner werden automatisch aus dem GitHub-Repository geladen.
+    Klicke auf einen Ordner, um dessen Dateien und Unterordner anzuzeigen.
+  </p>
+
 </section>
 
 
-<!-- =========================================
-     QM HANDBUCH
-========================================= -->
+<!-- ================= QM ================= -->
 
 <section id="qm" class="section">
 
-    <div class="section-title">
-        <span class="section-icon">📚</span>
-        <h2>QM-Handbuch</h2>
+  <div class="section-title">
+
+    <span class="section-title-icon">📚</span>
+
+    <h2>QM-Handbuch</h2>
+
+  </div>
+
+  <div id="qmFolders" class="folder-grid">
+
+    <div class="loading">
+      <div class="spinner"></div>
+      QM-Handbuch wird geladen …
     </div>
 
-    <div id="qmFolders" class="grid">
-        <div class="loading">
-            <div class="spinner"></div>
-            QM-Handbuch wird geladen …
-        </div>
-    </div>
+  </div>
 
 </section>
 
 
-<!-- =========================================
-     STANDARDS
-========================================= -->
+<!-- ================= STANDARDS ================= -->
 
 <section id="standards" class="section">
 
-    <div class="section-title">
-        <span class="section-icon">📋</span>
-        <h2>Standards & Verfahrensanweisungen</h2>
+  <div class="section-title">
+
+    <span class="section-title-icon">📋</span>
+
+    <h2>Standards & Verfahrensanweisungen</h2>
+
+  </div>
+
+  <div id="standardFolders" class="folder-grid">
+
+    <div class="loading">
+      <div class="spinner"></div>
+      Standards werden geladen …
     </div>
 
-    <div id="standardFolders" class="grid">
-        <div class="loading">
-            <div class="spinner"></div>
-            Standards werden geladen …
-        </div>
-    </div>
+  </div>
 
 </section>
 
 
-<!-- =========================================
-     SCHULUNGEN
-========================================= -->
+<!-- ================= SCHULUNGEN ================= -->
 
 <section id="schulungen" class="section">
 
-    <div class="section-title">
-        <span class="section-icon">🎓</span>
-        <h2>Schulungen & Unterweisungen</h2>
+  <div class="section-title">
+
+    <span class="section-title-icon">🎓</span>
+
+    <h2>Schulungen & Unterweisungen</h2>
+
+  </div>
+
+  <div id="trainingFolders" class="folder-grid">
+
+    <div class="loading">
+      <div class="spinner"></div>
+      Schulungen werden geladen …
     </div>
 
-    <div id="trainingFolders" class="grid">
-        <div class="loading">
-            <div class="spinner"></div>
-            Schulungen werden geladen …
-        </div>
-    </div>
+  </div>
 
 </section>
 
 
-<!-- =========================================
-     BILDERLAUBNIS
-========================================= -->
+<!-- ================= BILDER ================= -->
 
 <section id="bilder" class="section">
 
-    <div class="section-title">
-        <span class="section-icon">📷</span>
-        <h2>Bilderlaubnis</h2>
+  <div class="section-title">
+
+    <span class="section-title-icon">📷</span>
+
+    <h2>Bilderlaubnis</h2>
+
+  </div>
+
+  <div id="imageFolders" class="folder-grid">
+
+    <div class="loading">
+      <div class="spinner"></div>
+      Bilderlaubnis wird geladen …
     </div>
 
-    <div id="imageFolders" class="grid">
-        <div class="loading">
-            <div class="spinner"></div>
-            Dokumente werden geladen …
-        </div>
-    </div>
+  </div>
 
 </section>
 
 
-<!-- =========================================
-     PDL
-========================================= -->
+<!-- ================= PDL ================= -->
 
 <section id="pdl" class="section">
 
-    <div class="section-title">
-        <span class="section-icon">👩‍⚕️</span>
-        <h2>Anweisungen von PDL an Mitarbeiter</h2>
+  <div class="section-title">
+
+    <span class="section-title-icon">👩‍⚕️</span>
+
+    <h2>Anweisungen von PDL an Mitarbeiter</h2>
+
+  </div>
+
+  <div id="pdlFolders" class="folder-grid">
+
+    <div class="loading">
+      <div class="spinner"></div>
+      PDL-Anweisungen werden geladen …
     </div>
 
-    <div id="pdlFolders" class="grid">
-        <div class="loading">
-            <div class="spinner"></div>
-            Dokumente werden geladen …
-        </div>
-    </div>
+  </div>
 
 </section>
 
 
-<!-- =========================================
-     DYNAMISCHER INHALT
-========================================= -->
+<!-- ================= INHALT ================= -->
 
-<div id="contentPanel" class="content-panel">
+<section
+  id="contentPanel"
+  class="content-panel"
+>
 
-    <button class="back-button" onclick="closeFolder()">
-        ← Zurück
-    </button>
+  <button
+    class="back-button"
+    onclick="closeFolder()"
+  >
+    ← Zurück
+  </button>
 
-    <div id="breadcrumb" class="breadcrumb"></div>
+  <div
+    id="breadcrumb"
+    class="breadcrumb"
+  ></div>
 
-    <div id="folderContent"></div>
+  <div id="folderContent"></div>
 
-</div>
+</section>
 
 </main>
 
 
 <footer>
-    <p><strong>Intensivpflege-Halle-GmbH</strong></p>
-    <p>Internes Qualitätsmanagement-Portal</p>
+
+  <p><strong>Intensivpflege-Halle-GmbH</strong></p>
+
+  <p>
+    Internes Qualitätsmanagement-Portal
+  </p>
+
 </footer>
 
 
 <script>
 
-/* =========================================================
-   GITHUB EINSTELLUNGEN
-========================================================= */
+/* ============================================================
+   GITHUB
+============================================================ */
 
 const OWNER = "christiandiebner86-cpu";
-const REPO = "christiandiebner86-cpu.github.io";
+
+const REPOSITORY =
+  "christiandiebner86-cpu.github.io";
+
 const BRANCH = "main";
 
-const API_URL =
-    `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+
+/*
+   GitHub API.
+*/
+
+const API =
+  "https://api.github.com/repos/" +
+  OWNER +
+  "/" +
+  REPOSITORY +
+  "/git/trees/" +
+  BRANCH +
+  "?recursive=1";
 
 
-/* =========================================================
+let repositoryTree = [];
+
+
+/* ============================================================
    ICONS
-========================================================= */
+============================================================ */
 
-function getFolderIcon(name) {
+function folderIcon(name){
 
-    const n = name.toLowerCase();
+  const n =
+    decodeURIComponent(name).toLowerCase();
 
-    if (n.includes("schulung")) return "🎓";
-    if (n.includes("fortbildung")) return "🎓";
-    if (n.includes("fob")) return "🎓";
+  if(n.includes("schulung")) return "🎓";
+  if(n.includes("fob")) return "🎓";
+  if(n.includes("fortbildung")) return "🎓";
 
-    if (n.includes("hygiene")) return "🧼";
-    if (n.includes("prophylax")) return "🛡️";
-    if (n.includes("expertenstandard")) return "📖";
-    if (n.includes("prozess")) return "⚙️";
-    if (n.includes("datenschutz")) return "🔐";
-    if (n.includes("beschwer")) return "📣";
-    if (n.includes("notfall")) return "🚨";
-    if (n.includes("hilfe")) return "🆘";
-    if (n.includes("fortbildungskonzept")) return "🎓";
-    if (n.includes("visiten")) return "🩺";
-    if (n.includes("pflegeberatung")) return "👩‍⚕️";
-    if (n.includes("patient")) return "❤️";
-    if (n.includes("angehör")) return "👨‍👩‍👧";
-    if (n.includes("bilder")) return "📷";
-    if (n.includes("pdl")) return "👩‍⚕️";
+  if(n.includes("hygiene")) return "🧼";
+  if(n.includes("prophylax")) return "🛡️";
+  if(n.includes("expertenstandard")) return "📖";
+  if(n.includes("prozess")) return "⚙️";
+  if(n.includes("notfall")) return "🚨";
+  if(n.includes("hilfe")) return "🆘";
+  if(n.includes("datenschutz")) return "🔐";
+  if(n.includes("beschwer")) return "📣";
 
-    if (n.includes("behandlungspflege")) return "💉";
-    if (n.includes("grundpflege")) return "🛏️";
-    if (n.includes("chronische")) return "🩹";
-    if (n.includes("wunden")) return "🩹";
-    if (n.includes("schmerzen")) return "💊";
-    if (n.includes("beziehung")) return "🤝";
-    if (n.includes("bezugspflege")) return "👩‍⚕️";
-    if (n.includes("herzbett")) return "🛏️";
-    if (n.includes("nestlagerung")) return "🛏️";
-    if (n.includes("aki")) return "🩺";
+  if(n.includes("pflegeberatung")) return "👩‍⚕️";
+  if(n.includes("visiten")) return "🩺";
+  if(n.includes("fallbesprech")) return "🩺";
 
-    return "📁";
+  if(n.includes("bilder")) return "📷";
+  if(n.includes("pdl")) return "👩‍⚕️";
+
+  if(n.includes("behandlungspflege")) return "💉";
+  if(n.includes("grundpflege")) return "🛏️";
+  if(n.includes("chronische")) return "🩹";
+  if(n.includes("wunden")) return "🩹";
+  if(n.includes("schmerzen")) return "💊";
+  if(n.includes("beziehung")) return "🤝";
+  if(n.includes("bezugspflege")) return "👩‍⚕️";
+  if(n.includes("herzbett")) return "🛏️";
+  if(n.includes("nestlagerung")) return "🛏️";
+  if(n.includes("aki")) return "🩺";
+
+  return "📁";
 }
 
 
-/* =========================================================
+/* ============================================================
    FARBEN
-========================================================= */
+============================================================ */
 
-const colors = [
-    "#0b6e4f",
-    "#1976d2",
-    "#7b1fa2",
-    "#ef6c00",
-    "#c62828",
-    "#00838f",
-    "#6a1b9a",
-    "#558b2f",
-    "#ad1457"
+const folderColors = [
+  "#e53935",
+  "#fb8c00",
+  "#f6c700",
+  "#43a047",
+  "#00897b",
+  "#1e88e5",
+  "#3949ab",
+  "#8e24aa",
+  "#d81b60"
 ];
 
-function getColor(index) {
-    return colors[index % colors.length];
+
+function folderColor(index){
+
+  return folderColors[
+    index % folderColors.length
+  ];
+
 }
 
 
-/* =========================================================
-   DATEINAMEN
-========================================================= */
+/* ============================================================
+   SICHERHEIT
+============================================================ */
 
-function cleanName(name) {
+function escapeHTML(text){
 
-    return name
-        .replace(/\.pdf$/i, "")
-        .replace(/\.odt$/i, "")
-        .replace(/\.odg$/i, "")
-        .replace(/_/g, " ");
+  return String(text)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
 }
 
 
-/* =========================================================
-   GITHUB DATEN LADEN
-========================================================= */
+/* ============================================================
+   DATEINAME
+============================================================ */
 
-let tree = [];
+function cleanFileName(name){
+
+  return decodeURIComponent(name)
+    .replace(/\.pdf$/i,"")
+    .replace(/\.odt$/i,"")
+    .replace(/\.odg$/i,"")
+    .replace(/\.docx$/i,"")
+    .replace(/\.doc$/i,"")
+    .replace(/\.xlsx$/i,"")
+    .replace(/\.xls$/i,"")
+    .replace(/_/g," ");
+
+}
 
 
-async function loadRepository() {
+/* ============================================================
+   DATEI-URL
+============================================================ */
 
-    try {
+/*
+   WICHTIG:
 
-        const response = await fetch(API_URL, {
-            cache: "no-store"
-        });
+   Hier wird NICHT mehr die GitHub-API-URL verwendet.
 
-        if (!response.ok) {
-            throw new Error("GitHub API konnte nicht geladen werden.");
-        }
+   Die Datei wird direkt über GitHub Pages geöffnet.
 
-        const data = await response.json();
+   Beispiel:
 
-        tree = data.tree || [];
+   Schulungen/FOB 2026.pdf
 
-        buildMainSections();
+   wird:
 
-    } catch (error) {
+   https://christiandiebner86-cpu.github.io/Schulungen/FOB%202026.pdf
+*/
 
-        console.error(error);
+function fileURL(path){
 
-        const message = `
-            <div class="error">
-                <strong>Die Dokumentenübersicht konnte nicht geladen werden.</strong>
-                <br><br>
-                Bitte Seite neu laden.
-                <br><br>
-                Falls das Problem bleibt, prüfe bitte, ob das GitHub-Repository
-                öffentlich erreichbar ist.
-            </div>
-        `;
+  const parts =
+    path
+      .split("/")
+      .map(part =>
+        encodeURIComponent(
+          decodeURIComponent(part)
+        )
+      );
 
-        document.getElementById("qmFolders").innerHTML = message;
-        document.getElementById("standardFolders").innerHTML = "";
-        document.getElementById("trainingFolders").innerHTML = "";
-        document.getElementById("imageFolders").innerHTML = "";
-        document.getElementById("pdlFolders").innerHTML = "";
+  return "/" + parts.join("/");
+
+}
+
+
+/* ============================================================
+   ICON FÜR DATEI
+============================================================ */
+
+function fileIcon(path){
+
+  const n =
+    path.toLowerCase();
+
+  if(n.endsWith(".pdf"))
+    return "📕";
+
+  if(n.endsWith(".mp4") ||
+     n.endsWith(".webm") ||
+     n.endsWith(".mov"))
+    return "🎬";
+
+  if(n.endsWith(".mp3"))
+    return "🎧";
+
+  return "📄";
+
+}
+
+
+/* ============================================================
+   REPOSITORY LADEN
+============================================================ */
+
+async function loadRepository(){
+
+  try{
+
+    const response =
+      await fetch(API,{
+        cache:"no-store"
+      });
+
+    if(!response.ok){
+
+      throw new Error(
+        "GitHub API Fehler: " +
+        response.status
+      );
+
     }
+
+    const data =
+      await response.json();
+
+    repositoryTree =
+      data.tree || [];
+
+    renderMainSections();
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    const errorHTML = `
+      <div class="error">
+        <strong>Dokumente konnten nicht geladen werden.</strong>
+        <br><br>
+        Fehler beim Abrufen der GitHub-Ordner.
+      </div>
+    `;
+
+    document.getElementById(
+      "qmFolders"
+    ).innerHTML = errorHTML;
+
+    document.getElementById(
+      "standardFolders"
+    ).innerHTML = "";
+
+    document.getElementById(
+      "trainingFolders"
+    ).innerHTML = "";
+
+    document.getElementById(
+      "imageFolders"
+    ).innerHTML = "";
+
+    document.getElementById(
+      "pdlFolders"
+    ).innerHTML = "";
+
+  }
+
 }
 
 
-/* =========================================================
-   ROOT ORDNER ERMITTELN
-========================================================= */
+/* ============================================================
+   ROOT ORDNER
+============================================================ */
 
-function getRootFolders() {
+function rootFolders(){
 
-    const folders = new Set();
+  const result = [];
 
-    tree.forEach(item => {
+  repositoryTree.forEach(item => {
 
-        if (item.type !== "tree") return;
+    if(item.type !== "tree")
+      return;
 
-        const parts = item.path.split("/");
+    if(!item.path.includes("/"))
+      result.push(item.path);
 
-        if (parts.length === 1) {
-            folders.add(parts[0]);
-        }
+  });
 
-    });
+  return result;
 
-    return [...folders];
 }
 
 
-/* =========================================================
-   BEREICHE ZUORDNEN
-========================================================= */
+/* ============================================================
+   HAUPTBEREICHE
+============================================================ */
 
-function buildMainSections() {
+function renderMainSections(){
 
-    const roots = getRootFolders();
+  const roots =
+    rootFolders();
 
-    const qm = [];
-    const standards = [];
-    const trainings = [];
-    const bilder = [];
-    const pdl = [];
+  const qm = [];
+  const standards = [];
+  const training = [];
+  const bilder = [];
+  const pdl = [];
 
-    roots.forEach(folder => {
 
-        const n = folder.toLowerCase();
+  roots.forEach(folder => {
 
-        /* Teams niemals anzeigen */
-        if (
-            n === "teams" ||
-            n.includes("teams")
-        ) {
-            return;
-        }
-
-        /* Bilderlaubnis */
-        if (n === "bilderlaubnis") {
-            bilder.push(folder);
-            return;
-        }
-
-        /* Schulungen */
-        if (
-            n === "schulungen" ||
-            n.includes("fortbildung")
-        ) {
-            trainings.push(folder);
-            return;
-        }
-
-        /* PDL */
-        if (
-            n === "dokumente"
-        ) {
-            pdl.push(folder);
-            return;
-        }
-
-        /* Standards */
-        if (
-            n.startsWith("va ") ||
-            n.startsWith("va%20") ||
-            n.includes("behandlungspflege") ||
-            n.includes("grundpflege") ||
-            n.includes("bezugspflege") ||
-            n.includes("beziehungsgestaltung") ||
-            n.includes("chronische") ||
-            n.includes("herzbett") ||
-            n.includes("nestlagerung") ||
-            n.includes("aki patienten")
-        ) {
-            standards.push(folder);
-            return;
-        }
-
-        /* QM */
-        if (
-            n === "qm-handbuch" ||
-            n.startsWith("qm ") ||
-            n.startsWith("qm.")
-        ) {
-            qm.push(folder);
-            return;
-        }
-
-    });
+    const n =
+      folder.toLowerCase();
 
 
     /*
-       Diese Root-Ordner wurden bei dir teilweise außerhalb
-       von QM-Handbuch angelegt.
-
-       Sie werden trotzdem automatisch unter QM-Handbuch
-       einsortiert.
+      Teams niemals anzeigen.
     */
 
-    renderFolders(
-        "qmFolders",
-        qm,
-        "qm"
-    );
-
-    renderFolders(
-        "standardFolders",
-        standards,
-        "standards"
-    );
-
-    renderFolders(
-        "trainingFolders",
-        trainings,
-        "training"
-    );
-
-    renderFolders(
-        "imageFolders",
-        bilder,
-        "bilder"
-    );
-
-    renderFolders(
-        "pdlFolders",
-        pdl,
-        "pdl"
-    );
-}
-
-
-/* =========================================================
-   ORDNER DARSTELLEN
-========================================================= */
-
-function renderFolders(containerId, folders, type) {
-
-    const container = document.getElementById(containerId);
-
-    container.innerHTML = "";
-
-    if (!folders.length) {
-
-        container.innerHTML = `
-            <div class="loading">
-                Keine Ordner gefunden.
-            </div>
-        `;
-
-        return;
+    if(
+      n === "teams" ||
+      n.includes("team")
+    ){
+      return;
     }
 
 
-    folders.sort((a,b) =>
-        a.localeCompare(b, "de", {
-            numeric: true,
-            sensitivity: "base"
-        })
-    );
+    /*
+      Bilderlaubnis
+    */
+
+    if(n === "bilderlaubnis"){
+
+      bilder.push(folder);
+      return;
+
+    }
 
 
-    folders.forEach((folder, index) => {
+    /*
+      Schulungen
+    */
 
-        const card = document.createElement("div");
+    if(
+      n === "schulungen" ||
+      n.includes("fortbildungskonzept")
+    ){
 
-        card.className = "folder-card";
+      training.push(folder);
+      return;
 
-        card.style.setProperty(
-            "--folder-color",
-            getColor(index)
-        );
-
-        const icon =
-            type === "training"
-                ? "🎓"
-                : getFolderIcon(folder);
+    }
 
 
-        card.innerHTML = `
-            <div class="folder-icon">${icon}</div>
+    /*
+      PDL-Ordner.
+      Dein PDL-Ordner liegt unter "dokumente".
+    */
 
-            <div class="folder-name">
-                ${escapeHTML(folder)}
-            </div>
+    if(n === "dokumente"){
 
-            <div class="folder-info">
-                Ordner öffnen →
-            </div>
-        `;
+      pdl.push(folder);
+      return;
 
-
-        card.onclick = () => {
-
-            openFolder(folder);
-
-        };
+    }
 
 
-        container.appendChild(card);
+    /*
+      Standards & VA
+    */
 
-    });
+    if(
+      n.startsWith("va ") ||
+      n.includes("behandlungspflege") ||
+      n.includes("grundpflege") ||
+      n.includes("beziehungsgestaltung") ||
+      n.includes("bezugspflege") ||
+      n.includes("chronische") ||
+      n.includes("herzbett") ||
+      n.includes("nestlagerung") ||
+      n.includes("aki patienten")
+    ){
+
+      standards.push(folder);
+      return;
+
+    }
+
+
+    /*
+      QM-Handbuch.
+
+      Dazu zählen auch deine QM-Ordner,
+      die direkt unter main liegen.
+    */
+
+    if(
+      n === "qm-handbuch" ||
+      n.startsWith("qm ")
+    ){
+
+      qm.push(folder);
+      return;
+
+    }
+
+  });
+
+
+  renderFolderGrid(
+    "qmFolders",
+    qm
+  );
+
+  renderFolderGrid(
+    "standardFolders",
+    standards
+  );
+
+  renderFolderGrid(
+    "trainingFolders",
+    training
+  );
+
+  renderFolderGrid(
+    "imageFolders",
+    bilder
+  );
+
+  renderFolderGrid(
+    "pdlFolders",
+    pdl
+  );
 
 }
 
 
-/* =========================================================
-   ORDNER ÖFFNEN
-========================================================= */
+/* ============================================================
+   ORDNER KACHELN
+============================================================ */
 
-function openFolder(folderPath) {
+function renderFolderGrid(
+  containerID,
+  folders
+){
 
-    const panel = document.getElementById("contentPanel");
-    const content = document.getElementById("folderContent");
-    const breadcrumb = document.getElementById("breadcrumb");
+  const container =
+    document.getElementById(
+      containerID
+    );
 
-    panel.classList.add("active");
-
-    breadcrumb.textContent =
-        "📁 " + folderPath.replaceAll("/", " / ");
+  container.innerHTML = "";
 
 
-    content.innerHTML = `
-        <div class="loading">
-            <div class="spinner"></div>
-            Ordner wird geöffnet …
+  folders.sort((a,b)=>
+    a.localeCompare(
+      b,
+      "de",
+      {
+        numeric:true,
+        sensitivity:"base"
+      }
+    )
+  );
+
+
+  if(!folders.length){
+
+    container.innerHTML = `
+      <div class="loading">
+        Keine Ordner gefunden.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  folders.forEach(
+    (folder,index)=>{
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+      card.className =
+        "folder-card";
+
+      card.style.setProperty(
+        "--folder-color",
+        folderColor(index)
+      );
+
+
+      card.innerHTML = `
+
+        <div class="folder-icon">
+          ${folderIcon(folder)}
         </div>
+
+        <div class="folder-name">
+          ${escapeHTML(
+            decodeURIComponent(folder)
+          )}
+        </div>
+
+        <div class="folder-description">
+          Ordner öffnen →
+        </div>
+
+      `;
+
+
+      card.addEventListener(
+        "click",
+        ()=>{
+          openFolder(folder);
+        }
+      );
+
+
+      container.appendChild(card);
+
+    }
+  );
+
+}
+
+
+/* ============================================================
+   ORDNER ÖFFNEN
+============================================================ */
+
+function openFolder(path){
+
+  const panel =
+    document.getElementById(
+      "contentPanel"
+    );
+
+  const content =
+    document.getElementById(
+      "folderContent"
+    );
+
+  const breadcrumb =
+    document.getElementById(
+      "breadcrumb"
+    );
+
+
+  panel.classList.add(
+    "active"
+  );
+
+
+  breadcrumb.textContent =
+    "📁 " +
+    decodeURIComponent(path)
+      .replaceAll("/"," / ");
+
+
+  content.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      Ordner wird geöffnet …
+    </div>
+  `;
+
+
+  const prefix =
+    path + "/";
+
+
+  /*
+    Nur direkte Inhalte des Ordners.
+  */
+
+  const children =
+    repositoryTree.filter(
+      item => {
+
+        if(
+          !item.path.startsWith(
+            prefix
+          )
+        ){
+          return false;
+        }
+
+        const rest =
+          item.path.substring(
+            prefix.length
+          );
+
+        return (
+          rest.length > 0 &&
+          !rest.includes("/")
+        );
+
+      }
+    );
+
+
+  /*
+    Unterordner
+  */
+
+  const folders =
+    children
+      .filter(
+        item =>
+          item.type === "tree"
+      )
+      .sort((a,b)=>
+        a.path.localeCompare(
+          b.path,
+          "de",
+          {
+            numeric:true
+          }
+        )
+      );
+
+
+  /*
+    Dateien
+  */
+
+  const files =
+    children
+      .filter(
+        item =>
+          item.type === "blob"
+      )
+      .sort((a,b)=>
+        a.path.localeCompare(
+          b.path,
+          "de",
+          {
+            numeric:true
+          }
+        )
+      );
+
+
+  let html = "";
+
+
+  /* ========================================
+     UNTERORDNER
+  ======================================== */
+
+  if(folders.length){
+
+    html += `
+      <h3>📁 Unterordner</h3>
+
+      <div class="subfolder-grid">
     `;
 
 
-    /*
-       Alle Einträge innerhalb dieses Ordners.
-    */
+    folders.forEach(
+      (folder,index)=>{
 
-    const prefix = folderPath + "/";
+        const name =
+          folder.path.substring(
+            prefix.length
+          );
 
-    const children = tree.filter(item => {
-
-        if (!item.path.startsWith(prefix)) {
-            return false;
-        }
-
-        const rest = item.path.substring(prefix.length);
 
         /*
-           Nur direkte Kinder anzeigen.
-           Unterordner werden ebenfalls als Kachel angezeigt.
+          data-path verhindert Probleme
+          mit Umlauten und Sonderzeichen.
         */
 
-        return rest.length > 0 && !rest.includes("/");
+        html += `
 
-    });
+          <div
+            class="subfolder-card"
+            data-folder-path="${escapeHTML(
+              folder.path
+            )}"
+          >
 
-
-    if (!children.length) {
-
-        content.innerHTML = `
-            <div class="loading">
-                Dieser Ordner enthält momentan keine Dateien.
+            <div class="subfolder-icon">
+              ${folderIcon(name)}
             </div>
+
+            <div class="subfolder-name">
+              ${escapeHTML(
+                decodeURIComponent(name)
+              )}
+            </div>
+
+          </div>
+
         `;
 
-        panel.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-        return;
-    }
-
-
-    const folders = children
-        .filter(item => item.type === "tree")
-        .sort((a,b) =>
-            a.path.localeCompare(b.path, "de", {
-                numeric: true
-            })
-        );
-
-
-    const files = children
-        .filter(item => item.type === "blob")
-        .sort((a,b) =>
-            a.path.localeCompare(b.path, "de", {
-                numeric: true
-            })
-        );
-
-
-    let html = "";
-
-
-    /* Unterordner */
-
-    if (folders.length) {
-
-        html += `
-            <h3>📁 Unterordner</h3>
-
-            <div class="grid">
-        `;
-
-
-        folders.forEach((folder, index) => {
-
-            const name =
-                folder.path.substring(prefix.length);
-
-            html += `
-                <div
-                    class="folder-card"
-                    style="--folder-color:${getColor(index)}"
-                    onclick="openFolder('${escapeJS(folder.path)}')"
-                >
-
-                    <div class="folder-icon">
-                        ${getFolderIcon(name)}
-                    </div>
-
-                    <div class="folder-name">
-                        ${escapeHTML(name)}
-                    </div>
-
-                    <div class="folder-info">
-                        Unterordner öffnen →
-                    </div>
-
-                </div>
-            `;
-
-        });
-
-
-        html += `</div>`;
-    }
-
-
-    /* Dateien */
-
-    if (files.length) {
-
-        html += `
-            <h3 style="margin-top:30px;">
-                📄 Dokumente
-            </h3>
-
-            <div class="file-list">
-        `;
-
-
-        files.forEach(file => {
-
-            const name =
-                file.path.substring(prefix.length);
-
-            const extension =
-                name.split(".").pop().toLowerCase();
-
-
-            /*
-               Relative GitHub-Pages-Adresse.
-
-               Dadurch wird das PDF direkt im Browser geöffnet.
-            */
-
-            const url =
-                buildPageUrl(file.path);
-
-
-            let icon = "📄";
-
-            if (extension === "pdf") {
-                icon = "📕";
-            } else if (extension === "mp4" || extension === "webm") {
-                icon = "🎬";
-            } else if (extension === "mp3") {
-                icon = "🎧";
-            }
-
-
-            html += `
-                <a
-                    class="file-card"
-                    href="${url}"
-                    target="_blank"
-                    rel="noopener"
-                >
-
-                    <div class="pdf-icon">
-                        ${icon}
-                    </div>
-
-                    <div>
-
-                        <div class="file-name">
-                            ${escapeHTML(cleanName(name))}
-                        </div>
-
-                        <div class="file-type">
-                            ${extension.toUpperCase()} · Öffnen
-                        </div>
-
-                    </div>
-
-                </a>
-            `;
-
-        });
-
-
-        html += `</div>`;
-    }
-
-
-    content.innerHTML = html;
-
-
-    panel.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
-
-}
-
-
-/* =========================================================
-   URL FÜR DATEIEN
-========================================================= */
-
-function buildPageUrl(path) {
-
-    return encodeURI(
-        window.location.origin +
-        "/" +
-        path
-            .split("/")
-            .map(part => encodeURIComponent(part))
-            .join("/")
+      }
     );
 
+
+    html += `
+      </div>
+    `;
+
+  }
+
+
+  /* ========================================
+     DATEIEN
+  ======================================== */
+
+  if(files.length){
+
+    html += `
+      <h3>
+        📄 Dokumente
+      </h3>
+
+      <div class="file-list">
+    `;
+
+
+    files.forEach(
+      file => {
+
+        const name =
+          file.path.substring(
+            prefix.length
+          );
+
+
+        /*
+          HIER IST DIE ENTSCHEIDENDE
+          KORREKTUR:
+
+          Der Link zeigt direkt auf
+          GitHub Pages.
+
+          NICHT auf /blob/main/
+          und NICHT auf die API.
+        */
+
+        const url =
+          fileURL(file.path);
+
+
+        const extension =
+          name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+
+        html += `
+
+          <a
+            class="file-card"
+            href="${url}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="file-icon">
+              ${fileIcon(name)}
+            </div>
+
+            <div>
+
+              <div class="file-name">
+                ${escapeHTML(
+                  cleanFileName(name)
+                )}
+              </div>
+
+              <div class="file-info">
+                ${extension.toUpperCase()}
+                · Zum Öffnen anklicken
+              </div>
+
+            </div>
+
+          </a>
+
+        `;
+
+      }
+    );
+
+
+    html += `
+      </div>
+    `;
+
+  }
+
+
+  /*
+    Keine Inhalte.
+  */
+
+  if(
+    !folders.length &&
+    !files.length
+  ){
+
+    html = `
+      <div class="loading">
+        Dieser Ordner enthält momentan
+        keine direkt sichtbaren Dateien.
+      </div>
+    `;
+
+  }
+
+
+  content.innerHTML =
+    html;
+
+
+  /*
+    Unterordner-Klicks aktivieren.
+  */
+
+  content
+    .querySelectorAll(
+      "[data-folder-path]"
+    )
+    .forEach(
+      element => {
+
+        element.addEventListener(
+          "click",
+          ()=>{
+
+            openFolder(
+              element.dataset.folderPath
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+  panel.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+
 }
 
 
-/* =========================================================
-   ORDNER SCHLIESSEN
-========================================================= */
+/* ============================================================
+   ZURÜCK
+============================================================ */
 
-function closeFolder() {
+function closeFolder(){
 
-    const panel =
-        document.getElementById("contentPanel");
+  const panel =
+    document.getElementById(
+      "contentPanel"
+    );
 
-    panel.classList.remove("active");
-
-    document
-        .getElementById("start")
-        .scrollIntoView({
-            behavior: "smooth"
-        });
+  panel.classList.remove(
+    "active"
+  );
 
 }
 
 
-/* =========================================================
-   SICHERHEIT / HTML
-========================================================= */
-
-function escapeHTML(value) {
-
-    return value
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-}
-
-
-function escapeJS(value) {
-
-    return value
-        .replaceAll("\\", "\\\\")
-        .replaceAll("'", "\\'");
-}
-
-
-/* =========================================================
+/* ============================================================
    START
-========================================================= */
+============================================================ */
 
 loadRepository();
 
