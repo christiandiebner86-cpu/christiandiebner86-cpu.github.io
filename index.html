@@ -1,714 +1,1173 @@
 ```html
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>QM-Portal – Intensivpflege-Halle-GmbH</title>
 
+<!--
+  WICHTIG:
+  Diese Polyfill-Zeilen stehen VOR Supabase.
+  Damit wird verhindert, dass ältere/ungewöhnliche
+  Browserumgebungen bei Promise.finally abstürzen.
+-->
+<script>
+(function () {
+  if (typeof Promise !== "undefined" &&
+      !Promise.prototype.finally) {
+
+    Promise.prototype.finally = function (callback) {
+      var P = this.constructor;
+
+      return this.then(
+        function (value) {
+          return P.resolve(callback()).then(function () {
+            return value;
+          });
+        },
+        function (reason) {
+          return P.resolve(callback()).then(function () {
+            throw reason;
+          });
+        }
+      );
+    };
+  }
+})();
+</script>
+
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-:root{
-  --bg:#f3f7f6;
-  --card:#fff;
-  --text:#17313a;
-  --muted:#66777d;
-  --line:#dce7e4;
-  --green:#087f5b;
-  --green-dark:#075c43;
-  --red:#d93025;
-  --blue:#1e88e5;
+:root {
+  --bg: #f3f7f6;
+  --card: #ffffff;
+  --text: #17313a;
+  --muted: #66777d;
+  --line: #dce7e4;
+
+  --green: #087f5b;
+  --green-dark: #075c43;
+
+  --red: #d93025;
+  --orange: #fb8c00;
+  --blue: #1e88e5;
 }
 
-*{box-sizing:border-box}
-
-html{
-  scroll-behavior:smooth;
+* {
+  box-sizing: border-box;
 }
 
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
+html {
+  scroll-behavior: smooth;
 }
 
-button,input{
-  font:inherit;
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  background: var(--bg);
+  color: var(--text);
 }
 
-#authScreen{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:25px;
+/* =========================================================
+   AUTH
+========================================================= */
+
+#authScreen {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 25px;
+
   background:
-    radial-gradient(circle at top left,#d9f4e9,transparent 40%),
-    radial-gradient(circle at bottom right,#dbeeff,transparent 40%),
+    radial-gradient(
+      circle at top left,
+      #d9f4e9,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      #dbeeff,
+      transparent 40%
+    ),
     var(--bg);
 }
 
-.auth-card{
-  width:100%;
-  max-width:470px;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:25px;
-  padding:35px;
-  box-shadow:0 15px 45px rgba(0,0,0,.12);
+.auth-card {
+  width: 100%;
+  max-width: 470px;
+
+  background: #fff;
+
+  border: 1px solid var(--line);
+  border-radius: 25px;
+
+  padding: 35px;
+
+  box-shadow:
+    0 15px 45px rgba(0,0,0,.12);
+}
+
+.auth-logo {
+  width: 85px;
+  height: 85px;
+
+  margin: 0 auto 20px;
+
+  border-radius: 20px;
+  overflow: hidden;
+
+  background: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow:
+    0 5px 18px rgba(0,0,0,.1);
+}
+
+.auth-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.auth-title {
+  text-align: center;
+  margin: 0;
+  font-size: 27px;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: var(--muted);
+  margin: 8px 0 25px;
 }
 
-.auth-logo,
-.logo{
-  background:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
+.auth-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 22px;
 }
 
-.auth-logo{
-  width:85px;
-  height:85px;
-  margin:0 auto 20px;
-  border-radius:20px;
-  box-shadow:0 5px 18px rgba(0,0,0,.1);
+.auth-tabs button {
+  flex: 1;
+
+  border: 0;
+
+  padding: 12px;
+
+  border-radius: 11px;
+
+  cursor: pointer;
+
+  background: #edf4f2;
+
+  font-weight: 800;
+
+  color: var(--text);
 }
 
-.auth-logo img,
-.logo img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
+.auth-tabs button.active {
+  background: var(--green);
+  color: #fff;
 }
+
+.auth-form label {
+  display: block;
 
-.auth-title{
-  text-align:center;
-  margin:0;
-  font-size:27px;
+  margin: 13px 0 6px;
+
+  font-weight: 700;
 }
+
+.auth-form input {
+  width: 100%;
+
+  padding: 13px 14px;
+
+  border: 1px solid var(--line);
 
-.auth-subtitle{
-  text-align:center;
-  color:var(--muted);
-  margin:8px 0 25px;
+  border-radius: 11px;
+
+  font-size: 16px;
+
+  outline: none;
 }
 
-.auth-tabs{
-  display:flex;
-  gap:8px;
-  margin-bottom:22px;
+.auth-form input:focus {
+  border-color: var(--green);
+
+  box-shadow:
+    0 0 0 3px rgba(8,127,91,.1);
 }
+
+.auth-submit {
+  width: 100%;
+
+  margin-top: 20px;
 
-.auth-tabs button{
-  flex:1;
-  border:0;
-  padding:12px;
-  border-radius:11px;
-  cursor:pointer;
-  background:#edf4f2;
-  font-weight:800;
-  color:var(--text);
+  padding: 14px;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #075c43,
+      #087f5b
+    );
+
+  color: #fff;
+
+  font-size: 16px;
+
+  font-weight: 800;
+
+  cursor: pointer;
 }
 
-.auth-tabs button.active{
-  background:var(--green);
-  color:#fff;
+.auth-submit:disabled {
+  opacity: .65;
+  cursor: wait;
 }
+
+.auth-message {
+  display: none;
 
-.auth-form label{
-  display:block;
-  margin:13px 0 6px;
-  font-weight:700;
+  margin-top: 15px;
+
+  padding: 13px;
+
+  border-radius: 10px;
+
+  font-size: 14px;
+
+  line-height: 1.5;
 }
 
-.auth-form input{
-  width:100%;
-  padding:13px 14px;
-  border:1px solid var(--line);
-  border-radius:11px;
-  font-size:16px;
-  outline:none;
+.auth-message.error {
+  display: block;
+
+  background: #fff0f0;
+
+  color: #8c2929;
+
+  border: 1px solid #efcaca;
 }
+
+.auth-message.success {
+  display: block;
+
+  background: #edf9f3;
 
-.auth-form input:focus{
-  border-color:var(--green);
-  box-shadow:0 0 0 3px rgba(8,127,91,.1);
+  color: #17613f;
+
+  border: 1px solid #c5e8d5;
 }
+
+/* =========================================================
+   PORTAL
+========================================================= */
 
-.auth-submit{
-  width:100%;
-  margin-top:20px;
-  padding:14px;
-  border:0;
-  border-radius:12px;
-  background:linear-gradient(135deg,#075c43,#087f5b);
-  color:#fff;
-  font-weight:800;
-  cursor:pointer;
+#portal {
+  display: none;
 }
+
+header {
+  background:
+    linear-gradient(
+      135deg,
+      #075c43,
+      #087f5b,
+      #13a06f
+    );
+
+  color: #fff;
 
-.auth-submit:disabled{
-  opacity:.6;
-  cursor:wait;
+  padding: 25px 18px;
+
+  box-shadow:
+    0 5px 20px rgba(0,0,0,.15);
 }
+
+.header-inner {
+  max-width: 1200px;
+
+  margin: auto;
+
+  display: flex;
+
+  align-items: center;
 
-.auth-message,
-.admin-message{
-  display:none;
-  margin-top:15px;
-  padding:13px;
-  border-radius:10px;
-  font-size:14px;
+  gap: 20px;
 }
 
-.auth-message.error,
-.admin-message.error{
-  display:block;
-  background:#fff0f0;
-  color:#8c2929;
-  border:1px solid #efcaca;
+.logo {
+  width: 78px;
+  height: 78px;
+
+  background: #fff;
+
+  border-radius: 18px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  flex-shrink: 0;
 }
 
-.auth-message.success,
-.admin-message.success{
-  display:block;
-  background:#edf9f3;
-  color:#17613f;
-  border:1px solid #c5e8d5;
+.logo img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
 }
 
-#portal{
-  display:none;
+.header-text {
+  flex: 1;
 }
 
-header{
-  background:linear-gradient(135deg,#075c43,#087f5b,#13a06f);
-  color:#fff;
-  padding:25px 18px;
-  box-shadow:0 5px 20px rgba(0,0,0,.15);
+.header-text h1 {
+  margin: 0 0 5px;
+
+  font-size: 30px;
 }
+
+.header-text p {
+  margin: 0;
 
-.header-inner{
-  max-width:1200px;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  gap:20px;
+  opacity: .9;
 }
 
-.logo{
-  width:78px;
-  height:78px;
-  border-radius:18px;
-  flex-shrink:0;
+.user-box {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  background:
+    rgba(255,255,255,.14);
+
+  border:
+    1px solid rgba(255,255,255,.25);
+
+  padding: 10px 12px;
+
+  border-radius: 13px;
 }
 
-.header-text{
-  flex:1;
+.user-info {
+  text-align: right;
+
+  line-height: 1.25;
 }
 
-.header-text h1{
-  margin:0 0 5px;
-  font-size:30px;
+.user-name {
+  font-weight: 800;
 }
 
-.header-text p{
-  margin:0;
-  opacity:.9;
+.user-role {
+  font-size: 12px;
+  opacity: .85;
 }
+
+.logout-btn {
+  border: 0;
 
-.user-box{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:rgba(255,255,255,.14);
-  border:1px solid rgba(255,255,255,.25);
-  padding:10px 12px;
-  border-radius:13px;
+  border-radius: 9px;
+
+  padding: 8px 11px;
+
+  background: #fff;
+
+  color: var(--green-dark);
+
+  font-weight: 800;
+
+  cursor: pointer;
 }
+
+/* =========================================================
+   NAV
+========================================================= */
+
+nav {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 100;
 
-.user-info{
-  text-align:right;
-  line-height:1.25;
+  background: #fff;
+
+  border-bottom: 1px solid var(--line);
+
+  box-shadow:
+    0 2px 10px rgba(0,0,0,.06);
 }
+
+.nav-inner {
+  max-width: 1200px;
+
+  margin: auto;
 
-.user-name{
-  font-weight:800;
+  display: flex;
+
+  gap: 7px;
+
+  padding: 10px 14px;
+
+  overflow-x: auto;
 }
+
+nav a {
+  color: var(--text);
+
+  text-decoration: none;
 
-.user-role{
-  font-size:12px;
-  opacity:.85;
+  padding: 10px 14px;
+
+  border-radius: 10px;
+
+  white-space: nowrap;
+
+  font-weight: 700;
 }
+
+nav a:hover {
+  background: #e5f4ee;
 
-.logout-btn{
-  border:0;
-  border-radius:9px;
-  padding:8px 11px;
-  background:#fff;
-  color:var(--green-dark);
-  font-weight:800;
-  cursor:pointer;
+  color: var(--green-dark);
 }
 
-nav{
-  position:sticky;
-  top:0;
-  z-index:100;
-  background:#fff;
-  border-bottom:1px solid var(--line);
-  box-shadow:0 2px 10px rgba(0,0,0,.06);
+/* =========================================================
+   MAIN
+========================================================= */
+
+main {
+  max-width: 1200px;
+
+  margin: auto;
+
+  padding: 32px 16px 70px;
 }
+
+.hero {
+  background: #fff;
+
+  border: 1px solid var(--line);
 
-.nav-inner{
-  max-width:1200px;
-  margin:auto;
-  display:flex;
-  gap:7px;
-  padding:10px 14px;
-  overflow-x:auto;
+  border-radius: 22px;
+
+  padding: 32px;
+
+  box-shadow:
+    0 7px 25px rgba(0,0,0,.07);
+
+  margin-bottom: 35px;
 }
+
+.hero h2 {
+  margin-top: 0;
 
-nav a{
-  color:var(--text);
-  text-decoration:none;
-  padding:10px 14px;
-  border-radius:10px;
-  white-space:nowrap;
-  font-weight:700;
+  font-size: 29px;
 }
 
-nav a:hover{
-  background:#e5f4ee;
-  color:var(--green-dark);
+.hero p {
+  color: var(--muted);
+
+  line-height: 1.7;
 }
+
+/* =========================================================
+   SECTIONS
+========================================================= */
 
-main{
-  max-width:1200px;
-  margin:auto;
-  padding:32px 16px 70px;
+.section {
+  margin-top: 42px;
+
+  scroll-margin-top: 80px;
 }
+
+.section-title {
+  display: flex;
 
-.hero{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:32px;
-  box-shadow:0 7px 25px rgba(0,0,0,.07);
-  margin-bottom:35px;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 20px;
 }
 
-.hero h2{
-  margin-top:0;
-  font-size:29px;
+.section-title-icon {
+  font-size: 34px;
 }
 
-.hero p{
-  color:var(--muted);
-  line-height:1.7;
+.section-title h2 {
+  margin: 0;
+
+  font-size: 25px;
 }
+
+/* =========================================================
+   FOLDER GRID
+========================================================= */
 
-.section{
-  margin-top:42px;
-  scroll-margin-top:80px;
+.folder-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(235px,1fr)
+    );
+
+  gap: 18px;
 }
+
+.folder-card {
+  position: relative;
+
+  background: #fff;
+
+  border: 1px solid var(--line);
 
-.section-title{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:20px;
+  border-radius: 20px;
+
+  padding: 23px 20px 20px;
+
+  min-height: 190px;
+
+  cursor: pointer;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 6px 18px rgba(0,0,0,.06);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
 }
 
-.section-title-icon{
-  font-size:34px;
+.folder-card:hover {
+  transform: translateY(-5px);
+
+  box-shadow:
+    0 13px 30px rgba(0,0,0,.13);
 }
+
+.folder-card::before {
+  content: "";
+
+  position: absolute;
 
-.section-title h2{
-  margin:0;
-  font-size:25px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  width: 7px;
+
+  background:
+    var(--folder-color,#087f5b);
 }
+
+.folder-icon {
+  font-size: 56px;
+
+  line-height: 1;
 
-.folder-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(235px,1fr));
-  gap:18px;
+  margin-bottom: 18px;
 }
 
-.folder-card{
-  position:relative;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:23px 20px 20px;
-  min-height:190px;
-  cursor:pointer;
-  overflow:hidden;
-  box-shadow:0 6px 18px rgba(0,0,0,.06);
-  transition:transform .2s ease,box-shadow .2s ease;
+.folder-name {
+  font-size: 18px;
+
+  font-weight: 800;
+
+  line-height: 1.35;
+
+  overflow-wrap: anywhere;
 }
+
+.folder-description {
+  margin-top: 8px;
+
+  font-size: 14px;
 
-.folder-card:hover{
-  transform:translateY(-5px);
-  box-shadow:0 13px 30px rgba(0,0,0,.13);
+  color: var(--muted);
 }
 
-.folder-card:before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:7px;
-  background:var(--folder-color,#087f5b);
+/* =========================================================
+   CONTENT
+========================================================= */
+
+#contentPanel {
+  display: none;
+
+  margin-top: 35px;
+
+  background: #fff;
+
+  border: 1px solid var(--line);
+
+  border-radius: 20px;
+
+  padding: 25px;
+
+  box-shadow:
+    0 8px 25px rgba(0,0,0,.08);
+
+  scroll-margin-top: 80px;
 }
 
-.folder-icon{
-  font-size:56px;
-  line-height:1;
-  margin-bottom:18px;
+#contentPanel.active {
+  display: block;
 }
 
-.folder-name{
-  font-size:18px;
-  font-weight:800;
-  line-height:1.35;
-  overflow-wrap:anywhere;
+.back-button {
+  border: 0;
+
+  background: #e5f4ee;
+
+  color: var(--green-dark);
+
+  padding: 10px 15px;
+
+  border-radius: 10px;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  margin-bottom: 18px;
 }
+
+.breadcrumb {
+  color: var(--muted);
+
+  font-size: 14px;
 
-.folder-description{
-  margin-top:8px;
-  font-size:14px;
-  color:var(--muted);
+  margin-bottom: 20px;
+
+  overflow-wrap: anywhere;
 }
+
+/* =========================================================
+   FILES
+========================================================= */
 
-#contentPanel{
-  display:none;
-  margin-top:35px;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:25px;
-  box-shadow:0 8px 25px rgba(0,0,0,.08);
-  scroll-margin-top:80px;
+.file-list {
+  display: grid;
+
+  gap: 11px;
 }
+
+.file-card {
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 15px;
+
+  border: 1px solid var(--line);
+
+  border-radius: 13px;
 
-#contentPanel.active{
-  display:block;
+  background: #fff;
+
+  color: var(--text);
+
+  text-decoration: none;
+
+  transition: .18s ease;
 }
+
+.file-card:hover {
+  background: #f0f8f5;
 
-.back-button{
-  border:0;
-  background:#e5f4ee;
-  color:var(--green-dark);
-  padding:10px 15px;
-  border-radius:10px;
-  font-weight:800;
-  cursor:pointer;
-  margin-bottom:18px;
+  border-color: #b6d8ca;
+
+  transform: translateX(3px);
 }
+
+.file-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
 
-.breadcrumb{
-  color:var(--muted);
-  font-size:14px;
-  margin-bottom:20px;
+  background: #ffe7e7;
+
+  font-size: 25px;
+
+  flex-shrink: 0;
 }
+
+.file-name {
+  font-weight: 750;
+
+  line-height: 1.4;
 
-.file-list{
-  display:grid;
-  gap:11px;
+  overflow-wrap: anywhere;
 }
 
-.file-card{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  padding:15px;
-  border:1px solid var(--line);
-  border-radius:13px;
-  background:#fff;
-  color:var(--text);
-  text-decoration:none;
-  transition:.18s ease;
+.file-info {
+  margin-top: 3px;
+
+  color: var(--muted);
+
+  font-size: 13px;
 }
+
+/* =========================================================
+   SUBFOLDERS
+========================================================= */
+
+.subfolder-grid {
+  display: grid;
 
-.file-card:hover{
-  background:#f0f8f5;
-  border-color:#b6d8ca;
-  transform:translateX(3px);
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(220px,1fr)
+    );
+
+  gap: 15px;
+
+  margin-bottom: 30px;
 }
+
+.subfolder-card {
+  background: #f8fbfa;
+
+  border: 1px solid var(--line);
 
-.file-icon{
-  width:44px;
-  height:44px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:11px;
-  background:#ffe7e7;
-  font-size:25px;
-  flex-shrink:0;
+  border-radius: 15px;
+
+  padding: 18px;
+
+  cursor: pointer;
+
+  transition: .18s ease;
 }
 
-.file-name{
-  font-weight:750;
-  line-height:1.4;
-  overflow-wrap:anywhere;
+.subfolder-card:hover {
+  background: #edf7f3;
+
+  transform: translateY(-2px);
 }
+
+.subfolder-icon {
+  font-size: 42px;
 
-.file-info{
-  margin-top:3px;
-  color:var(--muted);
-  font-size:13px;
+  margin-bottom: 10px;
 }
 
-.subfolder-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:15px;
-  margin-bottom:30px;
+.subfolder-name {
+  font-weight: 800;
+
+  line-height: 1.35;
+
+  overflow-wrap: anywhere;
 }
 
-.subfolder-card{
-  background:#f8fbfa;
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:18px;
-  cursor:pointer;
-  transition:.18s ease;
+/* =========================================================
+   ADMIN
+========================================================= */
+
+#adminSection {
+  display: none;
 }
+
+.admin-panel {
+  background: #fff;
 
-.subfolder-card:hover{
-  background:#edf7f3;
-  transform:translateY(-2px);
+  border: 1px solid var(--line);
+
+  border-radius: 22px;
+
+  padding: 25px;
+
+  box-shadow:
+    0 8px 25px rgba(0,0,0,.08);
 }
+
+.admin-header {
+  display: flex;
+
+  align-items: center;
 
-.subfolder-icon{
-  font-size:42px;
-  margin-bottom:10px;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 20px;
 }
 
-.subfolder-name{
-  font-weight:800;
-  line-height:1.35;
-  overflow-wrap:anywhere;
+.admin-header h2 {
+  margin: 0;
 }
+
+.admin-badge {
+  background: #fff3cd;
+
+  color: #795500;
 
-#adminSection{
-  display:none;
+  border: 1px solid #efd98a;
+
+  padding: 8px 12px;
+
+  border-radius: 10px;
+
+  font-weight: 800;
 }
 
-.admin-panel{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:25px;
-  box-shadow:0 8px 25px rgba(0,0,0,.08);
+.admin-table-wrap {
+  overflow-x: auto;
 }
+
+.admin-table {
+  width: 100%;
+
+  border-collapse: collapse;
 
-.admin-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  margin-bottom:20px;
+  min-width: 760px;
 }
 
-.admin-header h2{
-  margin:0;
+.admin-table th {
+  text-align: left;
+
+  background: #f2f7f5;
+
+  padding: 13px;
+
+  border-bottom:
+    1px solid var(--line);
 }
+
+.admin-table td {
+  padding: 13px;
 
-.admin-badge{
-  background:#fff3cd;
-  color:#795500;
-  border:1px solid #efd98a;
-  padding:8px 12px;
-  border-radius:10px;
-  font-weight:800;
+  border-bottom:
+    1px solid var(--line);
+
+  vertical-align: middle;
 }
+
+.status {
+  display: inline-block;
+
+  padding: 6px 10px;
+
+  border-radius: 999px;
 
-.admin-table-wrap{
-  overflow-x:auto;
+  font-size: 12px;
+
+  font-weight: 800;
 }
+
+.status.active {
+  background: #def5e9;
 
-.admin-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:760px;
+  color: #17613f;
 }
 
-.admin-table th{
-  text-align:left;
-  background:#f2f7f5;
-  padding:13px;
-  border-bottom:1px solid var(--line);
+.status.inactive {
+  background: #ffe1e1;
+
+  color: #8c2929;
 }
+
+.role-badge {
+  display: inline-block;
+
+  padding: 6px 10px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  background: #e9eefc;
 
-.admin-table td{
-  padding:13px;
-  border-bottom:1px solid var(--line);
-  vertical-align:middle;
+  color: #304c9b;
 }
 
-.status,
-.role-badge{
-  display:inline-block;
-  padding:6px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:800;
+.admin-actions {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
 }
+
+.admin-actions button {
+  border: 0;
+
+  border-radius: 8px;
 
-.status.active{
-  background:#def5e9;
-  color:#17613f;
+  padding: 8px 10px;
+
+  cursor: pointer;
+
+  font-weight: 700;
 }
 
-.status.inactive{
-  background:#ffe1e1;
-  color:#8c2929;
+.btn-lock {
+  background: #ffe4e4;
+
+  color: #9a2929;
 }
 
-.role-badge{
-  background:#e9eefc;
-  color:#304c9b;
+.btn-unlock {
+  background: #dff5e8;
+
+  color: #17613f;
 }
+
+.btn-role {
+  background: #e8efff;
 
-.admin-actions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
+  color: #304c9b;
 }
 
-.admin-actions button,
-.btn-refresh{
-  border:0;
-  border-radius:8px;
-  padding:8px 10px;
-  cursor:pointer;
-  font-weight:700;
+.btn-name {
+  background: #fff1d9;
+
+  color: #8a5700;
 }
+
+.btn-refresh {
+  background: #e5f4ee;
+
+  color: var(--green-dark);
+
+  border: 0;
 
-.btn-lock{
-  background:#ffe4e4;
-  color:#9a2929;
+  border-radius: 10px;
+
+  padding: 10px 14px;
+
+  font-weight: 800;
+
+  cursor: pointer;
 }
+
+.admin-message {
+  display: none;
+
+  margin-bottom: 15px;
 
-.btn-unlock{
-  background:#dff5e8;
-  color:#17613f;
+  padding: 12px;
+
+  border-radius: 10px;
 }
+
+.admin-message.success {
+  display: block;
 
-.btn-role{
-  background:#e8efff;
-  color:#304c9b;
+  background: #edf9f3;
+
+  color: #17613f;
 }
+
+.admin-message.error {
+  display: block;
 
-.btn-name{
-  background:#fff1d9;
-  color:#8a5700;
+  background: #fff0f0;
+
+  color: #8c2929;
 }
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading {
+  background: #fff;
+
+  border: 1px solid var(--line);
 
-.btn-refresh{
-  background:#e5f4ee;
-  color:var(--green-dark);
+  border-radius: 15px;
+
+  padding: 30px;
+
+  text-align: center;
+
+  color: var(--muted);
 }
+
+.spinner {
+  width: 36px;
+  height: 36px;
 
-.loading{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:30px;
-  text-align:center;
-  color:var(--muted);
+  border: 4px solid #dceae4;
+
+  border-top-color: var(--green);
+
+  border-radius: 50%;
+
+  animation: spin .9s linear infinite;
+
+  margin: 0 auto 14px;
 }
 
-.spinner{
-  width:36px;
-  height:36px;
-  border:4px solid #dceae4;
-  border-top-color:var(--green);
-  border-radius:50%;
-  animation:spin .9s linear infinite;
-  margin:0 auto 14px;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
+
+.error {
+  background: #fff1f1;
 
-@keyframes spin{
-  to{transform:rotate(360deg)}
+  border: 1px solid #edcaca;
+
+  color: #8c2929;
+
+  padding: 18px;
+
+  border-radius: 12px;
+
+  line-height: 1.5;
 }
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.portal-status {
+  display: none;
+
+  margin: 15px 0;
+
+  padding: 14px;
+
+  border-radius: 12px;
 
-.error{
-  background:#fff1f1;
-  border:1px solid #edcaca;
-  color:#8c2929;
-  padding:18px;
-  border-radius:12px;
+  background: #fff8e6;
+
+  border: 1px solid #f0d99a;
+
+  color: #735500;
 }
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+  background: #17313a;
 
-footer{
-  background:#17313a;
-  color:#fff;
-  text-align:center;
-  padding:28px 15px;
+  color: #fff;
+
+  text-align: center;
+
+  padding: 28px 15px;
 }
 
-footer p{
-  margin:5px;
-  opacity:.85;
+footer p {
+  margin: 5px;
+
+  opacity: .85;
 }
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
 
-@media(max-width:700px){
+  .header-inner {
+    align-items: flex-start;
 
-  .header-inner{
-    align-items:flex-start;
-    flex-wrap:wrap;
+    flex-wrap: wrap;
   }
 
-  .logo{
-    width:60px;
-    height:60px;
+  .logo {
+    width: 60px;
+    height: 60px;
   }
 
-  .header-text h1{
-    font-size:23px;
+  .header-text h1 {
+    font-size: 23px;
   }
 
-  .header-text p{
-    font-size:14px;
+  .header-text p {
+    font-size: 14px;
   }
 
-  .user-box{
-    width:100%;
+  .user-box {
+    width: 100%;
   }
 
-  .user-info{
-    text-align:left;
-    flex:1;
+  .user-info {
+    text-align: left;
+
+    flex: 1;
   }
 
-  .hero{
-    padding:24px;
+  .hero {
+    padding: 24px;
   }
 
-  .hero h2{
-    font-size:24px;
+  .hero h2 {
+    font-size: 24px;
   }
 
-  .folder-grid{
-    grid-template-columns:1fr;
+  .folder-grid {
+    grid-template-columns: 1fr;
   }
 
-  .auth-card{
-    padding:25px;
+  .auth-card {
+    padding: 25px;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+
+    flex-direction: column;
   }
 }
 </style>
 </head>
 
 <body>
+
+<!-- =========================================================
+     LOGIN
+========================================================= -->
 
 <div id="authScreen">
 
@@ -721,25 +1180,43 @@ footer p{
       >
     </div>
 
-    <h1 class="auth-title">QM-Portal</h1>
+    <h1 class="auth-title">
+      QM-Portal
+    </h1>
 
     <p class="auth-subtitle">
       Intensivpflege-Halle-GmbH
     </p>
 
     <div class="auth-tabs">
-      <button id="loginTab" class="active" type="button" onclick="showLogin()">
+
+      <button
+        id="loginTab"
+        class="active"
+        type="button"
+        onclick="showLogin()"
+      >
         🔐 Anmelden
       </button>
 
-      <button id="registerTab" type="button" onclick="showRegister()">
+      <button
+        id="registerTab"
+        type="button"
+        onclick="showRegister()"
+      >
         👤 Registrieren
       </button>
+
     </div>
 
-    <form id="loginForm" class="auth-form">
+    <form
+      id="loginForm"
+      class="auth-form"
+    >
 
-      <label for="loginEmail">E-Mail-Adresse</label>
+      <label for="loginEmail">
+        E-Mail-Adresse
+      </label>
 
       <input
         id="loginEmail"
@@ -748,7 +1225,9 @@ footer p{
         required
       >
 
-      <label for="loginPassword">Passwort</label>
+      <label for="loginPassword">
+        Passwort
+      </label>
 
       <input
         id="loginPassword"
@@ -757,15 +1236,25 @@ footer p{
         required
       >
 
-      <button id="loginSubmit" class="auth-submit" type="submit">
+      <button
+        id="loginButton"
+        class="auth-submit"
+        type="submit"
+      >
         🔐 Anmelden
       </button>
 
     </form>
 
-    <form id="registerForm" class="auth-form" style="display:none">
+    <form
+      id="registerForm"
+      class="auth-form"
+      style="display:none"
+    >
 
-      <label for="registerName">Name</label>
+      <label for="registerName">
+        Name
+      </label>
 
       <input
         id="registerName"
@@ -774,7 +1263,9 @@ footer p{
         required
       >
 
-      <label for="registerEmail">E-Mail-Adresse</label>
+      <label for="registerEmail">
+        E-Mail-Adresse
+      </label>
 
       <input
         id="registerEmail"
@@ -783,7 +1274,9 @@ footer p{
         required
       >
 
-      <label for="registerPassword">Passwort</label>
+      <label for="registerPassword">
+        Passwort
+      </label>
 
       <input
         id="registerPassword"
@@ -793,17 +1286,29 @@ footer p{
         required
       >
 
-      <button id="registerSubmit" class="auth-submit" type="submit">
+      <button
+        id="registerButton"
+        class="auth-submit"
+        type="submit"
+      >
         👤 Konto erstellen
       </button>
 
     </form>
 
-    <div id="authMessage" class="auth-message"></div>
+    <div
+      id="authMessage"
+      class="auth-message"
+    ></div>
 
   </div>
 
 </div>
+
+
+<!-- =========================================================
+     PORTAL
+========================================================= -->
 
 <div id="portal">
 
@@ -812,15 +1317,19 @@ footer p{
   <div class="header-inner">
 
     <div class="logo">
+
       <img
         src="https://www.intensivpflege-halle.de/wp-content/uploads/2021/01/cropped-logo.png"
         alt="Intensivpflege-Halle-GmbH"
       >
+
     </div>
 
     <div class="header-text">
 
-      <h1>QM-Portal</h1>
+      <h1>
+        QM-Portal
+      </h1>
 
       <p>
         Qualitätsmanagement · Intensivpflege-Halle-GmbH
@@ -832,17 +1341,27 @@ footer p{
 
       <div class="user-info">
 
-        <div id="currentUserName" class="user-name">
+        <div
+          id="currentUserName"
+          class="user-name"
+        >
           Benutzer
         </div>
 
-        <div id="currentUserRole" class="user-role">
+        <div
+          id="currentUserRole"
+          class="user-role"
+        >
           Mitarbeiter
         </div>
 
       </div>
 
-      <button class="logout-btn" type="button" onclick="logout()">
+      <button
+        class="logout-btn"
+        type="button"
+        onclick="logout()"
+      >
         Abmelden
       </button>
 
@@ -852,18 +1371,40 @@ footer p{
 
 </header>
 
+
 <nav>
 
   <div class="nav-inner">
 
-    <a href="#start">🏠 Start</a>
-    <a href="#qm">📚 QM-Handbuch</a>
-    <a href="#standards">📋 Standards</a>
-    <a href="#schulungen">🎓 Schulungen</a>
-    <a href="#bilder">📷 Bilderlaubnis</a>
-    <a href="#pdl">👩‍⚕️ PDL-Anweisungen</a>
+    <a href="#start">
+      🏠 Start
+    </a>
 
-    <a id="adminNav" href="#admin" style="display:none">
+    <a href="#qm">
+      📚 QM-Handbuch
+    </a>
+
+    <a href="#standards">
+      📋 Standards
+    </a>
+
+    <a href="#schulungen">
+      🎓 Schulungen
+    </a>
+
+    <a href="#bilder">
+      📷 Bilderlaubnis
+    </a>
+
+    <a href="#pdl">
+      👩‍⚕️ PDL-Anweisungen
+    </a>
+
+    <a
+      id="adminNav"
+      href="#admin"
+      style="display:none"
+    >
       🛡️ Adminbereich
     </a>
 
@@ -871,109 +1412,240 @@ footer p{
 
 </nav>
 
+
 <main>
 
-<section id="start" class="hero">
+<section
+  id="start"
+  class="hero"
+>
 
-  <h2>Willkommen im QM-Portal</h2>
+  <h2>
+    Willkommen im QM-Portal
+  </h2>
 
   <p>
-    Diese Website dient als zentrale Oberfläche für die interne
-    Qualitätsmanagement-Dokumentation der Intensivpflege-Halle-GmbH.
+    Diese Website dient als zentrale Oberfläche
+    für die interne Qualitätsmanagement-Dokumentation
+    der Intensivpflege-Halle-GmbH.
   </p>
 
   <p>
-    Die Ordner werden automatisch aus dem GitHub-Repository geladen.
-    Klicke auf einen Ordner, um dessen Dateien und Unterordner anzuzeigen.
+    Die Dokumente werden automatisch aus dem
+    GitHub-Repository geladen.
   </p>
+
+  <div
+    id="portalStatus"
+    class="portal-status"
+  ></div>
 
 </section>
 
-<section id="qm" class="section">
+
+<!-- QM -->
+
+<section
+  id="qm"
+  class="section"
+>
 
   <div class="section-title">
-    <span class="section-title-icon">📚</span>
-    <h2>QM-Handbuch</h2>
+
+    <span class="section-title-icon">
+      📚
+    </span>
+
+    <h2>
+      QM-Handbuch
+    </h2>
+
   </div>
 
-  <div id="qmFolders" class="folder-grid">
+  <div
+    id="qmFolders"
+    class="folder-grid"
+  >
+
     <div class="loading">
+
       <div class="spinner"></div>
+
       QM-Handbuch wird geladen …
+
     </div>
+
   </div>
 
 </section>
 
-<section id="standards" class="section">
+
+<!-- STANDARDS -->
+
+<section
+  id="standards"
+  class="section"
+>
 
   <div class="section-title">
-    <span class="section-title-icon">📋</span>
-    <h2>Standards & Verfahrensanweisungen</h2>
+
+    <span class="section-title-icon">
+      📋
+    </span>
+
+    <h2>
+      Standards & Verfahrensanweisungen
+    </h2>
+
   </div>
 
-  <div id="standardFolders" class="folder-grid">
+  <div
+    id="standardFolders"
+    class="folder-grid"
+  >
+
     <div class="loading">
+
       <div class="spinner"></div>
+
       Standards werden geladen …
+
     </div>
+
   </div>
 
 </section>
 
-<section id="schulungen" class="section">
+
+<!-- SCHULUNGEN -->
+
+<section
+  id="schulungen"
+  class="section"
+>
 
   <div class="section-title">
-    <span class="section-title-icon">🎓</span>
-    <h2>Schulungen & Unterweisungen</h2>
+
+    <span class="section-title-icon">
+      🎓
+    </span>
+
+    <h2>
+      Schulungen & Unterweisungen
+    </h2>
+
   </div>
 
-  <div id="trainingFolders" class="folder-grid">
+  <div
+    id="trainingFolders"
+    class="folder-grid"
+  >
+
     <div class="loading">
+
       <div class="spinner"></div>
+
       Schulungen werden geladen …
+
     </div>
+
   </div>
 
 </section>
 
-<section id="bilder" class="section">
+
+<!-- BILDER -->
+
+<section
+  id="bilder"
+  class="section"
+>
 
   <div class="section-title">
-    <span class="section-title-icon">📷</span>
-    <h2>Bilderlaubnis</h2>
+
+    <span class="section-title-icon">
+      📷
+    </span>
+
+    <h2>
+      Bilderlaubnis
+    </h2>
+
   </div>
 
-  <div id="imageFolders" class="folder-grid">
+  <div
+    id="imageFolders"
+    class="folder-grid"
+  >
+
     <div class="loading">
+
       <div class="spinner"></div>
+
       Bilderlaubnis wird geladen …
+
     </div>
+
   </div>
 
 </section>
 
-<section id="pdl" class="section">
+
+<!-- PDL -->
+
+<section
+  id="pdl"
+  class="section"
+>
 
   <div class="section-title">
-    <span class="section-title-icon">👩‍⚕️</span>
-    <h2>Anweisungen von PDL an Mitarbeiter</h2>
+
+    <span class="section-title-icon">
+      👩‍⚕️
+    </span>
+
+    <h2>
+      Anweisungen von PDL an Mitarbeiter
+    </h2>
+
   </div>
 
-  <div id="pdlFolders" class="folder-grid">
+  <div
+    id="pdlFolders"
+    class="folder-grid"
+  >
+
     <div class="loading">
+
       <div class="spinner"></div>
+
       PDL-Anweisungen werden geladen …
+
     </div>
+
   </div>
 
 </section>
 
-<section id="admin" class="section" style="display:none">
+
+<!-- ADMIN -->
+
+<section
+  id="admin"
+  class="section"
+  style="display:none"
+>
 
   <div class="section-title">
-    <span class="section-title-icon">🛡️</span>
-    <h2>Adminbereich</h2>
+
+    <span class="section-title-icon">
+      🛡️
+    </span>
+
+    <h2>
+      Adminbereich
+    </h2>
+
   </div>
 
   <div class="admin-panel">
@@ -981,11 +1653,15 @@ footer p{
     <div class="admin-header">
 
       <div>
-        <h2>👥 Mitarbeiterverwaltung</h2>
+
+        <h2>
+          👥 Mitarbeiterverwaltung
+        </h2>
 
         <p style="color:var(--muted)">
           Verwaltung der registrierten Benutzer.
         </p>
+
       </div>
 
       <div class="admin-badge">
@@ -994,7 +1670,10 @@ footer p{
 
     </div>
 
-    <div id="adminMessage" class="admin-message"></div>
+    <div
+      id="adminMessage"
+      class="admin-message"
+    ></div>
 
     <button
       class="btn-refresh"
@@ -1004,7 +1683,8 @@ footer p{
       🔄 Aktualisieren
     </button>
 
-    <br><br>
+    <br>
+    <br>
 
     <div class="admin-table-wrap">
 
@@ -1013,11 +1693,27 @@ footer p{
         <thead>
 
           <tr>
-            <th>Name</th>
-            <th>Rolle</th>
-            <th>Status</th>
-            <th>Letzter Login</th>
-            <th>Aktionen</th>
+
+            <th>
+              Name
+            </th>
+
+            <th>
+              Rolle
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Letzter Login
+            </th>
+
+            <th>
+              Aktionen
+            </th>
+
           </tr>
 
         </thead>
@@ -1025,9 +1721,19 @@ footer p{
         <tbody id="adminUsers">
 
           <tr>
+
             <td colspan="5">
-              Mitarbeiter werden geladen …
+
+              <div class="loading">
+
+                <div class="spinner"></div>
+
+                Mitarbeiter werden geladen …
+
+              </div>
+
             </td>
+
           </tr>
 
         </tbody>
@@ -1040,7 +1746,12 @@ footer p{
 
 </section>
 
-<section id="contentPanel">
+
+<!-- CONTENT -->
+
+<section
+  id="contentPanel"
+>
 
   <button
     class="back-button"
@@ -1050,7 +1761,10 @@ footer p{
     ← Zurück
   </button>
 
-  <div id="breadcrumb" class="breadcrumb"></div>
+  <div
+    id="breadcrumb"
+    class="breadcrumb"
+  ></div>
 
   <div id="folderContent"></div>
 
@@ -1058,10 +1772,13 @@ footer p{
 
 </main>
 
+
 <footer>
 
   <p>
-    <strong>Intensivpflege-Halle-GmbH</strong>
+    <strong>
+      Intensivpflege-Halle-GmbH
+    </strong>
   </p>
 
   <p>
@@ -1072,11 +1789,12 @@ footer p{
 
 </div>
 
+
 <script>
 "use strict";
 
 /* =========================================================
-   KONFIGURATION
+   SUPABASE KONFIGURATION
 ========================================================= */
 
 const SUPABASE_URL =
@@ -1084,6 +1802,66 @@ const SUPABASE_URL =
 
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_SQKuCSBTQK0uE6d2nfM5hg_UEeo8x2z";
+
+
+/* =========================================================
+   SUPABASE CLIENT
+========================================================= */
+
+let supabaseClient = null;
+
+try {
+
+  if (
+    !window.supabase ||
+    typeof window.supabase.createClient !== "function"
+  ) {
+
+    throw new Error(
+      "Supabase-JavaScript konnte nicht geladen werden."
+    );
+
+  }
+
+  supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      }
+    );
+
+}
+catch (error) {
+
+  console.error(
+    "Supabase Initialisierung:",
+    error
+  );
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+      showAuthMessage(
+        "Supabase konnte nicht geladen werden. Bitte Seite neu laden.",
+        "error"
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   GITHUB
+========================================================= */
 
 const OWNER =
   "christiandiebner86-cpu";
@@ -1103,54 +1881,257 @@ const GITHUB_API =
   BRANCH +
   "?recursive=1";
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
+
+/* =========================================================
+   STATUS
+========================================================= */
 
 let repositoryTree = [];
+
 let currentUser = null;
+
 let currentProfile = null;
 
-let initializationPromise = null;
-let initializedUserId = null;
+let portalInitialized = false;
+
+let initializationRunning = false;
+
 let authListenerStarted = false;
 
 
 /* =========================================================
-   HILFSFUNKTIONEN
+   TIMEOUT HELPER
 ========================================================= */
 
-function escapeHTML(text){
+function withTimeout(
+  promise,
+  milliseconds,
+  message
+) {
 
-  return String(text ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+  return new Promise(
+    function(resolve, reject) {
+
+      let finished = false;
+
+      const timer =
+        setTimeout(
+          function() {
+
+            if (finished) {
+              return;
+            }
+
+            finished = true;
+
+            reject(
+              new Error(
+                message ||
+                "Zeitüberschreitung."
+              )
+            );
+
+          },
+          milliseconds
+        );
+
+
+      Promise.resolve(promise)
+        .then(
+          function(value) {
+
+            if (finished) {
+              return;
+            }
+
+            finished = true;
+
+            clearTimeout(timer);
+
+            resolve(value);
+
+          }
+        )
+        .catch(
+          function(error) {
+
+            if (finished) {
+              return;
+            }
+
+            finished = true;
+
+            clearTimeout(timer);
+
+            reject(error);
+
+          }
+        );
+
+    }
+  );
 
 }
 
 
-function showAuthMessage(text,type="error"){
+/* =========================================================
+   HTML SICHER MACHEN
+========================================================= */
+
+function escapeHTML(text) {
+
+  return String(text == null ? "" : text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   DATEINAME
+========================================================= */
+
+function cleanFileName(name) {
+
+  try {
+
+    name =
+      decodeURIComponent(name);
+
+  }
+  catch (error) {
+    /* Bereits dekodiert. */
+  }
+
+  return String(name)
+    .replace(/\.pdf$/i, "")
+    .replace(/\.odt$/i, "")
+    .replace(/\.odg$/i, "")
+    .replace(/\.docx$/i, "")
+    .replace(/\.doc$/i, "")
+    .replace(/\.xlsx$/i, "")
+    .replace(/\.xls$/i, "")
+    .replace(/_/g, " ");
+
+}
+
+
+/* =========================================================
+   FOLDER ICON
+========================================================= */
+
+function folderIcon(name) {
+
+  const n =
+    String(name)
+      .toLowerCase();
+
+  if (n.includes("schulung")) return "🎓";
+  if (n.includes("fortbildung")) return "🎓";
+  if (n.includes("fob")) return "🎓";
+
+  if (n.includes("hygiene")) return "🧼";
+  if (n.includes("prophylax")) return "🛡️";
+  if (n.includes("expertenstandard")) return "📖";
+
+  if (n.includes("prozess")) return "⚙️";
+
+  if (n.includes("notfall")) return "🚨";
+  if (n.includes("hilfe")) return "🆘";
+
+  if (n.includes("datenschutz")) return "🔐";
+  if (n.includes("beschwer")) return "📣";
+
+  if (n.includes("pflegeberatung")) return "👩‍⚕️";
+  if (n.includes("visiten")) return "🩺";
+  if (n.includes("fallbesprech")) return "🩺";
+
+  if (n.includes("bilder")) return "📷";
+  if (n.includes("pdl")) return "👩‍⚕️";
+
+  if (n.includes("behandlungspflege")) return "💉";
+  if (n.includes("grundpflege")) return "🛏️";
+
+  if (n.includes("chronische")) return "🩹";
+  if (n.includes("wunden")) return "🩹";
+  if (n.includes("schmerzen")) return "💊";
+
+  if (n.includes("beziehung")) return "🤝";
+  if (n.includes("bezugspflege")) return "👩‍⚕️";
+
+  if (n.includes("herzbett")) return "🛏️";
+  if (n.includes("nestlagerung")) return "🛏️";
+
+  if (n.includes("aki")) return "🩺";
+
+  return "📁";
+
+}
+
+
+const folderColors = [
+  "#e53935",
+  "#fb8c00",
+  "#f6c700",
+  "#43a047",
+  "#00897b",
+  "#1e88e5",
+  "#3949ab",
+  "#8e24aa",
+  "#d81b60"
+];
+
+
+function folderColor(index) {
+
+  return folderColors[
+    index % folderColors.length
+  ];
+
+}
+
+
+/* =========================================================
+   AUTH MESSAGE
+========================================================= */
+
+function showAuthMessage(
+  text,
+  type
+) {
 
   const box =
-    document.getElementById("authMessage");
+    document.getElementById(
+      "authMessage"
+    );
 
-  box.textContent = text;
+  if (!box) {
+    return;
+  }
+
+  box.textContent =
+    String(text || "");
 
   box.className =
-    "auth-message " + type;
+    "auth-message " +
+    (type || "error");
 
 }
 
 
-function clearAuthMessage(){
+function clearAuthMessage() {
 
   const box =
-    document.getElementById("authMessage");
+    document.getElementById(
+      "authMessage"
+    );
+
+  if (!box) {
+    return;
+  }
 
   box.textContent = "";
 
@@ -1160,465 +2141,80 @@ function clearAuthMessage(){
 }
 
 
-function showAdminMessage(text,type="success"){
+/* =========================================================
+   ADMIN MESSAGE
+========================================================= */
+
+function showAdminMessage(
+  text,
+  type
+) {
 
   const box =
-    document.getElementById("adminMessage");
-
-  box.textContent = text;
-
-  box.className =
-    "admin-message " + type;
-
-}
-
-
-function clearAdminMessage(){
-
-  const box =
-    document.getElementById("adminMessage");
-
-  box.textContent = "";
-
-  box.className =
-    "admin-message";
-
-}
-
-
-function setButtonLoading(button,loading,text){
-
-  if(!button) return;
-
-  if(loading){
-
-    button.dataset.originalText =
-      button.textContent;
-
-    button.textContent = text;
-    button.disabled = true;
-
-  }else{
-
-    button.textContent =
-      button.dataset.originalText ||
-      button.textContent;
-
-    button.disabled = false;
-
-  }
-
-}
-
-
-function withTimeout(promise,ms,message){
-
-  let timer;
-
-  const timeout =
-    new Promise(
-      (_,reject)=>{
-
-        timer =
-          setTimeout(
-            ()=>{
-              reject(
-                new Error(message)
-              );
-            },
-            ms
-          );
-
-      }
+    document.getElementById(
+      "adminMessage"
     );
 
-  return Promise.race([
-    promise.finally(
-      ()=>{
-        clearTimeout(timer);
-      }
-    ),
-    timeout
-  ]);
+  if (!box) {
+    return;
+  }
+
+  box.textContent =
+    String(text || "");
+
+  box.className =
+    "admin-message " +
+    (type || "success");
 
 }
 
 
 /* =========================================================
-   LOGIN / REGISTRIERUNG
+   AUTH TABS
 ========================================================= */
 
-function showLogin(){
+function showLogin() {
 
-  document.getElementById("loginForm").style.display =
-    "block";
+  document.getElementById(
+    "loginForm"
+  ).style.display = "block";
 
-  document.getElementById("registerForm").style.display =
-    "none";
+  document.getElementById(
+    "registerForm"
+  ).style.display = "none";
 
-  document.getElementById("loginTab").classList.add("active");
+  document.getElementById(
+    "loginTab"
+  ).classList.add("active");
 
-  document.getElementById("registerTab").classList.remove("active");
+  document.getElementById(
+    "registerTab"
+  ).classList.remove("active");
 
   clearAuthMessage();
 
 }
 
 
-function showRegister(){
+function showRegister() {
 
-  document.getElementById("loginForm").style.display =
-    "none";
+  document.getElementById(
+    "loginForm"
+  ).style.display = "none";
 
-  document.getElementById("registerForm").style.display =
-    "block";
+  document.getElementById(
+    "registerForm"
+  ).style.display = "block";
 
-  document.getElementById("loginTab").classList.remove("active");
+  document.getElementById(
+    "loginTab"
+  ).classList.remove("active");
 
-  document.getElementById("registerTab").classList.add("active");
+  document.getElementById(
+    "registerTab"
+  ).classList.add("active");
 
   clearAuthMessage();
-
-}
-
-
-function showPortal(){
-
-  document.getElementById("authScreen").style.display =
-    "none";
-
-  document.getElementById("portal").style.display =
-    "block";
-
-}
-
-
-function showAuthScreen(){
-
-  document.getElementById("portal").style.display =
-    "none";
-
-  document.getElementById("authScreen").style.display =
-    "flex";
-
-}
-
-
-/* =========================================================
-   PROFIL
-========================================================= */
-
-async function loadCurrentProfile(){
-
-  if(!currentUser){
-    currentProfile = null;
-    return null;
-  }
-
-  const result =
-    await withTimeout(
-      supabaseClient
-        .from("profiles")
-        .select(
-          "id,name,role,active,last_login,created_at"
-        )
-        .eq("id",currentUser.id)
-        .maybeSingle(),
-      8000,
-      "Das Benutzerprofil konnte nicht rechtzeitig geladen werden."
-    );
-
-  if(result.error){
-
-    console.error(
-      "Profil-Ladefehler:",
-      result.error
-    );
-
-    throw result.error;
-
-  }
-
-  currentProfile =
-    result.data || null;
-
-  return currentProfile;
-
-}
-
-
-async function ensureProfile(){
-
-  const profile =
-    await loadCurrentProfile();
-
-  if(profile)
-    return profile;
-
-  /*
-    Nur für das eigene Konto.
-    Ein neuer Benutzer erhält niemals über
-    das Frontend Adminrechte.
-  */
-
-  const name =
-    currentUser?.user_metadata?.name ||
-    currentUser?.email ||
-    "Mitarbeiter";
-
-  const result =
-    await withTimeout(
-      supabaseClient
-        .from("profiles")
-        .insert({
-          id:currentUser.id,
-          name:name,
-          role:"mitarbeiter",
-          active:true
-        })
-        .select(
-          "id,name,role,active,last_login,created_at"
-        )
-        .single(),
-      8000,
-      "Das Benutzerprofil konnte nicht erstellt werden."
-    );
-
-  if(result.error){
-
-    console.error(
-      "Profil-Erstellungsfehler:",
-      result.error
-    );
-
-    throw result.error;
-
-  }
-
-  currentProfile =
-    result.data;
-
-  return currentProfile;
-
-}
-
-
-/* =========================================================
-   BENUTZER-HEADER
-========================================================= */
-
-function updateUserHeader(){
-
-  const name =
-    currentProfile?.name ||
-    currentUser?.email ||
-    "Benutzer";
-
-  const role =
-    currentProfile?.role === "admin"
-      ? "🛡️ Administrator"
-      : "👤 Mitarbeiter";
-
-  document.getElementById(
-    "currentUserName"
-  ).textContent = name;
-
-  document.getElementById(
-    "currentUserRole"
-  ).textContent = role;
-
-}
-
-
-/* =========================================================
-   ADMIN SICHTBARKEIT
-========================================================= */
-
-function updateAdminVisibility(){
-
-  const isAdmin =
-    currentProfile?.role === "admin" &&
-    currentProfile?.active === true;
-
-  document.getElementById(
-    "adminNav"
-  ).style.display =
-    isAdmin ? "block" : "none";
-
-  document.getElementById(
-    "admin"
-  ).style.display =
-    isAdmin ? "block" : "none";
-
-}
-
-
-/* =========================================================
-   PORTAL INITIALISIEREN
-========================================================= */
-
-async function initializePortal(){
-
-  /*
-    Verhindert parallele Initialisierungen.
-  */
-
-  if(initializationPromise){
-    return initializationPromise;
-  }
-
-  initializationPromise =
-    initializePortalInternal();
-
-  try{
-
-    return await initializationPromise;
-
-  }finally{
-
-    initializationPromise = null;
-
-  }
-
-}
-
-
-async function initializePortalInternal(){
-
-  try{
-
-    const sessionResult =
-      await withTimeout(
-        supabaseClient.auth.getSession(),
-        8000,
-        "Supabase antwortet nicht. Bitte Seite neu laden."
-      );
-
-    const session =
-      sessionResult.data?.session;
-
-    if(!session?.user){
-
-      currentUser = null;
-      currentProfile = null;
-
-      initializedUserId = null;
-
-      updateAdminVisibility();
-      showAuthScreen();
-
-      return;
-
-    }
-
-    /*
-      Falls dasselbe Konto bereits vollständig
-      initialisiert wurde, nichts erneut laden.
-    */
-
-    if(
-      initializedUserId === session.user.id &&
-      currentProfile
-    ){
-
-      showPortal();
-      updateUserHeader();
-      updateAdminVisibility();
-
-      return;
-
-    }
-
-    currentUser =
-      session.user;
-
-    currentProfile = null;
-
-    /*
-      Profil laden bzw. anlegen.
-    */
-
-    await ensureProfile();
-
-    if(!currentProfile){
-
-      throw new Error(
-        "Für dieses Konto ist kein Profil vorhanden."
-      );
-
-    }
-
-    /*
-      Sicherheitsprüfung:
-      Nur ein aktives Profil darf ins Portal.
-    */
-
-    if(currentProfile.active !== true){
-
-      initializedUserId = null;
-
-      await supabaseClient.auth.signOut();
-
-      showAuthScreen();
-
-      showAuthMessage(
-        "Dieses Benutzerkonto wurde gesperrt. Bitte wende dich an einen Administrator.",
-        "error"
-      );
-
-      return;
-
-    }
-
-    initializedUserId =
-      currentUser.id;
-
-    showPortal();
-
-    updateUserHeader();
-
-    updateAdminVisibility();
-
-    /*
-      Dokumente unabhängig vom Admin laden.
-    */
-
-    await loadRepository();
-
-    /*
-      Adminliste nur für echte aktive Admins.
-    */
-
-    if(
-      currentProfile.role === "admin" &&
-      currentProfile.active === true
-    ){
-
-      await loadAdminProfiles();
-
-    }
-
-  }
-  catch(error){
-
-    console.error(
-      "Portal-Initialisierung fehlgeschlagen:",
-      error
-    );
-
-    currentProfile = null;
-
-    updateAdminVisibility();
-
-    showAuthScreen();
-
-    showAuthMessage(
-      "Das Portal konnte nicht vollständig geladen werden: " +
-      (error?.message || "Unbekannter Fehler"),
-      "error"
-    );
-
-  }
 
 }
 
@@ -1631,69 +2227,90 @@ document
   .getElementById("loginForm")
   .addEventListener(
     "submit",
-    async event => {
+    async function(event) {
 
       event.preventDefault();
 
       clearAuthMessage();
 
       const button =
-        document.getElementById("loginSubmit");
+        document.getElementById(
+          "loginButton"
+        );
 
       const email =
-        document.getElementById("loginEmail").value.trim();
+        document.getElementById(
+          "loginEmail"
+        ).value.trim();
 
       const password =
-        document.getElementById("loginPassword").value;
+        document.getElementById(
+          "loginPassword"
+        ).value;
 
-      setButtonLoading(
-        button,
-        true,
-        "Anmeldung läuft …"
-      );
 
-      try{
+      if (!email || !password) {
+
+        showAuthMessage(
+          "Bitte E-Mail-Adresse und Passwort eingeben.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      button.disabled = true;
+
+      button.textContent =
+        "⏳ Anmeldung …";
+
+
+      try {
 
         const result =
           await withTimeout(
             supabaseClient.auth.signInWithPassword({
-              email,
-              password
+              email: email,
+              password: password
             }),
-            10000,
-            "Die Anmeldung dauert zu lange. Bitte prüfe deine Internetverbindung."
+            15000,
+            "Die Anmeldung hat zu lange gedauert."
           );
 
-        if(result.error){
 
-          showAuthMessage(
-            "Anmeldung fehlgeschlagen: " +
-            result.error.message
-          );
+        if (result.error) {
 
-          return;
+          throw result.error;
 
         }
+
 
         await initializePortal();
 
       }
-      catch(error){
+      catch (error) {
 
-        console.error(error);
+        console.error(
+          "Login:",
+          error
+        );
 
         showAuthMessage(
-          error?.message ||
-          "Anmeldung fehlgeschlagen."
+          "Anmeldung fehlgeschlagen: " +
+          (error.message ||
+           "Unbekannter Fehler."),
+          "error"
         );
 
       }
-      finally{
+      finally {
 
-        setButtonLoading(
-          button,
-          false
-        );
+        button.disabled = false;
+
+        button.textContent =
+          "🔐 Anmelden";
 
       }
 
@@ -1709,136 +2326,156 @@ document
   .getElementById("registerForm")
   .addEventListener(
     "submit",
-    async event => {
+    async function(event) {
 
       event.preventDefault();
 
       clearAuthMessage();
 
       const button =
-        document.getElementById("registerSubmit");
+        document.getElementById(
+          "registerButton"
+        );
 
       const name =
-        document.getElementById("registerName").value.trim();
+        document.getElementById(
+          "registerName"
+        ).value.trim();
 
       const email =
-        document.getElementById("registerEmail").value.trim();
+        document.getElementById(
+          "registerEmail"
+        ).value.trim();
 
       const password =
-        document.getElementById("registerPassword").value;
+        document.getElementById(
+          "registerPassword"
+        ).value;
 
-      if(!name){
+
+      if (!name) {
 
         showAuthMessage(
-          "Bitte deinen Namen eingeben."
+          "Bitte deinen Namen eingeben.",
+          "error"
         );
 
         return;
 
       }
 
-      if(password.length < 6){
+
+      if (password.length < 6) {
 
         showAuthMessage(
-          "Das Passwort muss mindestens 6 Zeichen lang sein."
+          "Das Passwort muss mindestens 6 Zeichen lang sein.",
+          "error"
         );
 
         return;
 
       }
 
-      setButtonLoading(
-        button,
-        true,
-        "Konto wird erstellt …"
-      );
 
-      try{
+      button.disabled = true;
+
+      button.textContent =
+        "⏳ Konto wird erstellt …";
+
+
+      try {
 
         const result =
           await withTimeout(
             supabaseClient.auth.signUp({
-              email,
-              password,
-              options:{
-                data:{
-                  name:name
+              email: email,
+              password: password,
+              options: {
+                data: {
+                  name: name
                 }
               }
             }),
-            10000,
-            "Die Registrierung dauert zu lange."
+            15000,
+            "Die Registrierung hat zu lange gedauert."
           );
 
-        if(result.error){
 
-          showAuthMessage(
-            "Registrierung fehlgeschlagen: " +
-            result.error.message
-          );
+        if (result.error) {
 
-          return;
+          throw result.error;
 
         }
+
 
         const user =
-          result.data?.user;
+          result.data &&
+          result.data.user;
 
-        const session =
-          result.data?.session;
 
-        if(!user){
+        if (!user) {
 
-          showAuthMessage(
-            "Das Konto konnte nicht erstellt werden."
+          throw new Error(
+            "Supabase hat keinen Benutzer zurückgegeben."
           );
-
-          return;
 
         }
 
-        /*
-          Wenn keine E-Mail-Bestätigung erforderlich ist,
-          besteht direkt eine Session.
 
-          Das Profil wird anschließend über ensureProfile()
-          angelegt. Dadurch vermeiden wir doppelte Inserts.
+        /*
+          Nur versuchen, das Profil anzulegen,
+          wenn direkt eine Session vorhanden ist.
+          Bei aktivierter E-Mail-Bestätigung wird
+          das Profil später über ensureProfile()
+          versucht anzulegen.
         */
 
-        if(!session){
+        if (result.data.session) {
+
+          await createProfileIfMissing(
+            user,
+            name
+          );
+
+          showAuthMessage(
+            "Konto wurde erfolgreich erstellt.",
+            "success"
+          );
+
+          await initializePortal();
+
+        }
+        else {
 
           showAuthMessage(
             "Registrierung erfolgreich. Bitte bestätige deine E-Mail-Adresse und melde dich anschließend an.",
             "success"
           );
 
-          document.getElementById(
-            "registerPassword"
-          ).value = "";
-
-          return;
-
         }
 
-        await initializePortal();
-
       }
-      catch(error){
+      catch (error) {
 
-        console.error(error);
+        console.error(
+          "Registrierung:",
+          error
+        );
 
         showAuthMessage(
-          error?.message ||
-          "Registrierung fehlgeschlagen."
+          "Registrierung fehlgeschlagen: " +
+          (error.message ||
+           "Unbekannter Fehler."),
+          "error"
         );
 
       }
-      finally{
+      finally {
 
-        setButtonLoading(
-          button,
-          false
-        );
+        button.disabled = false;
+
+        button.textContent =
+          "👤 Konto erstellen";
 
       }
 
@@ -1847,31 +2484,303 @@ document
 
 
 /* =========================================================
-   LOGOUT
+   PROFIL ANLEGEN
 ========================================================= */
 
-async function logout(){
+async function createProfileIfMissing(
+  user,
+  fallbackName
+) {
 
-  initializedUserId = null;
-  currentUser = null;
-  currentProfile = null;
+  if (!user) {
+    return null;
+  }
 
-  updateAdminVisibility();
 
-  showAuthScreen();
+  const existing =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .maybeSingle();
 
-  clearAuthMessage();
 
-  try{
-
-    await supabaseClient.auth.signOut();
-
-  }catch(error){
+  if (existing.error) {
 
     console.error(
-      "Logout-Fehler:",
+      "Profilabfrage:",
+      existing.error
+    );
+
+    throw existing.error;
+
+  }
+
+
+  if (existing.data) {
+
+    return existing.data;
+
+  }
+
+
+  const name =
+    fallbackName ||
+    user.user_metadata?.name ||
+    user.email ||
+    "Mitarbeiter";
+
+
+  const inserted =
+    await supabaseClient
+      .from("profiles")
+      .insert({
+        id: user.id,
+        name: name,
+        role: "mitarbeiter",
+        active: true
+      })
+      .select()
+      .single();
+
+
+  if (inserted.error) {
+
+    console.error(
+      "Profil erstellen:",
+      inserted.error
+    );
+
+    throw inserted.error;
+
+  }
+
+
+  return inserted.data;
+
+}
+
+
+/* =========================================================
+   PROFIL LADEN
+========================================================= */
+
+async function loadCurrentProfile() {
+
+  if (!currentUser) {
+
+    currentProfile = null;
+
+    return null;
+
+  }
+
+
+  const result =
+    await withTimeout(
+      supabaseClient
+        .from("profiles")
+        .select(
+          "id,name,role,active,last_login,created_at"
+        )
+        .eq("id", currentUser.id)
+        .maybeSingle(),
+      10000,
+      "Das Benutzerprofil konnte nicht geladen werden."
+    );
+
+
+  if (result.error) {
+
+    console.error(
+      "Profil laden:",
+      result.error
+    );
+
+    throw result.error;
+
+  }
+
+
+  currentProfile =
+    result.data || null;
+
+
+  return currentProfile;
+
+}
+
+
+/* =========================================================
+   PROFIL SICHERSTELLEN
+========================================================= */
+
+async function ensureProfile() {
+
+  if (!currentUser) {
+
+    currentProfile = null;
+
+    return;
+
+  }
+
+
+  let profile =
+    await loadCurrentProfile();
+
+
+  if (profile) {
+
+    return;
+
+  }
+
+
+  const name =
+    currentUser.user_metadata?.name ||
+    currentUser.email ||
+    "Mitarbeiter";
+
+
+  try {
+
+    profile =
+      await createProfileIfMissing(
+        currentUser,
+        name
+      );
+
+  }
+  catch (error) {
+
+    console.error(
+      "Profil konnte nicht erstellt werden:",
       error
     );
+
+    currentProfile = null;
+
+    return;
+
+  }
+
+
+  currentProfile =
+    profile || null;
+
+}
+
+
+/* =========================================================
+   PORTAL ANZEIGEN
+========================================================= */
+
+function showPortal() {
+
+  document.getElementById(
+    "authScreen"
+  ).style.display = "none";
+
+  document.getElementById(
+    "portal"
+  ).style.display = "block";
+
+}
+
+
+function showAuthScreen() {
+
+  document.getElementById(
+    "portal"
+  ).style.display = "none";
+
+  document.getElementById(
+    "authScreen"
+  ).style.display = "flex";
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+function updateUserHeader() {
+
+  const name =
+    currentProfile?.name ||
+    currentUser?.email ||
+    "Benutzer";
+
+
+  const role =
+    currentProfile?.role === "admin"
+      ? "🛡️ Administrator"
+      : "👤 Mitarbeiter";
+
+
+  document.getElementById(
+    "currentUserName"
+  ).textContent = name;
+
+
+  document.getElementById(
+    "currentUserRole"
+  ).textContent = role;
+
+}
+
+
+/* =========================================================
+   ADMIN SICHTBARKEIT
+========================================================= */
+
+function updateAdminVisibility() {
+
+  const isAdmin =
+    !!currentProfile &&
+    currentProfile.role === "admin" &&
+    currentProfile.active === true;
+
+
+  const nav =
+    document.getElementById(
+      "adminNav"
+    );
+
+  const section =
+    document.getElementById(
+      "admin"
+    );
+
+
+  if (isAdmin) {
+
+    nav.style.display =
+      "block";
+
+    section.style.display =
+      "block";
+
+    document.getElementById(
+      "adminSection"
+    ).style.display =
+      "block";
+
+  }
+  else {
+
+    nav.style.display =
+      "none";
+
+    section.style.display =
+      "none";
+
+    document.getElementById(
+      "adminSection"
+    ).style.display =
+      "none";
 
   }
 
@@ -1879,28 +2788,287 @@ async function logout(){
 
 
 /* =========================================================
-   ADMIN – PROFILE LADEN
+   PORTAL INITIALISIERUNG
 ========================================================= */
 
-async function loadAdminProfiles(){
+async function initializePortal() {
 
-  if(
-    !currentProfile ||
-    currentProfile.role !== "admin" ||
-    currentProfile.active !== true
-  ){
+  /*
+    Verhindert parallele Initialisierungen.
+  */
+
+  if (initializationRunning) {
 
     return;
 
   }
 
-  const tbody =
-    document.getElementById("adminUsers");
 
-  if(!tbody)
+  if (
+    portalInitialized &&
+    currentUser &&
+    currentProfile
+  ) {
+
     return;
 
-  clearAdminMessage();
+  }
+
+
+  initializationRunning = true;
+
+
+  try {
+
+    if (!supabaseClient) {
+
+      throw new Error(
+        "Supabase ist nicht verfügbar."
+      );
+
+    }
+
+
+    const result =
+      await withTimeout(
+        supabaseClient.auth.getUser(),
+        10000,
+        "Supabase antwortet nicht."
+      );
+
+
+    if (
+      !result.data ||
+      !result.data.user
+    ) {
+
+      currentUser = null;
+
+      currentProfile = null;
+
+      portalInitialized = false;
+
+      showAuthScreen();
+
+      return;
+
+    }
+
+
+    currentUser =
+      result.data.user;
+
+
+    await ensureProfile();
+
+
+    if (!currentProfile) {
+
+      throw new Error(
+        "Für dieses Konto konnte kein Profil gefunden werden."
+      );
+
+    }
+
+
+    /*
+      Gesperrte Benutzer kommen nicht ins Portal.
+    */
+
+    if (
+      currentProfile.active !== true
+    ) {
+
+      showAuthMessage(
+        "Dieses Benutzerkonto wurde gesperrt. Bitte wende dich an einen Administrator.",
+        "error"
+      );
+
+
+      await supabaseClient.auth.signOut();
+
+
+      currentUser = null;
+
+      currentProfile = null;
+
+      portalInitialized = false;
+
+      showAuthScreen();
+
+      return;
+
+    }
+
+
+    showPortal();
+
+    updateUserHeader();
+
+    updateAdminVisibility();
+
+
+    portalInitialized = true;
+
+
+    /*
+      Admin-Benutzer bekommen die Verwaltung.
+    */
+
+    if (
+      currentProfile.role === "admin"
+    ) {
+
+      await loadAdminProfiles();
+
+    }
+
+
+    /*
+      GitHub-Dokumente laden.
+    */
+
+    await loadRepository();
+
+  }
+  catch (error) {
+
+    console.error(
+      "Portal konnte nicht vollständig geladen werden:",
+      error
+    );
+
+
+    portalInitialized = false;
+
+
+    showPortal();
+
+
+    showPortalStatus(
+      "Das Portal konnte nicht vollständig geladen werden: " +
+      (error.message ||
+       "Unbekannter Fehler."),
+      true
+    );
+
+  }
+  finally {
+
+    initializationRunning = false;
+
+  }
+
+}
+
+
+/* =========================================================
+   PORTAL STATUS
+========================================================= */
+
+function showPortalStatus(
+  message,
+  isError
+) {
+
+  const box =
+    document.getElementById(
+      "portalStatus"
+    );
+
+  if (!box) {
+    return;
+  }
+
+
+  box.textContent =
+    message;
+
+
+  box.style.display =
+    "block";
+
+
+  if (isError) {
+
+    box.style.background =
+      "#fff1f1";
+
+    box.style.borderColor =
+      "#edcaca";
+
+    box.style.color =
+      "#8c2929";
+
+  }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout() {
+
+  try {
+
+    if (supabaseClient) {
+
+      await supabaseClient.auth.signOut();
+
+    }
+
+  }
+  catch (error) {
+
+    console.error(
+      "Logout:",
+      error
+    );
+
+  }
+
+
+  currentUser = null;
+
+  currentProfile = null;
+
+  repositoryTree = [];
+
+  portalInitialized = false;
+
+  initializationRunning = false;
+
+  showAuthScreen();
+
+  showLogin();
+
+}
+
+
+/* =========================================================
+   ADMIN PROFILE LADEN
+========================================================= */
+
+async function loadAdminProfiles() {
+
+  if (
+    !currentProfile ||
+    currentProfile.role !== "admin" ||
+    currentProfile.active !== true
+  ) {
+
+    return;
+
+  }
+
+
+  const tbody =
+    document.getElementById(
+      "adminUsers"
+    );
+
 
   tbody.innerHTML = `
     <tr>
@@ -1913,7 +3081,8 @@ async function loadAdminProfiles(){
     </tr>
   `;
 
-  try{
+
+  try {
 
     const result =
       await withTimeout(
@@ -1925,21 +3094,27 @@ async function loadAdminProfiles(){
           .order(
             "name",
             {
-              ascending:true,
-              nullsFirst:false
+              ascending: true,
+              nullsFirst: false
             }
           ),
         10000,
-        "Die Mitarbeiterliste konnte nicht rechtzeitig geladen werden."
+        "Die Mitarbeiterliste konnte nicht geladen werden."
       );
 
-    if(result.error)
+
+    if (result.error) {
+
       throw result.error;
+
+    }
+
 
     const data =
       result.data || [];
 
-    if(!data.length){
+
+    if (!data.length) {
 
       tbody.innerHTML = `
         <tr>
@@ -1953,43 +3128,58 @@ async function loadAdminProfiles(){
 
     }
 
+
     tbody.innerHTML = "";
 
-    data.forEach(profile => {
 
-      const tr =
-        document.createElement("tr");
+    data.forEach(
+      function(profile) {
 
-      const lastLogin =
-        profile.last_login
-          ? new Date(
-              profile.last_login
-            ).toLocaleString("de-DE")
-          : "Noch kein Login";
+        const tr =
+          document.createElement("tr");
 
-      const isSelf =
-        profile.id === currentUser?.id;
 
-      const safeName =
-        profile.name || "Ohne Namen";
+        const lastLogin =
+          profile.last_login
+            ? new Date(
+                profile.last_login
+              ).toLocaleString("de-DE")
+            : "Noch kein Login";
 
-      const actionButtons =
-        isSelf
-          ? `
-            <span style="color:var(--muted);font-size:13px">
+
+        const isSelf =
+          currentUser &&
+          profile.id === currentUser.id;
+
+
+        let actions = "";
+
+
+        if (isSelf) {
+
+          actions = `
+            <span
+              style="
+                color:var(--muted);
+                font-size:13px;
+              "
+            >
               Eigenes Admin-Konto
             </span>
-          `
-          : `
+          `;
+
+        }
+        else {
+
+          actions = `
             ${
               profile.active
                 ? `
                   <button
                     class="btn-lock"
                     type="button"
-                    data-action="status"
+                    data-action="lock"
                     data-user-id="${escapeHTML(profile.id)}"
-                    data-value="false"
                   >
                     🔒 Sperren
                   </button>
@@ -1998,9 +3188,8 @@ async function loadAdminProfiles(){
                   <button
                     class="btn-unlock"
                     type="button"
-                    data-action="status"
+                    data-action="unlock"
                     data-user-id="${escapeHTML(profile.id)}"
-                    data-value="true"
                   >
                     🔓 Entsperren
                   </button>
@@ -2022,65 +3211,140 @@ async function loadAdminProfiles(){
               type="button"
               data-action="name"
               data-user-id="${escapeHTML(profile.id)}"
-              data-current-name="${escapeHTML(safeName)}"
+              data-current-name="${escapeHTML(profile.name || "")}"
             >
               ✏️ Name
             </button>
           `;
 
-      tr.innerHTML = `
-        <td>
-          <strong>${escapeHTML(safeName)}</strong>
-        </td>
+        }
 
-        <td>
-          <span class="role-badge">
-            ${
-              profile.role === "admin"
-                ? "🛡️ Admin"
-                : "👤 Mitarbeiter"
+
+        tr.innerHTML = `
+          <td>
+            <strong>
+              ${escapeHTML(
+                profile.name ||
+                "Ohne Namen"
+              )}
+            </strong>
+          </td>
+
+          <td>
+            <span class="role-badge">
+              ${
+                profile.role === "admin"
+                  ? "🛡️ Admin"
+                  : "👤 Mitarbeiter"
+              }
+            </span>
+          </td>
+
+          <td>
+            <span
+              class="status ${
+                profile.active
+                  ? "active"
+                  : "inactive"
+              }"
+            >
+              ${
+                profile.active
+                  ? "🟢 Aktiv"
+                  : "🔴 Gesperrt"
+              }
+            </span>
+          </td>
+
+          <td>
+            ${escapeHTML(lastLogin)}
+          </td>
+
+          <td>
+            <div class="admin-actions">
+              ${actions}
+            </div>
+          </td>
+        `;
+
+
+        tbody.appendChild(tr);
+
+      }
+    );
+
+
+    /*
+      Event-Listener statt onclick mit
+      Benutzerwerten im HTML.
+    */
+
+    tbody
+      .querySelectorAll("[data-action]")
+      .forEach(
+        function(button) {
+
+          button.addEventListener(
+            "click",
+            function() {
+
+              const action =
+                button.dataset.action;
+
+              const userId =
+                button.dataset.userId;
+
+
+              if (action === "lock") {
+
+                changeUserStatus(
+                  userId,
+                  false
+                );
+
+              }
+
+              else if (action === "unlock") {
+
+                changeUserStatus(
+                  userId,
+                  true
+                );
+
+              }
+
+              else if (action === "role") {
+
+                changeUserRole(
+                  userId,
+                  button.dataset.currentRole
+                );
+
+              }
+
+              else if (action === "name") {
+
+                changeUserName(
+                  userId,
+                  button.dataset.currentName || ""
+                );
+
+              }
+
             }
-          </span>
-        </td>
+          );
 
-        <td>
-          <span class="status ${
-            profile.active
-              ? "active"
-              : "inactive"
-          }">
-            ${
-              profile.active
-                ? "🟢 Aktiv"
-                : "🔴 Gesperrt"
-            }
-          </span>
-        </td>
-
-        <td>
-          ${escapeHTML(lastLogin)}
-        </td>
-
-        <td>
-          <div class="admin-actions">
-            ${actionButtons}
-          </div>
-        </td>
-      `;
-
-      tbody.appendChild(tr);
-
-    });
-
-    attachAdminActions();
+        }
+      );
 
   }
-  catch(error){
+  catch (error) {
 
     console.error(
-      "Adminliste:",
+      "Admin Profile:",
       error
     );
+
 
     tbody.innerHTML = `
       <tr>
@@ -2088,7 +3352,10 @@ async function loadAdminProfiles(){
           <div class="error">
             Mitarbeiter konnten nicht geladen werden.
             <br><br>
-            ${escapeHTML(error?.message || "Unbekannter Fehler")}
+            ${escapeHTML(
+              error.message ||
+              "Unbekannter Fehler."
+            )}
           </div>
         </td>
       </tr>
@@ -2100,122 +3367,76 @@ async function loadAdminProfiles(){
 
 
 /* =========================================================
-   ADMIN – BUTTON EVENTS
-========================================================= */
-
-function attachAdminActions(){
-
-  document
-    .querySelectorAll(
-      "#adminUsers [data-action]"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        async () => {
-
-          const action =
-            button.dataset.action;
-
-          const userId =
-            button.dataset.userId;
-
-          if(action === "status"){
-
-            await changeUserStatus(
-              userId,
-              button.dataset.value === "true"
-            );
-
-          }
-
-          if(action === "role"){
-
-            await changeUserRole(
-              userId,
-              button.dataset.currentRole
-            );
-
-          }
-
-          if(action === "name"){
-
-            await changeUserName(
-              userId,
-              button.dataset.currentName || ""
-            );
-
-          }
-
-        }
-      );
-
-    });
-
-}
-
-
-/* =========================================================
    ADMIN – STATUS
 ========================================================= */
 
 async function changeUserStatus(
   userId,
   active
-){
+) {
 
-  if(
+  if (
     !currentProfile ||
     currentProfile.role !== "admin" ||
     currentProfile.active !== true
-  ){
+  ) {
 
     return;
 
   }
 
-  if(userId === currentUser?.id){
 
-    showAdminMessage(
-      "Das eigene Admin-Konto kann hier nicht gesperrt werden.",
-      "error"
-    );
+  if (
+    !userId ||
+    userId === currentUser.id
+  ) {
 
     return;
 
   }
+
 
   const action =
-    active ? "entsperren" : "sperren";
+    active
+      ? "entsperren"
+      : "sperren";
 
-  if(
+
+  if (
     !confirm(
-      `Mitarbeiter wirklich ${action}?`
+      "Mitarbeiter wirklich " +
+      action +
+      "?"
     )
-  ){
+  ) {
 
     return;
 
   }
 
-  try{
+
+  try {
 
     const result =
       await withTimeout(
         supabaseClient.rpc(
           "admin_update_profile",
           {
-            target_user_id:userId,
-            new_active:active
+            target_user_id: userId,
+            new_active: active
           }
         ),
         10000,
-        "Die Änderung dauert zu lange."
+        "Die Änderung hat zu lange gedauert."
       );
 
-    if(result.error)
+
+    if (result.error) {
+
       throw result.error;
+
+    }
+
 
     showAdminMessage(
       active
@@ -2224,16 +3445,24 @@ async function changeUserStatus(
       "success"
     );
 
+
     await loadAdminProfiles();
 
   }
-  catch(error){
+  catch (error) {
 
-    console.error(error);
+    console.error(
+      "Status ändern:",
+      error
+    );
+
 
     showAdminMessage(
       "Änderung fehlgeschlagen: " +
-      (error?.message || "Unbekannter Fehler"),
+      (
+        error.message ||
+        "Unbekannter Fehler."
+      ),
       "error"
     );
 
@@ -2249,75 +3478,94 @@ async function changeUserStatus(
 async function changeUserRole(
   userId,
   currentRole
-){
+) {
 
-  if(
+  if (
     !currentProfile ||
     currentProfile.role !== "admin" ||
     currentProfile.active !== true
-  ){
+  ) {
 
     return;
 
   }
 
-  if(userId === currentUser?.id){
 
-    showAdminMessage(
-      "Das eigene Admin-Konto kann hier nicht geändert werden.",
-      "error"
-    );
+  if (
+    !userId ||
+    userId === currentUser.id
+  ) {
 
     return;
 
   }
+
 
   const newRole =
     currentRole === "admin"
       ? "mitarbeiter"
       : "admin";
 
+
   const question =
     currentRole === "admin"
       ? "Soll dieser Benutzer wirklich zum Mitarbeiter zurückgestuft werden?"
       : "Soll dieser Benutzer wirklich Administrator werden?";
 
-  if(!confirm(question))
+
+  if (!confirm(question)) {
+
     return;
 
-  try{
+  }
+
+
+  try {
 
     const result =
       await withTimeout(
         supabaseClient.rpc(
           "admin_update_profile",
           {
-            target_user_id:userId,
-            new_role:newRole
+            target_user_id: userId,
+            new_role: newRole
           }
         ),
         10000,
-        "Die Rollenänderung dauert zu lange."
+        "Die Rollenänderung hat zu lange gedauert."
       );
 
-    if(result.error)
+
+    if (result.error) {
+
       throw result.error;
+
+    }
+
 
     showAdminMessage(
       "Rolle wurde erfolgreich geändert.",
       "success"
     );
 
+
     await loadAdminProfiles();
 
   }
-  catch(error){
+  catch (error) {
 
-    console.error(error);
+    console.error(
+      "Rolle ändern:",
+      error
+    );
+
 
     showAdminMessage(
       "Rollenänderung fehlgeschlagen: " +
-      (error?.message || "Unbekannter Fehler"),
+      (
+        error.message ||
+        "Unbekannter Fehler."
+      ),
       "error"
     );
 
@@ -2333,79 +3581,92 @@ async function changeUserRole(
 async function changeUserName(
   userId,
   currentName
-){
+) {
 
-  if(
+  if (
     !currentProfile ||
     currentProfile.role !== "admin" ||
     currentProfile.active !== true
-  ){
+  ) {
 
     return;
 
   }
+
+
+  if (
+    !userId ||
+    userId === currentUser.id
+  ) {
+
+    return;
+
+  }
+
 
   const newName =
     prompt(
       "Neuen Namen eingeben:",
-      currentName
+      currentName || ""
     );
 
-  if(
+
+  if (
     newName === null ||
     !newName.trim()
-  ){
+  ) {
 
     return;
 
   }
 
-  try{
+
+  try {
 
     const result =
       await withTimeout(
         supabaseClient.rpc(
           "admin_update_profile",
           {
-            target_user_id:userId,
-            new_name:newName.trim()
+            target_user_id: userId,
+            new_name: newName.trim()
           }
         ),
         10000,
-        "Die Namensänderung dauert zu lange."
+        "Die Namensänderung hat zu lange gedauert."
       );
 
-    if(result.error)
+
+    if (result.error) {
+
       throw result.error;
+
+    }
+
 
     showAdminMessage(
       "Name wurde geändert.",
       "success"
     );
 
+
     await loadAdminProfiles();
 
-    /*
-      Falls der Admin sich selbst irgendwann
-      über eine andere Oberfläche ändert,
-      Profil neu laden.
-    */
-
-    if(userId === currentUser?.id){
-
-      await loadCurrentProfile();
-      updateUserHeader();
-
-    }
-
   }
-  catch(error){
+  catch (error) {
 
-    console.error(error);
+    console.error(
+      "Name ändern:",
+      error
+    );
+
 
     showAdminMessage(
       "Namensänderung fehlgeschlagen: " +
-      (error?.message || "Unbekannter Fehler"),
+      (
+        error.message ||
+        "Unbekannter Fehler."
+      ),
       "error"
     );
 
@@ -2415,116 +3676,33 @@ async function changeUserName(
 
 
 /* =========================================================
-   GITHUB
+   GITHUB FILE URL
 ========================================================= */
 
-async function loadRepository(){
-
-  try{
-
-    const response =
-      await withTimeout(
-        fetch(
-          GITHUB_API,
-          {
-            cache:"no-store",
-            headers:{
-              "Accept":
-                "application/vnd.github+json"
-            }
-          }
-        ),
-        10000,
-        "GitHub antwortet nicht rechtzeitig."
-      );
-
-    if(!response.ok){
-
-      throw new Error(
-        "GitHub API Fehler: " +
-        response.status
-      );
-
-    }
-
-    const data =
-      await response.json();
-
-    repositoryTree =
-      Array.isArray(data.tree)
-        ? data.tree
-        : [];
-
-    renderMainSections();
-
-  }
-  catch(error){
-
-    console.error(
-      "GitHub:",
-      error
-    );
-
-    const errorHTML = `
-      <div class="error">
-        <strong>
-          Dokumente konnten nicht geladen werden.
-        </strong>
-
-        <br><br>
-
-        ${escapeHTML(
-          error?.message ||
-          "Fehler beim Abrufen des GitHub-Repositorys."
-        )}
-
-        <br><br>
-
-        <button
-          class="btn-refresh"
-          type="button"
-          onclick="loadRepository()"
-        >
-          🔄 Erneut versuchen
-        </button>
-      </div>
-    `;
-
-    document.getElementById("qmFolders").innerHTML =
-      errorHTML;
-
-    document.getElementById("standardFolders").innerHTML =
-      errorHTML;
-
-    document.getElementById("trainingFolders").innerHTML =
-      errorHTML;
-
-    document.getElementById("imageFolders").innerHTML =
-      errorHTML;
-
-    document.getElementById("pdlFolders").innerHTML =
-      errorHTML;
-
-  }
-
-}
-
-
-/* =========================================================
-   GITHUB – DATEIEN
-========================================================= */
-
-function fileURL(path){
+function fileURL(path) {
 
   const parts =
-    path
+    String(path)
       .split("/")
       .map(
-        part =>
-          encodeURIComponent(
-            decodeURIComponent(part)
-          )
+        function(part) {
+
+          try {
+
+            return encodeURIComponent(
+              decodeURIComponent(part)
+            );
+
+          }
+          catch (error) {
+
+            return encodeURIComponent(part);
+
+          }
+
+        }
       );
+
 
   return (
     "https://" +
@@ -2536,52 +3714,55 @@ function fileURL(path){
 }
 
 
-function cleanFileName(name){
+/* =========================================================
+   DATEI ICON
+========================================================= */
 
-  return decodeURIComponent(name)
-    .replace(/\.(pdf|odt|odg|docx|doc|xlsx|xls)$/i,"")
-    .replace(/_/g," ");
-
-}
-
-
-function fileIcon(path){
+function fileIcon(path) {
 
   const n =
-    path.toLowerCase();
+    String(path)
+      .toLowerCase();
 
-  if(n.endsWith(".pdf"))
+
+  if (n.endsWith(".pdf")) {
     return "📕";
+  }
 
-  if(
+  if (
     n.endsWith(".mp4") ||
     n.endsWith(".webm") ||
     n.endsWith(".mov")
-  )
+  ) {
     return "🎬";
+  }
 
-  if(n.endsWith(".mp3"))
+  if (n.endsWith(".mp3")) {
     return "🎧";
+  }
 
-  if(
+  if (
     n.endsWith(".jpg") ||
     n.endsWith(".jpeg") ||
     n.endsWith(".png") ||
     n.endsWith(".webp")
-  )
+  ) {
     return "🖼️";
+  }
 
-  if(
+  if (
     n.endsWith(".doc") ||
     n.endsWith(".docx")
-  )
+  ) {
     return "📝";
+  }
 
-  if(
+  if (
     n.endsWith(".xls") ||
     n.endsWith(".xlsx")
-  )
+  ) {
     return "📊";
+  }
 
   return "📄";
 
@@ -2589,84 +3770,131 @@ function fileIcon(path){
 
 
 /* =========================================================
-   ORDNER
+   GITHUB LADEN
 ========================================================= */
 
-const folderColors = [
-  "#e53935",
-  "#fb8c00",
-  "#f6c700",
-  "#43a047",
-  "#00897b",
-  "#1e88e5",
-  "#3949ab",
-  "#8e24aa",
-  "#d81b60"
-];
+async function loadRepository() {
+
+  try {
+
+    const response =
+      await withTimeout(
+        fetch(
+          GITHUB_API,
+          {
+            cache: "no-store",
+            headers: {
+              "Accept":
+                "application/vnd.github+json"
+            }
+          }
+        ),
+        15000,
+        "GitHub antwortet nicht."
+      );
 
 
-function folderColor(index){
+    if (!response.ok) {
 
-  return folderColors[
-    index % folderColors.length
-  ];
-
-}
-
-
-function folderIcon(name){
-
-  const n =
-    decodeURIComponent(name).toLowerCase();
-
-  if(n.includes("schulung")) return "🎓";
-  if(n.includes("fob")) return "🎓";
-  if(n.includes("fortbildung")) return "🎓";
-  if(n.includes("hygiene")) return "🧼";
-  if(n.includes("prophylax")) return "🛡️";
-  if(n.includes("expertenstandard")) return "📖";
-  if(n.includes("prozess")) return "⚙️";
-  if(n.includes("notfall")) return "🚨";
-  if(n.includes("hilfe")) return "🆘";
-  if(n.includes("datenschutz")) return "🔐";
-  if(n.includes("beschwer")) return "📣";
-  if(n.includes("pflegeberatung")) return "👩‍⚕️";
-  if(n.includes("visiten")) return "🩺";
-  if(n.includes("fallbesprech")) return "🩺";
-  if(n.includes("bilder")) return "📷";
-  if(n.includes("pdl")) return "👩‍⚕️";
-  if(n.includes("behandlungspflege")) return "💉";
-  if(n.includes("grundpflege")) return "🛏️";
-  if(n.includes("chronische")) return "🩹";
-  if(n.includes("wunden")) return "🩹";
-  if(n.includes("schmerzen")) return "💊";
-  if(n.includes("beziehung")) return "🤝";
-  if(n.includes("bezugspflege")) return "👩‍⚕️";
-  if(n.includes("herzbett")) return "🛏️";
-  if(n.includes("nestlagerung")) return "🛏️";
-  if(n.includes("aki")) return "🩺";
-
-  return "📁";
-
-}
-
-
-function rootFolders(){
-
-  const result = [];
-
-  repositoryTree.forEach(item => {
-
-    if(
-      item.type === "tree" &&
-      !item.path.includes("/")
-    ){
-
-      result.push(item.path);
+      throw new Error(
+        "GitHub API Fehler: " +
+        response.status
+      );
 
     }
 
-  });
+
+    const data =
+      await response.json();
+
+
+    repositoryTree =
+      Array.isArray(data.tree)
+        ? data.tree
+        : [];
+
+
+    renderMainSections();
+
+  }
+  catch (error) {
+
+    console.error(
+      "GitHub:",
+      error
+    );
+
+
+    const errorHTML = `
+      <div class="error">
+        <strong>
+          Dokumente konnten nicht geladen werden.
+        </strong>
+
+        <br><br>
+
+        ${escapeHTML(
+          error.message ||
+          "Fehler beim Abrufen der GitHub-Ordner."
+        )}
+      </div>
+    `;
+
+
+    [
+      "qmFolders",
+      "standardFolders",
+      "trainingFolders",
+      "imageFolders",
+      "pdlFolders"
+    ]
+    .forEach(
+      function(id) {
+
+        const element =
+          document.getElementById(id);
+
+        if (element) {
+
+          element.innerHTML =
+            errorHTML;
+
+        }
+
+      }
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ROOT FOLDER
+========================================================= */
+
+function rootFolders() {
+
+  const result = [];
+
+
+  repositoryTree.forEach(
+    function(item) {
+
+      if (item.type !== "tree") {
+        return;
+      }
+
+
+      if (!item.path.includes("/")) {
+
+        result.push(item.path);
+
+      }
+
+    }
+  );
+
 
   return result;
 
@@ -2677,10 +3905,11 @@ function rootFolders(){
    HAUPTBEREICHE
 ========================================================= */
 
-function renderMainSections(){
+function renderMainSections() {
 
   const roots =
     rootFolders();
+
 
   const qm = [];
   const standards = [];
@@ -2688,112 +3917,165 @@ function renderMainSections(){
   const bilder = [];
   const pdl = [];
 
-  roots.forEach(folder => {
 
-    const n =
-      folder.toLowerCase();
+  roots.forEach(
+    function(folder) {
 
-    if(
-      n === "teams" ||
-      n.includes("team")
-    ){
+      const n =
+        folder.toLowerCase();
 
-      return;
+
+      if (
+        n === "teams" ||
+        n.includes("team")
+      ) {
+
+        return;
+
+      }
+
+
+      if (
+        n.includes("bilderlaubnis")
+      ) {
+
+        bilder.push(folder);
+
+        return;
+
+      }
+
+
+      if (
+        n === "schulungen" ||
+        n.includes("fortbildung") ||
+        n.includes("fob")
+      ) {
+
+        training.push(folder);
+
+        return;
+
+      }
+
+
+      if (
+        n.startsWith("va ") ||
+        n.startsWith("va_") ||
+        n.includes("behandlungspflege") ||
+        n.includes("grundpflege") ||
+        n.includes("beziehungsgestaltung") ||
+        n.includes("bezugspflege") ||
+        n.includes("chronische") ||
+        n.includes("herzbett") ||
+        n.includes("nestlagerung") ||
+        n.includes("aki patienten")
+      ) {
+
+        standards.push(folder);
+
+        return;
+
+      }
+
+
+      if (
+        n === "pdl" ||
+        n.includes("pdl-anweisung") ||
+        n.includes("pdl anweisung")
+      ) {
+
+        pdl.push(folder);
+
+        return;
+
+      }
+
+
+      if (
+        n === "qm-handbuch" ||
+        n.startsWith("qm ") ||
+        n.startsWith("qm.")
+      ) {
+
+        qm.push(folder);
+
+        return;
+
+      }
 
     }
+  );
 
-    if(n.includes("bilderlaubnis")){
 
-      bilder.push(folder);
-      return;
+  renderFolderGrid(
+    "qmFolders",
+    qm
+  );
 
-    }
+  renderFolderGrid(
+    "standardFolders",
+    standards
+  );
 
-    if(
-      n === "schulungen" ||
-      n.includes("fortbildung") ||
-      n.includes("fob")
-    ){
+  renderFolderGrid(
+    "trainingFolders",
+    training
+  );
 
-      training.push(folder);
-      return;
+  renderFolderGrid(
+    "imageFolders",
+    bilder
+  );
 
-    }
-
-    if(
-      n.startsWith("va ") ||
-      n.startsWith("va_") ||
-      n.includes("behandlungspflege") ||
-      n.includes("grundpflege") ||
-      n.includes("beziehungsgestaltung") ||
-      n.includes("bezugspflege") ||
-      n.includes("chronische") ||
-      n.includes("herzbett") ||
-      n.includes("nestlagerung") ||
-      n.includes("aki patienten")
-    ){
-
-      standards.push(folder);
-      return;
-
-    }
-
-    if(
-      n === "pdl" ||
-      n.includes("pdl-anweisung") ||
-      n.includes("pdl anweisung")
-    ){
-
-      pdl.push(folder);
-      return;
-
-    }
-
-    if(
-      n === "qm-handbuch" ||
-      n.startsWith("qm ") ||
-      n.startsWith("qm.")
-    ){
-
-      qm.push(folder);
-      return;
-
-    }
-
-  });
-
-  renderFolderGrid("qmFolders",qm);
-  renderFolderGrid("standardFolders",standards);
-  renderFolderGrid("trainingFolders",training);
-  renderFolderGrid("imageFolders",bilder);
-  renderFolderGrid("pdlFolders",pdl);
+  renderFolderGrid(
+    "pdlFolders",
+    pdl
+  );
 
 }
 
 
+/* =========================================================
+   ORDNER GRID
+========================================================= */
+
 function renderFolderGrid(
   containerID,
   folders
-){
+) {
 
   const container =
-    document.getElementById(containerID);
+    document.getElementById(
+      containerID
+    );
+
+
+  if (!container) {
+    return;
+  }
+
 
   container.innerHTML = "";
 
+
   folders.sort(
-    (a,b)=>
-      a.localeCompare(
+    function(a,b) {
+
+      return a.localeCompare(
         b,
         "de",
         {
-          numeric:true,
-          sensitivity:"base"
+          numeric: true,
+          sensitivity: "base"
         }
-      )
+      );
+
+    }
   );
 
-  if(!folders.length){
+
+  if (!folders.length) {
 
     container.innerHTML = `
       <div class="loading">
@@ -2805,19 +4087,36 @@ function renderFolderGrid(
 
   }
 
+
   folders.forEach(
-    (folder,index)=>{
+    function(folder,index) {
 
       const card =
         document.createElement("div");
 
+
       card.className =
         "folder-card";
+
 
       card.style.setProperty(
         "--folder-color",
         folderColor(index)
       );
+
+
+      let displayName =
+        folder;
+
+
+      try {
+
+        displayName =
+          decodeURIComponent(folder);
+
+      }
+      catch (error) {}
+
 
       card.innerHTML = `
         <div class="folder-icon">
@@ -2825,9 +4124,7 @@ function renderFolderGrid(
         </div>
 
         <div class="folder-name">
-          ${escapeHTML(
-            decodeURIComponent(folder)
-          )}
+          ${escapeHTML(displayName)}
         </div>
 
         <div class="folder-description">
@@ -2835,12 +4132,16 @@ function renderFolderGrid(
         </div>
       `;
 
+
       card.addEventListener(
         "click",
-        ()=>{
+        function() {
+
           openFolder(folder);
+
         }
       );
+
 
       container.appendChild(card);
 
@@ -2854,23 +4155,47 @@ function renderFolderGrid(
    ORDNER ÖFFNEN
 ========================================================= */
 
-function openFolder(path){
+function openFolder(path) {
 
   const panel =
-    document.getElementById("contentPanel");
+    document.getElementById(
+      "contentPanel"
+    );
 
   const content =
-    document.getElementById("folderContent");
+    document.getElementById(
+      "folderContent"
+    );
 
   const breadcrumb =
-    document.getElementById("breadcrumb");
+    document.getElementById(
+      "breadcrumb"
+    );
+
 
   panel.classList.add("active");
 
+
+  let readablePath =
+    path;
+
+
+  try {
+
+    readablePath =
+      decodeURIComponent(path);
+
+  }
+  catch (error) {}
+
+
   breadcrumb.textContent =
     "📁 " +
-    decodeURIComponent(path)
-      .replaceAll("/"," / ");
+    readablePath.replaceAll(
+      "/",
+      " / "
+    );
+
 
   content.innerHTML = `
     <div class="loading">
@@ -2879,154 +4204,134 @@ function openFolder(path){
     </div>
   `;
 
+
   const prefix =
     path + "/";
 
+
   const children =
-    repositoryTree.filter(item => {
+    repositoryTree.filter(
+      function(item) {
 
-      if(!item.path.startsWith(prefix))
-        return false;
+        if (
+          !item.path.startsWith(prefix)
+        ) {
 
-      const rest =
-        item.path.substring(
-          prefix.length
+          return false;
+
+        }
+
+
+        const rest =
+          item.path.substring(
+            prefix.length
+          );
+
+
+        return (
+          rest.length > 0 &&
+          !rest.includes("/")
         );
 
-      return (
-        rest.length > 0 &&
-        !rest.includes("/")
-      );
+      }
+    );
 
-    });
 
   const folders =
     children
       .filter(
-        item => item.type === "tree"
+        function(item) {
+
+          return item.type === "tree";
+
+        }
       )
       .sort(
-        (a,b)=>
-          a.path.localeCompare(
+        function(a,b) {
+
+          return a.path.localeCompare(
             b.path,
             "de",
             {
-              numeric:true
+              numeric: true
             }
-          )
+          );
+
+        }
       );
+
 
   const files =
     children
       .filter(
-        item => item.type === "blob"
+        function(item) {
+
+          return item.type === "blob";
+
+        }
       )
       .sort(
-        (a,b)=>
-          a.path.localeCompare(
+        function(a,b) {
+
+          return a.path.localeCompare(
             b.path,
             "de",
             {
-              numeric:true
+              numeric: true
             }
-          )
+          );
+
+        }
       );
+
 
   let html = "";
 
-  if(folders.length){
+
+  if (folders.length) {
 
     html += `
-      <h3>📁 Unterordner</h3>
+      <h3>
+        📁 Unterordner
+      </h3>
 
       <div class="subfolder-grid">
     `;
 
-    folders.forEach(folder => {
 
-      const name =
-        folder.path.substring(
-          prefix.length
-        );
+    folders.forEach(
+      function(folder) {
 
-      html += `
-        <div
-          class="subfolder-card"
-          data-folder-path="${escapeHTML(folder.path)}"
-        >
-          <div class="subfolder-icon">
-            ${folderIcon(name)}
-          </div>
+        const name =
+          folder.path.substring(
+            prefix.length
+          );
 
-          <div class="subfolder-name">
-            ${escapeHTML(
-              decodeURIComponent(name)
-            )}
-          </div>
-        </div>
-      `;
 
-    });
+        html += `
+          <div
+            class="subfolder-card"
+            data-folder-path="${escapeHTML(
+              folder.path
+            )}"
+          >
 
-    html += `
-      </div>
-    `;
+            <div class="subfolder-icon">
+              ${folderIcon(name)}
+            </div>
 
-  }
-
-  if(files.length){
-
-    html += `
-      <h3>📄 Dokumente</h3>
-
-      <div class="file-list">
-    `;
-
-    files.forEach(file => {
-
-      const name =
-        file.path.substring(
-          prefix.length
-        );
-
-      const url =
-        fileURL(file.path);
-
-      const extension =
-        name
-          .split(".")
-          .pop()
-          .toLowerCase();
-
-      html += `
-        <a
-          class="file-card"
-          href="${escapeHTML(url)}"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <div class="file-icon">
-            ${fileIcon(name)}
-          </div>
-
-          <div>
-            <div class="file-name">
+            <div class="subfolder-name">
               ${escapeHTML(
                 cleanFileName(name)
               )}
             </div>
 
-            <div class="file-info">
-              ${escapeHTML(
-                extension.toUpperCase()
-              )}
-              · Zum Öffnen anklicken
-            </div>
           </div>
-        </a>
-      `;
+        `;
 
-    });
+      }
+    );
+
 
     html += `
       </div>
@@ -3034,10 +4339,85 @@ function openFolder(path){
 
   }
 
-  if(
+
+  if (files.length) {
+
+    html += `
+      <h3>
+        📄 Dokumente
+      </h3>
+
+      <div class="file-list">
+    `;
+
+
+    files.forEach(
+      function(file) {
+
+        const name =
+          file.path.substring(
+            prefix.length
+          );
+
+
+        const url =
+          fileURL(file.path);
+
+
+        const extension =
+          name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+
+        html += `
+          <a
+            class="file-card"
+            href="${escapeHTML(url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="file-icon">
+              ${fileIcon(name)}
+            </div>
+
+            <div>
+
+              <div class="file-name">
+                ${escapeHTML(
+                  cleanFileName(name)
+                )}
+              </div>
+
+              <div class="file-info">
+                ${escapeHTML(
+                  extension.toUpperCase()
+                )}
+                · Zum Öffnen anklicken
+              </div>
+
+            </div>
+
+          </a>
+        `;
+
+      }
+    );
+
+
+    html += `
+      </div>
+    `;
+
+  }
+
+
+  if (
     !folders.length &&
     !files.length
-  ){
+  ) {
 
     html = `
       <div class="loading">
@@ -3048,38 +4428,51 @@ function openFolder(path){
 
   }
 
+
   content.innerHTML =
     html;
+
 
   content
     .querySelectorAll(
       "[data-folder-path]"
     )
-    .forEach(element => {
+    .forEach(
+      function(element) {
 
-      element.addEventListener(
-        "click",
-        ()=>{
-          openFolder(
-            element.dataset.folderPath
-          );
-        }
-      );
+        element.addEventListener(
+          "click",
+          function() {
 
-    });
+            openFolder(
+              element.dataset.folderPath
+            );
+
+          }
+        );
+
+      }
+    );
+
 
   panel.scrollIntoView({
-    behavior:"smooth",
-    block:"start"
+    behavior: "smooth",
+    block: "start"
   });
 
 }
 
 
-function closeFolder(){
+/* =========================================================
+   ORDNER SCHLIESSEN
+========================================================= */
+
+function closeFolder() {
 
   document
-    .getElementById("contentPanel")
+    .getElementById(
+      "contentPanel"
+    )
     .classList.remove("active");
 
 }
@@ -3089,53 +4482,77 @@ function closeFolder(){
    AUTH STATE
 ========================================================= */
 
-function startAuthListener(){
+function startAuthListener() {
 
-  if(authListenerStarted)
+  if (
+    authListenerStarted ||
+    !supabaseClient
+  ) {
+
     return;
+
+  }
+
 
   authListenerStarted = true;
 
+
   supabaseClient.auth.onAuthStateChange(
-    (event,session)=>{
+    function(event, session) {
 
       console.log(
-        "Supabase Auth:",
+        "Supabase Auth Event:",
         event
       );
 
-      if(
-        event === "SIGNED_OUT" ||
-        !session
-      ){
 
-        initializedUserId = null;
+      /*
+        SIGNED_OUT wird sofort verarbeitet.
+      */
+
+      if (
+        event === "SIGNED_OUT"
+      ) {
+
         currentUser = null;
+
         currentProfile = null;
 
-        updateAdminVisibility();
+        portalInitialized = false;
+
+        initializationRunning = false;
+
         showAuthScreen();
 
         return;
 
       }
 
-      if(
+
+      /*
+        Nicht bei jedem Event erneut
+        initializePortal starten.
+      */
+
+      if (
         event === "SIGNED_IN"
-      ){
+      ) {
 
-        /*
-          Nicht direkt innerhalb des Auth-Callbacks
-          Supabase-Abfragen auslösen.
-          Dadurch vermeiden wir mögliche Auth-Locks.
-        */
+        if (
+          !initializationRunning &&
+          !portalInitialized
+        ) {
 
-        setTimeout(
-          ()=>{
-            initializePortal();
-          },
-          0
-        );
+          setTimeout(
+            function() {
+
+              initializePortal();
+
+            },
+            0
+          );
+
+        }
 
       }
 
@@ -3149,51 +4566,107 @@ function startAuthListener(){
    START
 ========================================================= */
 
-(async function(){
+async function startApplication() {
+
+  if (!supabaseClient) {
+
+    showAuthScreen();
+
+    showAuthMessage(
+      "Supabase konnte nicht initialisiert werden. Bitte überprüfe die eingebundene Supabase-Bibliothek.",
+      "error"
+    );
+
+    return;
+
+  }
+
 
   startAuthListener();
 
-  try{
+
+  try {
+
+    /*
+      Genau EIN getSession beim Start.
+    */
 
     const result =
       await withTimeout(
         supabaseClient.auth.getSession(),
-        8000,
-        "Supabase antwortet nicht. Bitte Seite neu laden."
+        10000,
+        "Supabase antwortet beim Start nicht."
       );
 
-    if(result.data?.session){
 
-      currentUser =
-        result.data.session.user;
+    if (
+      result.error
+    ) {
+
+      throw result.error;
+
+    }
+
+
+    if (
+      result.data &&
+      result.data.session
+    ) {
 
       await initializePortal();
 
     }
-    else{
+    else {
 
       showAuthScreen();
 
     }
 
   }
-  catch(error){
+  catch (error) {
 
     console.error(
-      "Startfehler:",
+      "Start:",
       error
     );
 
+
     showAuthScreen();
 
+
     showAuthMessage(
-      error?.message ||
-      "Das Portal konnte nicht gestartet werden."
+      "Das Portal konnte nicht vollständig geladen werden: " +
+      (
+        error.message ||
+        "Unbekannter Fehler."
+      ),
+      "error"
     );
 
   }
 
-})();
+}
+
+
+/* =========================================================
+   DOM READY
+========================================================= */
+
+if (
+  document.readyState === "loading"
+) {
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    startApplication
+  );
+
+}
+else {
+
+  startApplication();
+
+}
 </script>
 
 </body>
