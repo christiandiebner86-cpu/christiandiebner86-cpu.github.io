@@ -7,17 +7,13 @@
 
 <title>QM-Portal – Intensivpflege-Halle-GmbH</title>
 
-<!--
-  WICHTIG:
-  Diese Polyfill-Zeilen stehen VOR Supabase.
-  Damit wird verhindert, dass ältere/ungewöhnliche
-  Browserumgebungen bei Promise.finally abstürzen.
--->
 <script>
 (function () {
-  if (typeof Promise !== "undefined" &&
-      !Promise.prototype.finally) {
-
+  if (
+    typeof Promise !== "undefined" &&
+    Promise.prototype &&
+    !Promise.prototype.finally
+  ) {
     Promise.prototype.finally = function (callback) {
       var P = this.constructor;
 
@@ -38,7 +34,6 @@
 })();
 </script>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -48,10 +43,8 @@
   --text: #17313a;
   --muted: #66777d;
   --line: #dce7e4;
-
   --green: #087f5b;
   --green-dark: #075c43;
-
   --red: #d93025;
   --orange: #fb8c00;
   --blue: #1e88e5;
@@ -74,7 +67,6 @@ body {
     "Segoe UI",
     Arial,
     sans-serif;
-
   background: var(--bg);
   color: var(--text);
 }
@@ -85,11 +77,9 @@ body {
 
 #authScreen {
   min-height: 100vh;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 25px;
 
   background:
@@ -109,35 +99,24 @@ body {
 .auth-card {
   width: 100%;
   max-width: 470px;
-
   background: #fff;
-
   border: 1px solid var(--line);
   border-radius: 25px;
-
   padding: 35px;
-
-  box-shadow:
-    0 15px 45px rgba(0,0,0,.12);
+  box-shadow: 0 15px 45px rgba(0,0,0,.12);
 }
 
 .auth-logo {
   width: 85px;
   height: 85px;
-
   margin: 0 auto 20px;
-
   border-radius: 20px;
   overflow: hidden;
-
   background: #fff;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  box-shadow:
-    0 5px 18px rgba(0,0,0,.1);
+  box-shadow: 0 5px 18px rgba(0,0,0,.1);
 }
 
 .auth-logo img {
@@ -166,19 +145,12 @@ body {
 
 .auth-tabs button {
   flex: 1;
-
   border: 0;
-
   padding: 12px;
-
   border-radius: 11px;
-
   cursor: pointer;
-
   background: #edf4f2;
-
   font-weight: 800;
-
   color: var(--text);
 }
 
@@ -189,57 +161,34 @@ body {
 
 .auth-form label {
   display: block;
-
   margin: 13px 0 6px;
-
   font-weight: 700;
 }
 
 .auth-form input {
   width: 100%;
-
   padding: 13px 14px;
-
   border: 1px solid var(--line);
-
   border-radius: 11px;
-
   font-size: 16px;
-
   outline: none;
 }
 
 .auth-form input:focus {
   border-color: var(--green);
-
-  box-shadow:
-    0 0 0 3px rgba(8,127,91,.1);
+  box-shadow: 0 0 0 3px rgba(8,127,91,.1);
 }
 
 .auth-submit {
   width: 100%;
-
   margin-top: 20px;
-
   padding: 14px;
-
   border: 0;
-
   border-radius: 12px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #075c43,
-      #087f5b
-    );
-
+  background: linear-gradient(135deg,#075c43,#087f5b);
   color: #fff;
-
   font-size: 16px;
-
   font-weight: 800;
-
   cursor: pointer;
 }
 
@@ -250,35 +199,24 @@ body {
 
 .auth-message {
   display: none;
-
   margin-top: 15px;
-
   padding: 13px;
-
   border-radius: 10px;
-
   font-size: 14px;
-
   line-height: 1.5;
 }
 
 .auth-message.error {
   display: block;
-
   background: #fff0f0;
-
   color: #8c2929;
-
   border: 1px solid #efcaca;
 }
 
 .auth-message.success {
   display: block;
-
   background: #edf9f3;
-
   color: #17613f;
-
   border: 1px solid #c5e8d5;
 }
 
@@ -291,56 +229,35 @@ body {
 }
 
 header {
-  background:
-    linear-gradient(
-      135deg,
-      #075c43,
-      #087f5b,
-      #13a06f
-    );
-
+  background: linear-gradient(135deg,#075c43,#087f5b,#13a06f);
   color: #fff;
-
   padding: 25px 18px;
-
-  box-shadow:
-    0 5px 20px rgba(0,0,0,.15);
+  box-shadow: 0 5px 20px rgba(0,0,0,.15);
 }
 
 .header-inner {
   max-width: 1200px;
-
   margin: auto;
-
   display: flex;
-
   align-items: center;
-
   gap: 20px;
 }
 
 .logo {
   width: 78px;
   height: 78px;
-
   background: #fff;
-
   border-radius: 18px;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   overflow: hidden;
-
   flex-shrink: 0;
 }
 
 .logo img {
   width: 100%;
   height: 100%;
-
   object-fit: contain;
 }
 
@@ -350,37 +267,26 @@ header {
 
 .header-text h1 {
   margin: 0 0 5px;
-
   font-size: 30px;
 }
 
 .header-text p {
   margin: 0;
-
   opacity: .9;
 }
 
 .user-box {
   display: flex;
-
   align-items: center;
-
   gap: 10px;
-
-  background:
-    rgba(255,255,255,.14);
-
-  border:
-    1px solid rgba(255,255,255,.25);
-
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.25);
   padding: 10px 12px;
-
   border-radius: 13px;
 }
 
 .user-info {
   text-align: right;
-
   line-height: 1.25;
 }
 
@@ -395,17 +301,11 @@ header {
 
 .logout-btn {
   border: 0;
-
   border-radius: 9px;
-
   padding: 8px 11px;
-
   background: #fff;
-
   color: var(--green-dark);
-
   font-weight: 800;
-
   cursor: pointer;
 }
 
@@ -415,50 +315,33 @@ header {
 
 nav {
   position: sticky;
-
   top: 0;
-
   z-index: 100;
-
   background: #fff;
-
   border-bottom: 1px solid var(--line);
-
-  box-shadow:
-    0 2px 10px rgba(0,0,0,.06);
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
 }
 
 .nav-inner {
   max-width: 1200px;
-
   margin: auto;
-
   display: flex;
-
   gap: 7px;
-
   padding: 10px 14px;
-
   overflow-x: auto;
 }
 
 nav a {
   color: var(--text);
-
   text-decoration: none;
-
   padding: 10px 14px;
-
   border-radius: 10px;
-
   white-space: nowrap;
-
   font-weight: 700;
 }
 
 nav a:hover {
   background: #e5f4ee;
-
   color: var(--green-dark);
 }
 
@@ -468,36 +351,26 @@ nav a:hover {
 
 main {
   max-width: 1200px;
-
   margin: auto;
-
   padding: 32px 16px 70px;
 }
 
 .hero {
   background: #fff;
-
   border: 1px solid var(--line);
-
   border-radius: 22px;
-
   padding: 32px;
-
-  box-shadow:
-    0 7px 25px rgba(0,0,0,.07);
-
+  box-shadow: 0 7px 25px rgba(0,0,0,.07);
   margin-bottom: 35px;
 }
 
 .hero h2 {
   margin-top: 0;
-
   font-size: 29px;
 }
 
 .hero p {
   color: var(--muted);
-
   line-height: 1.7;
 }
 
@@ -507,17 +380,13 @@ main {
 
 .section {
   margin-top: 42px;
-
   scroll-margin-top: 80px;
 }
 
 .section-title {
   display: flex;
-
   align-items: center;
-
   gap: 12px;
-
   margin-bottom: 20px;
 }
 
@@ -527,7 +396,6 @@ main {
 
 .section-title h2 {
   margin: 0;
-
   font-size: 25px;
 }
 
@@ -537,86 +405,54 @@ main {
 
 .folder-grid {
   display: grid;
-
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(235px,1fr)
-    );
-
+  grid-template-columns: repeat(auto-fit,minmax(235px,1fr));
   gap: 18px;
 }
 
 .folder-card {
   position: relative;
-
   background: #fff;
-
   border: 1px solid var(--line);
-
   border-radius: 20px;
-
   padding: 23px 20px 20px;
-
   min-height: 190px;
-
   cursor: pointer;
-
   overflow: hidden;
-
-  box-shadow:
-    0 6px 18px rgba(0,0,0,.06);
-
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,.06);
+  transition: transform .2s ease, box-shadow .2s ease;
 }
 
 .folder-card:hover {
   transform: translateY(-5px);
-
-  box-shadow:
-    0 13px 30px rgba(0,0,0,.13);
+  box-shadow: 0 13px 30px rgba(0,0,0,.13);
 }
 
 .folder-card::before {
   content: "";
-
   position: absolute;
-
   left: 0;
   top: 0;
   bottom: 0;
-
   width: 7px;
-
-  background:
-    var(--folder-color,#087f5b);
+  background: var(--folder-color,#087f5b);
 }
 
 .folder-icon {
   font-size: 56px;
-
   line-height: 1;
-
   margin-bottom: 18px;
 }
 
 .folder-name {
   font-size: 18px;
-
   font-weight: 800;
-
   line-height: 1.35;
-
   overflow-wrap: anywhere;
 }
 
 .folder-description {
   margin-top: 8px;
-
   font-size: 14px;
-
   color: var(--muted);
 }
 
@@ -626,20 +462,12 @@ main {
 
 #contentPanel {
   display: none;
-
   margin-top: 35px;
-
   background: #fff;
-
   border: 1px solid var(--line);
-
   border-radius: 20px;
-
   padding: 25px;
-
-  box-shadow:
-    0 8px 25px rgba(0,0,0,.08);
-
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
   scroll-margin-top: 80px;
 }
 
@@ -649,29 +477,19 @@ main {
 
 .back-button {
   border: 0;
-
   background: #e5f4ee;
-
   color: var(--green-dark);
-
   padding: 10px 15px;
-
   border-radius: 10px;
-
   font-weight: 800;
-
   cursor: pointer;
-
   margin-bottom: 18px;
 }
 
 .breadcrumb {
   color: var(--muted);
-
   font-size: 14px;
-
   margin-bottom: 20px;
-
   overflow-wrap: anywhere;
 }
 
@@ -681,71 +499,49 @@ main {
 
 .file-list {
   display: grid;
-
   gap: 11px;
 }
 
 .file-card {
   display: flex;
-
   align-items: center;
-
   gap: 15px;
-
   padding: 15px;
-
   border: 1px solid var(--line);
-
   border-radius: 13px;
-
   background: #fff;
-
   color: var(--text);
-
   text-decoration: none;
-
   transition: .18s ease;
 }
 
 .file-card:hover {
   background: #f0f8f5;
-
   border-color: #b6d8ca;
-
   transform: translateX(3px);
 }
 
 .file-icon {
   width: 44px;
   height: 44px;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   border-radius: 11px;
-
   background: #ffe7e7;
-
   font-size: 25px;
-
   flex-shrink: 0;
 }
 
 .file-name {
   font-weight: 750;
-
   line-height: 1.4;
-
   overflow-wrap: anywhere;
 }
 
 .file-info {
   margin-top: 3px;
-
   color: var(--muted);
-
   font-size: 13px;
 }
 
@@ -755,49 +551,33 @@ main {
 
 .subfolder-grid {
   display: grid;
-
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(220px,1fr)
-    );
-
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
   gap: 15px;
-
   margin-bottom: 30px;
 }
 
 .subfolder-card {
   background: #f8fbfa;
-
   border: 1px solid var(--line);
-
   border-radius: 15px;
-
   padding: 18px;
-
   cursor: pointer;
-
   transition: .18s ease;
 }
 
 .subfolder-card:hover {
   background: #edf7f3;
-
   transform: translateY(-2px);
 }
 
 .subfolder-icon {
   font-size: 42px;
-
   margin-bottom: 10px;
 }
 
 .subfolder-name {
   font-weight: 800;
-
   line-height: 1.35;
-
   overflow-wrap: anywhere;
 }
 
@@ -805,32 +585,23 @@ main {
    ADMIN
 ========================================================= */
 
-#adminSection {
+#admin {
   display: none;
 }
 
 .admin-panel {
   background: #fff;
-
   border: 1px solid var(--line);
-
   border-radius: 22px;
-
   padding: 25px;
-
-  box-shadow:
-    0 8px 25px rgba(0,0,0,.08);
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
 }
 
 .admin-header {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 15px;
-
   margin-bottom: 20px;
 }
 
@@ -840,15 +611,10 @@ main {
 
 .admin-badge {
   background: #fff3cd;
-
   color: #795500;
-
   border: 1px solid #efd98a;
-
   padding: 8px 12px;
-
   border-radius: 10px;
-
   font-weight: 800;
 }
 
@@ -858,155 +624,111 @@ main {
 
 .admin-table {
   width: 100%;
-
   border-collapse: collapse;
-
   min-width: 760px;
 }
 
 .admin-table th {
   text-align: left;
-
   background: #f2f7f5;
-
   padding: 13px;
-
-  border-bottom:
-    1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
 .admin-table td {
   padding: 13px;
-
-  border-bottom:
-    1px solid var(--line);
-
+  border-bottom: 1px solid var(--line);
   vertical-align: middle;
 }
 
 .status {
   display: inline-block;
-
   padding: 6px 10px;
-
   border-radius: 999px;
-
   font-size: 12px;
-
   font-weight: 800;
 }
 
 .status.active {
   background: #def5e9;
-
   color: #17613f;
 }
 
 .status.inactive {
   background: #ffe1e1;
-
   color: #8c2929;
 }
 
 .role-badge {
   display: inline-block;
-
   padding: 6px 10px;
-
   border-radius: 999px;
-
   font-size: 12px;
-
   font-weight: 800;
-
   background: #e9eefc;
-
   color: #304c9b;
 }
 
 .admin-actions {
   display: flex;
-
   flex-wrap: wrap;
-
   gap: 6px;
 }
 
 .admin-actions button {
   border: 0;
-
   border-radius: 8px;
-
   padding: 8px 10px;
-
   cursor: pointer;
-
   font-weight: 700;
 }
 
 .btn-lock {
   background: #ffe4e4;
-
   color: #9a2929;
 }
 
 .btn-unlock {
   background: #dff5e8;
-
   color: #17613f;
 }
 
 .btn-role {
   background: #e8efff;
-
   color: #304c9b;
 }
 
 .btn-name {
   background: #fff1d9;
-
   color: #8a5700;
 }
 
 .btn-refresh {
   background: #e5f4ee;
-
   color: var(--green-dark);
-
   border: 0;
-
   border-radius: 10px;
-
   padding: 10px 14px;
-
   font-weight: 800;
-
   cursor: pointer;
 }
 
 .admin-message {
   display: none;
-
   margin-bottom: 15px;
-
   padding: 12px;
-
   border-radius: 10px;
 }
 
 .admin-message.success {
   display: block;
-
   background: #edf9f3;
-
   color: #17613f;
 }
 
 .admin-message.error {
   display: block;
-
   background: #fff0f0;
-
   color: #8c2929;
 }
 
@@ -1016,30 +738,20 @@ main {
 
 .loading {
   background: #fff;
-
   border: 1px solid var(--line);
-
   border-radius: 15px;
-
   padding: 30px;
-
   text-align: center;
-
   color: var(--muted);
 }
 
 .spinner {
   width: 36px;
   height: 36px;
-
   border: 4px solid #dceae4;
-
   border-top-color: var(--green);
-
   border-radius: 50%;
-
   animation: spin .9s linear infinite;
-
   margin: 0 auto 14px;
 }
 
@@ -1051,15 +763,10 @@ main {
 
 .error {
   background: #fff1f1;
-
   border: 1px solid #edcaca;
-
   color: #8c2929;
-
   padding: 18px;
-
   border-radius: 12px;
-
   line-height: 1.5;
 }
 
@@ -1069,17 +776,11 @@ main {
 
 .portal-status {
   display: none;
-
   margin: 15px 0;
-
   padding: 14px;
-
   border-radius: 12px;
-
   background: #fff8e6;
-
   border: 1px solid #f0d99a;
-
   color: #735500;
 }
 
@@ -1089,17 +790,13 @@ main {
 
 footer {
   background: #17313a;
-
   color: #fff;
-
   text-align: center;
-
   padding: 28px 15px;
 }
 
 footer p {
   margin: 5px;
-
   opacity: .85;
 }
 
@@ -1111,7 +808,6 @@ footer p {
 
   .header-inner {
     align-items: flex-start;
-
     flex-wrap: wrap;
   }
 
@@ -1134,7 +830,6 @@ footer p {
 
   .user-info {
     text-align: left;
-
     flex: 1;
   }
 
@@ -1156,7 +851,6 @@ footer p {
 
   .admin-header {
     align-items: flex-start;
-
     flex-direction: column;
   }
 }
@@ -1443,8 +1137,6 @@ footer p {
 </section>
 
 
-<!-- QM -->
-
 <section
   id="qm"
   class="section"
@@ -1479,8 +1171,6 @@ footer p {
 
 </section>
 
-
-<!-- STANDARDS -->
 
 <section
   id="standards"
@@ -1517,8 +1207,6 @@ footer p {
 </section>
 
 
-<!-- SCHULUNGEN -->
-
 <section
   id="schulungen"
   class="section"
@@ -1553,8 +1241,6 @@ footer p {
 
 </section>
 
-
-<!-- BILDER -->
 
 <section
   id="bilder"
@@ -1591,8 +1277,6 @@ footer p {
 </section>
 
 
-<!-- PDL -->
-
 <section
   id="pdl"
   class="section"
@@ -1627,8 +1311,6 @@ footer p {
 
 </section>
 
-
-<!-- ADMIN -->
 
 <section
   id="admin"
@@ -1694,25 +1376,11 @@ footer p {
 
           <tr>
 
-            <th>
-              Name
-            </th>
-
-            <th>
-              Rolle
-            </th>
-
-            <th>
-              Status
-            </th>
-
-            <th>
-              Letzter Login
-            </th>
-
-            <th>
-              Aktionen
-            </th>
+            <th>Name</th>
+            <th>Rolle</th>
+            <th>Status</th>
+            <th>Letzter Login</th>
+            <th>Aktionen</th>
 
           </tr>
 
@@ -1746,8 +1414,6 @@ footer p {
 
 </section>
 
-
-<!-- CONTENT -->
 
 <section
   id="contentPanel"
@@ -1794,7 +1460,7 @@ footer p {
 "use strict";
 
 /* =========================================================
-   SUPABASE KONFIGURATION
+   SUPABASE
 ========================================================= */
 
 const SUPABASE_URL =
@@ -1802,11 +1468,6 @@ const SUPABASE_URL =
 
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_SQKuCSBTQK0uE6d2nfM5hg_UEeo8x2z";
-
-
-/* =========================================================
-   SUPABASE CLIENT
-========================================================= */
 
 let supabaseClient = null;
 
@@ -1816,11 +1477,9 @@ try {
     !window.supabase ||
     typeof window.supabase.createClient !== "function"
   ) {
-
     throw new Error(
       "Supabase-JavaScript konnte nicht geladen werden."
     );
-
   }
 
   supabaseClient =
@@ -1842,18 +1501,6 @@ catch (error) {
   console.error(
     "Supabase Initialisierung:",
     error
-  );
-
-  document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-      showAuthMessage(
-        "Supabase konnte nicht geladen werden. Bitte Seite neu laden.",
-        "error"
-      );
-
-    }
   );
 
 }
@@ -1887,20 +1534,24 @@ const GITHUB_API =
 ========================================================= */
 
 let repositoryTree = [];
-
 let currentUser = null;
-
 let currentProfile = null;
-
 let portalInitialized = false;
-
 let initializationRunning = false;
-
 let authListenerStarted = false;
 
 
 /* =========================================================
-   TIMEOUT HELPER
+   DOM-HILFSFUNKTION
+========================================================= */
+
+function getElement(id) {
+  return document.getElementById(id);
+}
+
+
+/* =========================================================
+   TIMEOUT
 ========================================================= */
 
 function withTimeout(
@@ -1975,7 +1626,7 @@ function withTimeout(
 
 
 /* =========================================================
-   HTML SICHER MACHEN
+   HTML ESCAPEN
 ========================================================= */
 
 function escapeHTML(text) {
@@ -1997,13 +1648,9 @@ function escapeHTML(text) {
 function cleanFileName(name) {
 
   try {
-
-    name =
-      decodeURIComponent(name);
-
+    name = decodeURIComponent(name);
   }
   catch (error) {
-    /* Bereits dekodiert. */
   }
 
   return String(name)
@@ -2026,49 +1673,36 @@ function cleanFileName(name) {
 function folderIcon(name) {
 
   const n =
-    String(name)
-      .toLowerCase();
+    String(name).toLowerCase();
 
   if (n.includes("schulung")) return "🎓";
   if (n.includes("fortbildung")) return "🎓";
   if (n.includes("fob")) return "🎓";
-
   if (n.includes("hygiene")) return "🧼";
   if (n.includes("prophylax")) return "🛡️";
   if (n.includes("expertenstandard")) return "📖";
-
   if (n.includes("prozess")) return "⚙️";
-
   if (n.includes("notfall")) return "🚨";
   if (n.includes("hilfe")) return "🆘";
-
   if (n.includes("datenschutz")) return "🔐";
   if (n.includes("beschwer")) return "📣";
-
   if (n.includes("pflegeberatung")) return "👩‍⚕️";
   if (n.includes("visiten")) return "🩺";
   if (n.includes("fallbesprech")) return "🩺";
-
   if (n.includes("bilder")) return "📷";
   if (n.includes("pdl")) return "👩‍⚕️";
-
   if (n.includes("behandlungspflege")) return "💉";
   if (n.includes("grundpflege")) return "🛏️";
-
   if (n.includes("chronische")) return "🩹";
   if (n.includes("wunden")) return "🩹";
   if (n.includes("schmerzen")) return "💊";
-
   if (n.includes("beziehung")) return "🤝";
   if (n.includes("bezugspflege")) return "👩‍⚕️";
-
   if (n.includes("herzbett")) return "🛏️";
   if (n.includes("nestlagerung")) return "🛏️";
-
   if (n.includes("aki")) return "🩺";
 
   return "📁";
-
 }
 
 
@@ -2104,9 +1738,7 @@ function showAuthMessage(
 ) {
 
   const box =
-    document.getElementById(
-      "authMessage"
-    );
+    getElement("authMessage");
 
   if (!box) {
     return;
@@ -2125,18 +1757,14 @@ function showAuthMessage(
 function clearAuthMessage() {
 
   const box =
-    document.getElementById(
-      "authMessage"
-    );
+    getElement("authMessage");
 
   if (!box) {
     return;
   }
 
   box.textContent = "";
-
-  box.className =
-    "auth-message";
+  box.className = "auth-message";
 
 }
 
@@ -2151,9 +1779,7 @@ function showAdminMessage(
 ) {
 
   const box =
-    document.getElementById(
-      "adminMessage"
-    );
+    getElement("adminMessage");
 
   if (!box) {
     return;
@@ -2175,21 +1801,34 @@ function showAdminMessage(
 
 function showLogin() {
 
-  document.getElementById(
-    "loginForm"
-  ).style.display = "block";
+  const loginForm =
+    getElement("loginForm");
 
-  document.getElementById(
-    "registerForm"
-  ).style.display = "none";
+  const registerForm =
+    getElement("registerForm");
 
-  document.getElementById(
-    "loginTab"
-  ).classList.add("active");
+  const loginTab =
+    getElement("loginTab");
 
-  document.getElementById(
-    "registerTab"
-  ).classList.remove("active");
+  const registerTab =
+    getElement("registerTab");
+
+
+  if (loginForm) {
+    loginForm.style.display = "block";
+  }
+
+  if (registerForm) {
+    registerForm.style.display = "none";
+  }
+
+  if (loginTab) {
+    loginTab.classList.add("active");
+  }
+
+  if (registerTab) {
+    registerTab.classList.remove("active");
+  }
 
   clearAuthMessage();
 
@@ -2198,21 +1837,34 @@ function showLogin() {
 
 function showRegister() {
 
-  document.getElementById(
-    "loginForm"
-  ).style.display = "none";
+  const loginForm =
+    getElement("loginForm");
 
-  document.getElementById(
-    "registerForm"
-  ).style.display = "block";
+  const registerForm =
+    getElement("registerForm");
 
-  document.getElementById(
-    "loginTab"
-  ).classList.remove("active");
+  const loginTab =
+    getElement("loginTab");
 
-  document.getElementById(
-    "registerTab"
-  ).classList.add("active");
+  const registerTab =
+    getElement("registerTab");
+
+
+  if (loginForm) {
+    loginForm.style.display = "none";
+  }
+
+  if (registerForm) {
+    registerForm.style.display = "block";
+  }
+
+  if (loginTab) {
+    loginTab.classList.remove("active");
+  }
+
+  if (registerTab) {
+    registerTab.classList.add("active");
+  }
 
   clearAuthMessage();
 
@@ -2223,9 +1875,16 @@ function showRegister() {
    LOGIN
 ========================================================= */
 
-document
-  .getElementById("loginForm")
-  .addEventListener(
+function setupLoginForm() {
+
+  const form =
+    getElement("loginForm");
+
+  if (!form) {
+    return;
+  }
+
+  form.addEventListener(
     "submit",
     async function(event) {
 
@@ -2234,19 +1893,24 @@ document
       clearAuthMessage();
 
       const button =
-        document.getElementById(
-          "loginButton"
-        );
+        getElement("loginButton");
+
+      const emailElement =
+        getElement("loginEmail");
+
+      const passwordElement =
+        getElement("loginPassword");
+
 
       const email =
-        document.getElementById(
-          "loginEmail"
-        ).value.trim();
+        emailElement
+          ? emailElement.value.trim()
+          : "";
 
       const password =
-        document.getElementById(
-          "loginPassword"
-        ).value;
+        passwordElement
+          ? passwordElement.value
+          : "";
 
 
       if (!email || !password) {
@@ -2261,10 +1925,24 @@ document
       }
 
 
-      button.disabled = true;
+      if (!supabaseClient) {
 
-      button.textContent =
-        "⏳ Anmeldung …";
+        showAuthMessage(
+          "Supabase ist nicht verfügbar.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if (button) {
+
+        button.disabled = true;
+        button.textContent = "⏳ Anmeldung …";
+
+      }
 
 
       try {
@@ -2281,9 +1959,7 @@ document
 
 
         if (result.error) {
-
           throw result.error;
-
         }
 
 
@@ -2299,32 +1975,45 @@ document
 
         showAuthMessage(
           "Anmeldung fehlgeschlagen: " +
-          (error.message ||
-           "Unbekannter Fehler."),
+          (
+            error.message ||
+            "Unbekannter Fehler."
+          ),
           "error"
         );
 
       }
       finally {
 
-        button.disabled = false;
+        if (button) {
 
-        button.textContent =
-          "🔐 Anmelden";
+          button.disabled = false;
+          button.textContent = "🔐 Anmelden";
+
+        }
 
       }
 
     }
   );
 
+}
+
 
 /* =========================================================
    REGISTRIERUNG
 ========================================================= */
 
-document
-  .getElementById("registerForm")
-  .addEventListener(
+function setupRegisterForm() {
+
+  const form =
+    getElement("registerForm");
+
+  if (!form) {
+    return;
+  }
+
+  form.addEventListener(
     "submit",
     async function(event) {
 
@@ -2333,24 +2022,32 @@ document
       clearAuthMessage();
 
       const button =
-        document.getElementById(
-          "registerButton"
-        );
+        getElement("registerButton");
+
+      const nameElement =
+        getElement("registerName");
+
+      const emailElement =
+        getElement("registerEmail");
+
+      const passwordElement =
+        getElement("registerPassword");
+
 
       const name =
-        document.getElementById(
-          "registerName"
-        ).value.trim();
+        nameElement
+          ? nameElement.value.trim()
+          : "";
 
       const email =
-        document.getElementById(
-          "registerEmail"
-        ).value.trim();
+        emailElement
+          ? emailElement.value.trim()
+          : "";
 
       const password =
-        document.getElementById(
-          "registerPassword"
-        ).value;
+        passwordElement
+          ? passwordElement.value
+          : "";
 
 
       if (!name) {
@@ -2377,10 +2074,25 @@ document
       }
 
 
-      button.disabled = true;
+      if (!supabaseClient) {
 
-      button.textContent =
-        "⏳ Konto wird erstellt …";
+        showAuthMessage(
+          "Supabase ist nicht verfügbar.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if (button) {
+
+        button.disabled = true;
+        button.textContent =
+          "⏳ Konto wird erstellt …";
+
+      }
 
 
       try {
@@ -2402,9 +2114,7 @@ document
 
 
         if (result.error) {
-
           throw result.error;
-
         }
 
 
@@ -2421,14 +2131,6 @@ document
 
         }
 
-
-        /*
-          Nur versuchen, das Profil anzulegen,
-          wenn direkt eine Session vorhanden ist.
-          Bei aktivierter E-Mail-Bestätigung wird
-          das Profil später über ensureProfile()
-          versucht anzulegen.
-        */
 
         if (result.data.session) {
 
@@ -2464,23 +2166,30 @@ document
 
         showAuthMessage(
           "Registrierung fehlgeschlagen: " +
-          (error.message ||
-           "Unbekannter Fehler."),
+          (
+            error.message ||
+            "Unbekannter Fehler."
+          ),
           "error"
         );
 
       }
       finally {
 
-        button.disabled = false;
+        if (button) {
 
-        button.textContent =
-          "👤 Konto erstellen";
+          button.disabled = false;
+          button.textContent =
+            "👤 Konto erstellen";
+
+        }
 
       }
 
     }
   );
+
+}
 
 
 /* =========================================================
@@ -2506,27 +2215,21 @@ async function createProfileIfMissing(
 
 
   if (existing.error) {
-
-    console.error(
-      "Profilabfrage:",
-      existing.error
-    );
-
     throw existing.error;
-
   }
 
 
   if (existing.data) {
-
     return existing.data;
-
   }
 
 
   const name =
     fallbackName ||
-    user.user_metadata?.name ||
+    (
+      user.user_metadata &&
+      user.user_metadata.name
+    ) ||
     user.email ||
     "Mitarbeiter";
 
@@ -2545,14 +2248,7 @@ async function createProfileIfMissing(
 
 
   if (inserted.error) {
-
-    console.error(
-      "Profil erstellen:",
-      inserted.error
-    );
-
     throw inserted.error;
-
   }
 
 
@@ -2570,7 +2266,6 @@ async function loadCurrentProfile() {
   if (!currentUser) {
 
     currentProfile = null;
-
     return null;
 
   }
@@ -2591,14 +2286,7 @@ async function loadCurrentProfile() {
 
 
   if (result.error) {
-
-    console.error(
-      "Profil laden:",
-      result.error
-    );
-
     throw result.error;
-
   }
 
 
@@ -2620,7 +2308,6 @@ async function ensureProfile() {
   if (!currentUser) {
 
     currentProfile = null;
-
     return;
 
   }
@@ -2631,14 +2318,16 @@ async function ensureProfile() {
 
 
   if (profile) {
-
     return;
-
   }
 
 
+  const metadata =
+    currentUser.user_metadata || {};
+
+
   const name =
-    currentUser.user_metadata?.name ||
+    metadata.name ||
     currentUser.email ||
     "Mitarbeiter";
 
@@ -2660,7 +2349,6 @@ async function ensureProfile() {
     );
 
     currentProfile = null;
-
     return;
 
   }
@@ -2678,26 +2366,40 @@ async function ensureProfile() {
 
 function showPortal() {
 
-  document.getElementById(
-    "authScreen"
-  ).style.display = "none";
+  const authScreen =
+    getElement("authScreen");
 
-  document.getElementById(
-    "portal"
-  ).style.display = "block";
+  const portal =
+    getElement("portal");
+
+
+  if (authScreen) {
+    authScreen.style.display = "none";
+  }
+
+  if (portal) {
+    portal.style.display = "block";
+  }
 
 }
 
 
 function showAuthScreen() {
 
-  document.getElementById(
-    "portal"
-  ).style.display = "none";
+  const authScreen =
+    getElement("authScreen");
 
-  document.getElementById(
-    "authScreen"
-  ).style.display = "flex";
+  const portal =
+    getElement("portal");
+
+
+  if (portal) {
+    portal.style.display = "none";
+  }
+
+  if (authScreen) {
+    authScreen.style.display = "flex";
+  }
 
 }
 
@@ -2708,32 +2410,47 @@ function showAuthScreen() {
 
 function updateUserHeader() {
 
+  const nameElement =
+    getElement("currentUserName");
+
+  const roleElement =
+    getElement("currentUserRole");
+
+
   const name =
-    currentProfile?.name ||
-    currentUser?.email ||
+    (
+      currentProfile &&
+      currentProfile.name
+    ) ||
+    (
+      currentUser &&
+      currentUser.email
+    ) ||
     "Benutzer";
 
 
   const role =
-    currentProfile?.role === "admin"
+    currentProfile &&
+    currentProfile.role === "admin"
       ? "🛡️ Administrator"
       : "👤 Mitarbeiter";
 
 
-  document.getElementById(
-    "currentUserName"
-  ).textContent = name;
+  if (nameElement) {
+    nameElement.textContent = name;
+  }
 
-
-  document.getElementById(
-    "currentUserRole"
-  ).textContent = role;
+  if (roleElement) {
+    roleElement.textContent = role;
+  }
 
 }
 
 
 /* =========================================================
    ADMIN SICHTBARKEIT
+   WICHTIGE KORREKTUR:
+   Es gibt im HTML "id=admin", NICHT "id=adminSection".
 ========================================================= */
 
 function updateAdminVisibility() {
@@ -2745,42 +2462,28 @@ function updateAdminVisibility() {
 
 
   const nav =
-    document.getElementById(
-      "adminNav"
-    );
+    getElement("adminNav");
 
   const section =
-    document.getElementById(
-      "admin"
-    );
+    getElement("admin");
 
 
-  if (isAdmin) {
+  if (nav) {
 
     nav.style.display =
-      "block";
-
-    section.style.display =
-      "block";
-
-    document.getElementById(
-      "adminSection"
-    ).style.display =
-      "block";
+      isAdmin
+        ? "block"
+        : "none";
 
   }
-  else {
 
-    nav.style.display =
-      "none";
+
+  if (section) {
 
     section.style.display =
-      "none";
-
-    document.getElementById(
-      "adminSection"
-    ).style.display =
-      "none";
+      isAdmin
+        ? "block"
+        : "none";
 
   }
 
@@ -2793,14 +2496,8 @@ function updateAdminVisibility() {
 
 async function initializePortal() {
 
-  /*
-    Verhindert parallele Initialisierungen.
-  */
-
   if (initializationRunning) {
-
     return;
-
   }
 
 
@@ -2809,9 +2506,7 @@ async function initializePortal() {
     currentUser &&
     currentProfile
   ) {
-
     return;
-
   }
 
 
@@ -2843,9 +2538,7 @@ async function initializePortal() {
     ) {
 
       currentUser = null;
-
       currentProfile = null;
-
       portalInitialized = false;
 
       showAuthScreen();
@@ -2871,10 +2564,6 @@ async function initializePortal() {
     }
 
 
-    /*
-      Gesperrte Benutzer kommen nicht ins Portal.
-    */
-
     if (
       currentProfile.active !== true
     ) {
@@ -2889,9 +2578,7 @@ async function initializePortal() {
 
 
       currentUser = null;
-
       currentProfile = null;
-
       portalInitialized = false;
 
       showAuthScreen();
@@ -2907,13 +2594,8 @@ async function initializePortal() {
 
     updateAdminVisibility();
 
-
     portalInitialized = true;
 
-
-    /*
-      Admin-Benutzer bekommen die Verwaltung.
-    */
 
     if (
       currentProfile.role === "admin"
@@ -2923,10 +2605,6 @@ async function initializePortal() {
 
     }
 
-
-    /*
-      GitHub-Dokumente laden.
-    */
 
     await loadRepository();
 
@@ -2941,14 +2619,15 @@ async function initializePortal() {
 
     portalInitialized = false;
 
-
     showPortal();
 
 
     showPortalStatus(
       "Das Portal konnte nicht vollständig geladen werden: " +
-      (error.message ||
-       "Unbekannter Fehler."),
+      (
+        error.message ||
+        "Unbekannter Fehler."
+      ),
       true
     );
 
@@ -2972,9 +2651,7 @@ function showPortalStatus(
 ) {
 
   const box =
-    document.getElementById(
-      "portalStatus"
-    );
+    getElement("portalStatus");
 
   if (!box) {
     return;
@@ -3031,24 +2708,19 @@ async function logout() {
 
 
   currentUser = null;
-
   currentProfile = null;
-
   repositoryTree = [];
-
   portalInitialized = false;
-
   initializationRunning = false;
 
   showAuthScreen();
-
   showLogin();
 
 }
 
 
 /* =========================================================
-   ADMIN PROFILE LADEN
+   ADMIN PROFILE
 ========================================================= */
 
 async function loadAdminProfiles() {
@@ -3058,16 +2730,17 @@ async function loadAdminProfiles() {
     currentProfile.role !== "admin" ||
     currentProfile.active !== true
   ) {
-
     return;
-
   }
 
 
   const tbody =
-    document.getElementById(
-      "adminUsers"
-    );
+    getElement("adminUsers");
+
+
+  if (!tbody) {
+    return;
+  }
 
 
   tbody.innerHTML = `
@@ -3104,9 +2777,7 @@ async function loadAdminProfiles() {
 
 
     if (result.error) {
-
       throw result.error;
-
     }
 
 
@@ -3274,11 +2945,6 @@ async function loadAdminProfiles() {
     );
 
 
-    /*
-      Event-Listener statt onclick mit
-      Benutzerwerten im HTML.
-    */
-
     tbody
       .querySelectorAll("[data-action]")
       .forEach(
@@ -3303,7 +2969,6 @@ async function loadAdminProfiles() {
                 );
 
               }
-
               else if (action === "unlock") {
 
                 changeUserStatus(
@@ -3312,7 +2977,6 @@ async function loadAdminProfiles() {
                 );
 
               }
-
               else if (action === "role") {
 
                 changeUserRole(
@@ -3321,7 +2985,6 @@ async function loadAdminProfiles() {
                 );
 
               }
-
               else if (action === "name") {
 
                 changeUserName(
@@ -3367,7 +3030,7 @@ async function loadAdminProfiles() {
 
 
 /* =========================================================
-   ADMIN – STATUS
+   ADMIN STATUS
 ========================================================= */
 
 async function changeUserStatus(
@@ -3380,19 +3043,16 @@ async function changeUserStatus(
     currentProfile.role !== "admin" ||
     currentProfile.active !== true
   ) {
-
     return;
-
   }
 
 
   if (
     !userId ||
+    !currentUser ||
     userId === currentUser.id
   ) {
-
     return;
-
   }
 
 
@@ -3409,9 +3069,7 @@ async function changeUserStatus(
       "?"
     )
   ) {
-
     return;
-
   }
 
 
@@ -3432,9 +3090,7 @@ async function changeUserStatus(
 
 
     if (result.error) {
-
       throw result.error;
-
     }
 
 
@@ -3472,7 +3128,7 @@ async function changeUserStatus(
 
 
 /* =========================================================
-   ADMIN – ROLLE
+   ADMIN ROLLE
 ========================================================= */
 
 async function changeUserRole(
@@ -3485,19 +3141,16 @@ async function changeUserRole(
     currentProfile.role !== "admin" ||
     currentProfile.active !== true
   ) {
-
     return;
-
   }
 
 
   if (
     !userId ||
+    !currentUser ||
     userId === currentUser.id
   ) {
-
     return;
-
   }
 
 
@@ -3514,9 +3167,7 @@ async function changeUserRole(
 
 
   if (!confirm(question)) {
-
     return;
-
   }
 
 
@@ -3537,9 +3188,7 @@ async function changeUserRole(
 
 
     if (result.error) {
-
       throw result.error;
-
     }
 
 
@@ -3575,7 +3224,7 @@ async function changeUserRole(
 
 
 /* =========================================================
-   ADMIN – NAME
+   ADMIN NAME
 ========================================================= */
 
 async function changeUserName(
@@ -3588,19 +3237,16 @@ async function changeUserName(
     currentProfile.role !== "admin" ||
     currentProfile.active !== true
   ) {
-
     return;
-
   }
 
 
   if (
     !userId ||
+    !currentUser ||
     userId === currentUser.id
   ) {
-
     return;
-
   }
 
 
@@ -3615,9 +3261,7 @@ async function changeUserName(
     newName === null ||
     !newName.trim()
   ) {
-
     return;
-
   }
 
 
@@ -3638,9 +3282,7 @@ async function changeUserName(
 
 
     if (result.error) {
-
       throw result.error;
-
     }
 
 
@@ -3721,48 +3363,35 @@ function fileURL(path) {
 function fileIcon(path) {
 
   const n =
-    String(path)
-      .toLowerCase();
+    String(path).toLowerCase();
 
 
-  if (n.endsWith(".pdf")) {
-    return "📕";
-  }
+  if (n.endsWith(".pdf")) return "📕";
 
   if (
     n.endsWith(".mp4") ||
     n.endsWith(".webm") ||
     n.endsWith(".mov")
-  ) {
-    return "🎬";
-  }
+  ) return "🎬";
 
-  if (n.endsWith(".mp3")) {
-    return "🎧";
-  }
+  if (n.endsWith(".mp3")) return "🎧";
 
   if (
     n.endsWith(".jpg") ||
     n.endsWith(".jpeg") ||
     n.endsWith(".png") ||
     n.endsWith(".webp")
-  ) {
-    return "🖼️";
-  }
+  ) return "🖼️";
 
   if (
     n.endsWith(".doc") ||
     n.endsWith(".docx")
-  ) {
-    return "📝";
-  }
+  ) return "📝";
 
   if (
     n.endsWith(".xls") ||
     n.endsWith(".xlsx")
-  ) {
-    return "📊";
-  }
+  ) return "📊";
 
   return "📄";
 
@@ -3852,13 +3481,10 @@ async function loadRepository() {
       function(id) {
 
         const element =
-          document.getElementById(id);
+          getElement(id);
 
         if (element) {
-
-          element.innerHTML =
-            errorHTML;
-
+          element.innerHTML = errorHTML;
         }
 
       }
@@ -3887,9 +3513,7 @@ function rootFolders() {
 
 
       if (!item.path.includes("/")) {
-
         result.push(item.path);
-
       }
 
     }
@@ -3929,9 +3553,7 @@ function renderMainSections() {
         n === "teams" ||
         n.includes("team")
       ) {
-
         return;
-
       }
 
 
@@ -3940,7 +3562,6 @@ function renderMainSections() {
       ) {
 
         bilder.push(folder);
-
         return;
 
       }
@@ -3953,7 +3574,6 @@ function renderMainSections() {
       ) {
 
         training.push(folder);
-
         return;
 
       }
@@ -3973,7 +3593,6 @@ function renderMainSections() {
       ) {
 
         standards.push(folder);
-
         return;
 
       }
@@ -3986,7 +3605,6 @@ function renderMainSections() {
       ) {
 
         pdl.push(folder);
-
         return;
 
       }
@@ -3999,7 +3617,6 @@ function renderMainSections() {
       ) {
 
         qm.push(folder);
-
         return;
 
       }
@@ -4008,30 +3625,11 @@ function renderMainSections() {
   );
 
 
-  renderFolderGrid(
-    "qmFolders",
-    qm
-  );
-
-  renderFolderGrid(
-    "standardFolders",
-    standards
-  );
-
-  renderFolderGrid(
-    "trainingFolders",
-    training
-  );
-
-  renderFolderGrid(
-    "imageFolders",
-    bilder
-  );
-
-  renderFolderGrid(
-    "pdlFolders",
-    pdl
-  );
+  renderFolderGrid("qmFolders", qm);
+  renderFolderGrid("standardFolders", standards);
+  renderFolderGrid("trainingFolders", training);
+  renderFolderGrid("imageFolders", bilder);
+  renderFolderGrid("pdlFolders", pdl);
 
 }
 
@@ -4046,9 +3644,7 @@ function renderFolderGrid(
 ) {
 
   const container =
-    document.getElementById(
-      containerID
-    );
+    getElement(containerID);
 
 
   if (!container) {
@@ -4110,12 +3706,11 @@ function renderFolderGrid(
 
 
       try {
-
         displayName =
           decodeURIComponent(folder);
-
       }
-      catch (error) {}
+      catch (error) {
+      }
 
 
       card.innerHTML = `
@@ -4136,9 +3731,7 @@ function renderFolderGrid(
       card.addEventListener(
         "click",
         function() {
-
           openFolder(folder);
-
         }
       );
 
@@ -4158,19 +3751,22 @@ function renderFolderGrid(
 function openFolder(path) {
 
   const panel =
-    document.getElementById(
-      "contentPanel"
-    );
+    getElement("contentPanel");
 
   const content =
-    document.getElementById(
-      "folderContent"
-    );
+    getElement("folderContent");
 
   const breadcrumb =
-    document.getElementById(
-      "breadcrumb"
-    );
+    getElement("breadcrumb");
+
+
+  if (
+    !panel ||
+    !content ||
+    !breadcrumb
+  ) {
+    return;
+  }
 
 
   panel.classList.add("active");
@@ -4181,18 +3777,17 @@ function openFolder(path) {
 
 
   try {
-
     readablePath =
       decodeURIComponent(path);
-
   }
-  catch (error) {}
+  catch (error) {
+  }
 
 
   breadcrumb.textContent =
     "📁 " +
-    readablePath.replaceAll(
-      "/",
+    readablePath.replace(
+      /\//g,
       " / "
     );
 
@@ -4216,9 +3811,7 @@ function openFolder(path) {
         if (
           !item.path.startsWith(prefix)
         ) {
-
           return false;
-
         }
 
 
@@ -4241,9 +3834,7 @@ function openFolder(path) {
     children
       .filter(
         function(item) {
-
           return item.type === "tree";
-
         }
       )
       .sort(
@@ -4265,9 +3856,7 @@ function openFolder(path) {
     children
       .filter(
         function(item) {
-
           return item.type === "blob";
-
         }
       )
       .sort(
@@ -4469,11 +4058,13 @@ function openFolder(path) {
 
 function closeFolder() {
 
-  document
-    .getElementById(
-      "contentPanel"
-    )
-    .classList.remove("active");
+  const panel =
+    getElement("contentPanel");
+
+
+  if (panel) {
+    panel.classList.remove("active");
+  }
 
 }
 
@@ -4488,9 +4079,7 @@ function startAuthListener() {
     authListenerStarted ||
     !supabaseClient
   ) {
-
     return;
-
   }
 
 
@@ -4506,20 +4095,13 @@ function startAuthListener() {
       );
 
 
-      /*
-        SIGNED_OUT wird sofort verarbeitet.
-      */
-
       if (
         event === "SIGNED_OUT"
       ) {
 
         currentUser = null;
-
         currentProfile = null;
-
         portalInitialized = false;
-
         initializationRunning = false;
 
         showAuthScreen();
@@ -4528,11 +4110,6 @@ function startAuthListener() {
 
       }
 
-
-      /*
-        Nicht bei jedem Event erneut
-        initializePortal starten.
-      */
 
       if (
         event === "SIGNED_IN"
@@ -4545,9 +4122,7 @@ function startAuthListener() {
 
           setTimeout(
             function() {
-
               initializePortal();
-
             },
             0
           );
@@ -4568,6 +4143,10 @@ function startAuthListener() {
 
 async function startApplication() {
 
+  setupLoginForm();
+  setupRegisterForm();
+
+
   if (!supabaseClient) {
 
     showAuthScreen();
@@ -4587,10 +4166,6 @@ async function startApplication() {
 
   try {
 
-    /*
-      Genau EIN getSession beim Start.
-    */
-
     const result =
       await withTimeout(
         supabaseClient.auth.getSession(),
@@ -4599,12 +4174,8 @@ async function startApplication() {
       );
 
 
-    if (
-      result.error
-    ) {
-
+    if (result.error) {
       throw result.error;
-
     }
 
 
