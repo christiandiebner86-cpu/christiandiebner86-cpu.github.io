@@ -7,8 +7,6 @@
 
 <title>QM-Portal – Intensivpflege-Halle-GmbH</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 :root{
   --bg:#f3f7f6;
@@ -18,9 +16,7 @@
   --line:#dce7e4;
   --green:#087f5b;
   --green-dark:#075c43;
-  --red:#d32f2f;
-  --orange:#f57c00;
-  --blue:#1976d2;
+  --danger:#b42318;
 }
 
 *{box-sizing:border-box}
@@ -36,89 +32,95 @@ body{
   color:var(--text);
 }
 
-/* =========================================================
+/* ============================================================
    LOGIN
-========================================================= */
+============================================================ */
 
-#loginScreen{
+#authScreen{
   min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:25px;
   background:
-    radial-gradient(circle at top left,#d9f3e9 0,#f3f7f6 40%),
-    var(--bg);
+    radial-gradient(circle at top left,#d9f5ea 0,transparent 35%),
+    radial-gradient(circle at bottom right,#d9ecff 0,transparent 35%),
+    #f3f7f6;
 }
 
-.login-box{
+.auth-box{
   width:100%;
-  max-width:470px;
+  max-width:460px;
   background:#fff;
   border:1px solid var(--line);
-  border-radius:26px;
+  border-radius:25px;
   padding:35px;
-  box-shadow:0 20px 60px rgba(0,0,0,.12);
+  box-shadow:0 18px 55px rgba(0,0,0,.12);
 }
 
-.login-logo{
-  width:95px;
-  height:95px;
+.auth-logo{
+  width:90px;
+  height:90px;
   margin:0 auto 20px;
-  border-radius:22px;
   background:#fff;
+  border-radius:20px;
   display:flex;
   align-items:center;
   justify-content:center;
   overflow:hidden;
-  border:1px solid var(--line);
+  box-shadow:0 5px 20px rgba(0,0,0,.08);
 }
 
-.login-logo img{
+.auth-logo img{
   width:100%;
   height:100%;
   object-fit:contain;
 }
 
-.login-title{
+.auth-logo-fallback{
+  font-size:45px;
+}
+
+.auth-box h1{
   text-align:center;
-  margin-bottom:28px;
-}
-
-.login-title h1{
-  margin:0 0 8px;
-  font-size:28px;
-}
-
-.login-title p{
   margin:0;
-  color:var(--muted);
+  color:var(--green-dark);
 }
 
-.login-tabs{
+.auth-subtitle{
+  text-align:center;
+  color:var(--muted);
+  margin:8px 0 28px;
+}
+
+.auth-tabs{
   display:flex;
   gap:8px;
   margin-bottom:22px;
-  background:#eef5f2;
-  padding:5px;
-  border-radius:12px;
 }
 
-.login-tab{
+.auth-tab{
   flex:1;
   border:0;
-  background:transparent;
-  padding:11px;
-  border-radius:9px;
+  padding:12px;
+  border-radius:11px;
+  background:#edf5f2;
+  color:var(--green-dark);
   font-weight:800;
   cursor:pointer;
-  color:var(--muted);
 }
 
-.login-tab.active{
-  background:#fff;
-  color:var(--green-dark);
-  box-shadow:0 2px 7px rgba(0,0,0,.08);
+.auth-tab.active{
+  background:var(--green);
+  color:#fff;
+}
+
+.auth-form{
+  display:none;
+}
+
+.auth-form.active{
+  display:block;
 }
 
 .form-group{
@@ -127,14 +129,14 @@ body{
 
 .form-group label{
   display:block;
-  font-weight:700;
   margin-bottom:7px;
+  font-weight:750;
 }
 
 .form-group input{
   width:100%;
   padding:13px 14px;
-  border:1px solid #ccdcd7;
+  border:1px solid #cbdad6;
   border-radius:11px;
   font-size:16px;
   outline:none;
@@ -142,71 +144,82 @@ body{
 
 .form-group input:focus{
   border-color:var(--green);
-  box-shadow:0 0 0 3px rgba(8,127,91,.1);
+  box-shadow:0 0 0 3px rgba(8,127,91,.12);
 }
 
-.primary-button{
+.auth-button{
   width:100%;
   border:0;
   border-radius:12px;
   padding:14px;
-  background:linear-gradient(135deg,#075c43,#087f5b);
+  background:linear-gradient(135deg,#075c43,#087f5b,#13a06f);
   color:#fff;
   font-weight:800;
   font-size:16px;
   cursor:pointer;
 }
 
-.primary-button:hover{
-  opacity:.92;
+.auth-button:hover{
+  filter:brightness(1.05);
 }
 
-.primary-button:disabled{
-  opacity:.55;
+.auth-button:disabled{
+  opacity:.6;
   cursor:not-allowed;
 }
 
-.login-message{
-  margin-top:15px;
-  padding:12px 14px;
-  border-radius:10px;
+.auth-message{
+  margin-top:16px;
+  padding:13px;
+  border-radius:11px;
   display:none;
   line-height:1.5;
+  font-size:14px;
 }
 
-.login-message.error{
+.auth-message.show{
   display:block;
-  background:#fff1f1;
-  color:#8c2929;
-  border:1px solid #edcaca;
 }
 
-.login-message.success{
-  display:block;
-  background:#edf8f3;
-  color:#176346;
-  border:1px solid #c5e5d7;
+.auth-message.error{
+  background:#fff0ef;
+  border:1px solid #f0c5c0;
+  color:#8b2118;
 }
 
-.login-footer{
-  text-align:center;
+.auth-message.success{
+  background:#eaf8f1;
+  border:1px solid #b9dfce;
+  color:#075c43;
+}
+
+.auth-footer{
   margin-top:22px;
+  text-align:center;
   color:var(--muted);
-  font-size:13px;
+  font-size:12px;
 }
 
-/* =========================================================
-   APP
-========================================================= */
+/* ============================================================
+   PORTAL
+============================================================ */
 
-#app{
+#portal{
   display:none;
 }
+
+#portal.authenticated{
+  display:block;
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
 
 header{
   background:linear-gradient(135deg,#075c43,#087f5b,#13a06f);
   color:#fff;
-  padding:24px 18px;
+  padding:25px 18px;
   box-shadow:0 5px 20px rgba(0,0,0,.15);
 }
 
@@ -236,6 +249,14 @@ header{
   object-fit:contain;
 }
 
+.logo-fallback{
+  font-size:42px;
+}
+
+.header-text{
+  flex:1;
+}
+
 .header-text h1{
   margin:0 0 5px;
   font-size:30px;
@@ -247,7 +268,6 @@ header{
 }
 
 .user-area{
-  margin-left:auto;
   display:flex;
   align-items:center;
   gap:10px;
@@ -255,23 +275,20 @@ header{
   justify-content:flex-end;
 }
 
-.user-name{
-  font-weight:800;
-}
-
-.user-role{
-  background:rgba(255,255,255,.18);
-  padding:6px 10px;
-  border-radius:20px;
+.user-badge{
+  background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.25);
+  padding:9px 13px;
+  border-radius:10px;
   font-size:13px;
 }
 
 .logout-button{
-  border:1px solid rgba(255,255,255,.4);
+  border:1px solid rgba(255,255,255,.35);
   background:rgba(255,255,255,.12);
   color:#fff;
   padding:9px 13px;
-  border-radius:9px;
+  border-radius:10px;
   font-weight:800;
   cursor:pointer;
 }
@@ -280,9 +297,9 @@ header{
   background:rgba(255,255,255,.22);
 }
 
-/* =========================================================
+/* ============================================================
    NAV
-========================================================= */
+============================================================ */
 
 nav{
   position:sticky;
@@ -316,17 +333,9 @@ nav a:hover{
   color:var(--green-dark);
 }
 
-.admin-nav{
-  display:none;
-}
-
-.admin-nav.visible{
-  display:block;
-}
-
-/* =========================================================
+/* ============================================================
    MAIN
-========================================================= */
+============================================================ */
 
 main{
   max-width:1200px;
@@ -353,6 +362,10 @@ main{
   line-height:1.7;
 }
 
+/* ============================================================
+   SECTIONS
+============================================================ */
+
 .section{
   margin-top:42px;
   scroll-margin-top:80px;
@@ -374,9 +387,9 @@ main{
   font-size:25px;
 }
 
-/* =========================================================
+/* ============================================================
    FOLDER GRID
-========================================================= */
+============================================================ */
 
 .folder-grid{
   display:grid;
@@ -394,7 +407,9 @@ main{
   cursor:pointer;
   overflow:hidden;
   box-shadow:0 6px 18px rgba(0,0,0,.06);
-  transition:transform .2s ease,box-shadow .2s ease;
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
 }
 
 .folder-card:hover{
@@ -431,9 +446,9 @@ main{
   color:var(--muted);
 }
 
-/* =========================================================
-   CONTENT
-========================================================= */
+/* ============================================================
+   CONTENT PANEL
+============================================================ */
 
 #contentPanel{
   display:none;
@@ -461,11 +476,19 @@ main{
   margin-bottom:18px;
 }
 
+.back-button:hover{
+  background:#d4ede4;
+}
+
 .breadcrumb{
   color:var(--muted);
   font-size:14px;
   margin-bottom:20px;
 }
+
+/* ============================================================
+   FILES
+============================================================ */
 
 .file-list{
   display:grid;
@@ -515,6 +538,10 @@ main{
   font-size:13px;
 }
 
+/* ============================================================
+   SUBFOLDERS
+============================================================ */
+
 .subfolder-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -547,6 +574,10 @@ main{
   overflow-wrap:anywhere;
 }
 
+/* ============================================================
+   LOADING / ERROR
+============================================================ */
+
 .loading{
   background:#fff;
   border:1px solid var(--line);
@@ -567,7 +598,9 @@ main{
 }
 
 @keyframes spin{
-  to{transform:rotate(360deg)}
+  to{
+    transform:rotate(360deg);
+  }
 }
 
 .error{
@@ -578,113 +611,30 @@ main{
   border-radius:12px;
 }
 
-/* =========================================================
-   ADMIN
-========================================================= */
+/* ============================================================
+   ADMIN HINWEIS
+============================================================ */
 
-#adminSection{
+.admin-banner{
   display:none;
+  margin-bottom:25px;
+  background:linear-gradient(135deg,#fff7d6,#fff);
+  border:1px solid #ead58a;
+  border-radius:15px;
+  padding:16px;
 }
 
-#adminSection.visible{
+.admin-banner.show{
   display:block;
 }
 
-.admin-panel{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:25px;
-  box-shadow:0 7px 25px rgba(0,0,0,.07);
+.admin-banner strong{
+  color:#765b00;
 }
 
-.admin-actions{
-  display:flex;
-  gap:10px;
-  margin-bottom:20px;
-  flex-wrap:wrap;
-}
-
-.admin-button{
-  border:0;
-  border-radius:10px;
-  padding:10px 15px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.admin-button.refresh{
-  background:#e5f4ee;
-  color:var(--green-dark);
-}
-
-.employee-table-wrap{
-  overflow-x:auto;
-}
-
-.employee-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:750px;
-}
-
-.employee-table th,
-.employee-table td{
-  padding:13px 10px;
-  border-bottom:1px solid var(--line);
-  text-align:left;
-}
-
-.employee-table th{
-  background:#f5f9f7;
-  font-size:14px;
-}
-
-.status{
-  display:inline-block;
-  padding:5px 9px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:800;
-}
-
-.status.active{
-  background:#e0f4e9;
-  color:#146b42;
-}
-
-.status.blocked{
-  background:#ffe3e3;
-  color:#a52626;
-}
-
-.small-button{
-  border:0;
-  padding:7px 10px;
-  border-radius:8px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.small-button.block{
-  background:#ffe5e5;
-  color:#a52626;
-}
-
-.small-button.activate{
-  background:#e3f4eb;
-  color:#146b42;
-}
-
-.role-select{
-  padding:7px;
-  border:1px solid #ccdcd7;
-  border-radius:8px;
-}
-
-/* =========================================================
+/* ============================================================
    FOOTER
-========================================================= */
+============================================================ */
 
 footer{
   background:#17313a;
@@ -698,34 +648,25 @@ footer p{
   opacity:.85;
 }
 
-/* =========================================================
+/* ============================================================
    MOBILE
-========================================================= */
+============================================================ */
 
-@media(max-width:800px){
+@media(max-width:750px){
 
   .header-inner{
     align-items:flex-start;
     flex-wrap:wrap;
   }
 
-  .user-area{
-    width:100%;
-    margin-left:0;
-    justify-content:flex-start;
-  }
-
-}
-
-@media(max-width:650px){
-
-  .login-box{
-    padding:25px;
-  }
-
   .logo{
     width:60px;
     height:60px;
+  }
+
+  .header-text{
+    min-width:0;
+    flex:1;
   }
 
   .header-text h1{
@@ -734,6 +675,11 @@ footer p{
 
   .header-text p{
     font-size:14px;
+  }
+
+  .user-area{
+    width:100%;
+    justify-content:flex-start;
   }
 
   .hero{
@@ -749,54 +695,70 @@ footer p{
   }
 
 }
+
+@media(max-width:480px){
+
+  .auth-box{
+    padding:25px 20px;
+  }
+
+}
 </style>
 </head>
 
 <body>
 
-<!-- =========================================================
-     LOGIN
-========================================================= -->
+<!-- ============================================================
+     LOGIN / REGISTRIERUNG
+============================================================ -->
 
-<div id="loginScreen">
+<div id="authScreen">
 
-  <div class="login-box">
+  <div class="auth-box">
 
-    <div class="login-logo">
+    <div class="auth-logo">
 
       <img
         src="https://www.intensivpflege-halle.de/wp-content/uploads/2021/01/cropped-logo.png"
         alt="Intensivpflege-Halle-GmbH"
-        onerror="this.style.display='none'"
+        onerror="
+          this.style.display='none';
+          document.getElementById('authLogoFallback').style.display='block';
+        "
       >
 
-    </div>
-
-    <div class="login-title">
-
-      <h1>QM-Portal</h1>
-
-      <p>
-        Intensivpflege-Halle-GmbH
-      </p>
+      <span
+        id="authLogoFallback"
+        class="auth-logo-fallback"
+        style="display:none"
+      >
+        ❤️
+      </span>
 
     </div>
 
+    <h1>QM-Portal</h1>
 
-    <div class="login-tabs">
+    <div class="auth-subtitle">
+      Intensivpflege-Halle-GmbH
+    </div>
+
+    <div class="auth-tabs">
 
       <button
         id="loginTab"
-        class="login-tab active"
-        onclick="showLogin()"
+        class="auth-tab active"
+        type="button"
+        onclick="showAuthForm('login')"
       >
         🔐 Anmelden
       </button>
 
       <button
         id="registerTab"
-        class="login-tab"
-        onclick="showRegister()"
+        class="auth-tab"
+        type="button"
+        onclick="showAuthForm('register')"
       >
         📝 Registrieren
       </button>
@@ -804,11 +766,12 @@ footer p{
     </div>
 
 
-    <!-- LOGIN FORM -->
+    <!-- LOGIN -->
 
     <form
       id="loginForm"
-      onsubmit="login(event)"
+      class="auth-form active"
+      onsubmit="loginUser(event)"
     >
 
       <div class="form-group">
@@ -822,6 +785,7 @@ footer p{
           type="email"
           autocomplete="email"
           required
+          placeholder="name@beispiel.de"
         >
 
       </div>
@@ -838,6 +802,7 @@ footer p{
           type="password"
           autocomplete="current-password"
           required
+          placeholder="Passwort"
         >
 
       </div>
@@ -845,7 +810,7 @@ footer p{
 
       <button
         id="loginButton"
-        class="primary-button"
+        class="auth-button"
         type="submit"
       >
         Anmelden
@@ -854,11 +819,11 @@ footer p{
     </form>
 
 
-    <!-- REGISTER FORM -->
+    <!-- REGISTRIERUNG -->
 
     <form
       id="registerForm"
-      style="display:none"
+      class="auth-form"
       onsubmit="registerUser(event)"
     >
 
@@ -872,8 +837,8 @@ footer p{
           id="registerName"
           type="text"
           autocomplete="name"
-          placeholder="Vor- und Nachname"
           required
+          placeholder="Vor- und Nachname"
         >
 
       </div>
@@ -890,6 +855,7 @@ footer p{
           type="email"
           autocomplete="email"
           required
+          placeholder="name@beispiel.de"
         >
 
       </div>
@@ -905,8 +871,9 @@ footer p{
           id="registerPassword"
           type="password"
           autocomplete="new-password"
-          minlength="6"
+          minlength="8"
           required
+          placeholder="Mindestens 8 Zeichen"
         >
 
       </div>
@@ -914,23 +881,23 @@ footer p{
 
       <button
         id="registerButton"
-        class="primary-button"
+        class="auth-button"
         type="submit"
       >
-        Konto erstellen
+        Registrierung absenden
       </button>
 
     </form>
 
 
     <div
-      id="loginMessage"
-      class="login-message"
+      id="authMessage"
+      class="auth-message"
     ></div>
 
 
-    <div class="login-footer">
-      Internes Qualitätsmanagement-Portal
+    <div class="auth-footer">
+      Interner Bereich · Qualitätsmanagement
     </div>
 
   </div>
@@ -938,11 +905,11 @@ footer p{
 </div>
 
 
-<!-- =========================================================
-     APP
-========================================================= -->
+<!-- ============================================================
+     PORTAL
+============================================================ -->
 
-<div id="app">
+<div id="portal">
 
 <header>
 
@@ -953,8 +920,19 @@ footer p{
       <img
         src="https://www.intensivpflege-halle.de/wp-content/uploads/2021/01/cropped-logo.png"
         alt="Intensivpflege-Halle-GmbH"
-        onerror="this.style.display='none'"
+        onerror="
+          this.style.display='none';
+          document.getElementById('logoFallback').style.display='block';
+        "
       >
+
+      <span
+        id="logoFallback"
+        class="logo-fallback"
+        style="display:none"
+      >
+        ❤️
+      </span>
 
     </div>
 
@@ -972,21 +950,19 @@ footer p{
 
     <div class="user-area">
 
-      <span
-        id="userName"
-        class="user-name"
-      ></span>
-
-      <span
-        id="userRole"
-        class="user-role"
-      ></span>
+      <div
+        id="userBadge"
+        class="user-badge"
+      >
+        👤 Benutzer
+      </div>
 
       <button
         class="logout-button"
-        onclick="logout()"
+        type="button"
+        onclick="logoutUser()"
       >
-        Abmelden
+        🚪 Abmelden
       </button>
 
     </div>
@@ -1007,14 +983,6 @@ footer p{
     <a href="#bilder">📷 Bilderlaubnis</a>
     <a href="#pdl">👩‍⚕️ PDL-Anweisungen</a>
 
-    <a
-      id="adminNav"
-      class="admin-nav"
-      href="#verwaltung"
-    >
-      👥 Mitarbeiter
-    </a>
-
   </div>
 
 </nav>
@@ -1022,12 +990,7 @@ footer p{
 
 <main>
 
-<!-- START -->
-
-<section
-  id="start"
-  class="hero"
->
+<section id="start" class="hero">
 
   <h2>
     Willkommen im QM-Portal
@@ -1043,10 +1006,21 @@ footer p{
     Klicke auf einen Ordner, um dessen Dateien und Unterordner anzuzeigen.
   </p>
 
+  <div
+    id="adminBanner"
+    class="admin-banner"
+  >
+    <strong>👨‍💼 Administrator</strong><br>
+    Du bist als Administrator angemeldet.
+    Die Mitarbeiterverwaltung wird im nächsten Schritt ergänzt.
+  </div>
+
 </section>
 
 
-<!-- QM -->
+<!-- ============================================================
+     QM
+============================================================ -->
 
 <section
   id="qm"
@@ -1071,8 +1045,11 @@ footer p{
   >
 
     <div class="loading">
+
       <div class="spinner"></div>
+
       QM-Handbuch wird geladen …
+
     </div>
 
   </div>
@@ -1080,7 +1057,9 @@ footer p{
 </section>
 
 
-<!-- STANDARDS -->
+<!-- ============================================================
+     STANDARDS
+============================================================ -->
 
 <section
   id="standards"
@@ -1094,7 +1073,7 @@ footer p{
     </span>
 
     <h2>
-      Standards & Verfahrensanweisungen
+      Standards &amp; Verfahrensanweisungen
     </h2>
 
   </div>
@@ -1105,8 +1084,11 @@ footer p{
   >
 
     <div class="loading">
+
       <div class="spinner"></div>
+
       Standards werden geladen …
+
     </div>
 
   </div>
@@ -1114,7 +1096,9 @@ footer p{
 </section>
 
 
-<!-- SCHULUNGEN -->
+<!-- ============================================================
+     SCHULUNGEN
+============================================================ -->
 
 <section
   id="schulungen"
@@ -1128,7 +1112,7 @@ footer p{
     </span>
 
     <h2>
-      Schulungen & Unterweisungen
+      Schulungen &amp; Unterweisungen
     </h2>
 
   </div>
@@ -1139,8 +1123,11 @@ footer p{
   >
 
     <div class="loading">
+
       <div class="spinner"></div>
+
       Schulungen werden geladen …
+
     </div>
 
   </div>
@@ -1148,7 +1135,9 @@ footer p{
 </section>
 
 
-<!-- BILDER -->
+<!-- ============================================================
+     BILDER
+============================================================ -->
 
 <section
   id="bilder"
@@ -1173,8 +1162,11 @@ footer p{
   >
 
     <div class="loading">
+
       <div class="spinner"></div>
+
       Bilderlaubnis wird geladen …
+
     </div>
 
   </div>
@@ -1182,7 +1174,9 @@ footer p{
 </section>
 
 
-<!-- PDL -->
+<!-- ============================================================
+     PDL
+============================================================ -->
 
 <section
   id="pdl"
@@ -1207,64 +1201,10 @@ footer p{
   >
 
     <div class="loading">
+
       <div class="spinner"></div>
+
       PDL-Anweisungen werden geladen …
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- ADMIN -->
-
-<section
-  id="verwaltung"
-  class="section"
->
-
-  <div
-    id="adminSection"
-  >
-
-    <div class="section-title">
-
-      <span class="section-title-icon">
-        👥
-      </span>
-
-      <h2>
-        Mitarbeiterverwaltung
-      </h2>
-
-    </div>
-
-
-    <div class="admin-panel">
-
-      <div class="admin-actions">
-
-        <button
-          class="admin-button refresh"
-          onclick="loadEmployees()"
-        >
-          🔄 Mitarbeiter aktualisieren
-        </button>
-
-      </div>
-
-
-      <div
-        id="employeeList"
-        class="employee-table-wrap"
-      >
-
-        <div class="loading">
-          <div class="spinner"></div>
-          Mitarbeiter werden geladen …
-        </div>
-
-      </div>
 
     </div>
 
@@ -1273,7 +1213,9 @@ footer p{
 </section>
 
 
-<!-- CONTENT -->
+<!-- ============================================================
+     CONTENT PANEL
+============================================================ -->
 
 <section
   id="contentPanel"
@@ -1281,6 +1223,7 @@ footer p{
 
   <button
     class="back-button"
+    type="button"
     onclick="closeFolder()"
   >
     ← Zurück
@@ -1315,28 +1258,40 @@ footer p{
 </div>
 
 
+<!-- ============================================================
+     SUPABASE
+============================================================ -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 
-/* =========================================================
-   SUPABASE
-========================================================= */
+/* ============================================================
+   SUPABASE KONFIGURATION
+============================================================ */
 
 const SUPABASE_URL =
   "https://syvcomshcexhnxhplqhx.supabase.co";
 
-const SUPABASE_KEY =
+const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_SQKuCSBTQK0uE6d2nfM5hg_UEeo8x2z";
 
+
+const {
+  createClient
+} = supabase;
+
+
 const supabaseClient =
-  window.supabase.createClient(
+  createClient(
     SUPABASE_URL,
-    SUPABASE_KEY
+    SUPABASE_PUBLISHABLE_KEY
   );
 
 
-/* =========================================================
+/* ============================================================
    GITHUB
-========================================================= */
+============================================================ */
 
 const OWNER =
   "christiandiebner86-cpu";
@@ -1358,234 +1313,128 @@ const API =
 
 
 let repositoryTree = [];
-let currentUser = null;
-let currentProfile = null;
 
 
-/* =========================================================
-   LOGIN / REGISTER TABS
-========================================================= */
+/* ============================================================
+   AUTH UI
+============================================================ */
 
-function showLogin(){
+function showAuthForm(type){
 
-  document.getElementById(
-    "loginForm"
-  ).style.display = "block";
-
-  document.getElementById(
-    "registerForm"
-  ).style.display = "none";
-
-  document.getElementById(
-    "loginTab"
-  ).classList.add("active");
-
-  document.getElementById(
-    "registerTab"
-  ).classList.remove("active");
-
-  clearMessage();
-
-}
-
-
-function showRegister(){
-
-  document.getElementById(
-    "loginForm"
-  ).style.display = "none";
-
-  document.getElementById(
-    "registerForm"
-  ).style.display = "block";
-
-  document.getElementById(
-    "loginTab"
-  ).classList.remove("active");
-
-  document.getElementById(
-    "registerTab"
-  ).classList.add("active");
-
-  clearMessage();
-
-}
-
-
-/* =========================================================
-   MELDUNGEN
-========================================================= */
-
-function showMessage(
-  text,
-  type
-){
-
-  const box =
+  const loginForm =
     document.getElementById(
-      "loginMessage"
+      "loginForm"
     );
 
-  box.textContent =
-    text;
+  const registerForm =
+    document.getElementById(
+      "registerForm"
+    );
 
-  box.className =
-    "login-message " +
+  const loginTab =
+    document.getElementById(
+      "loginTab"
+    );
+
+  const registerTab =
+    document.getElementById(
+      "registerTab"
+    );
+
+  clearAuthMessage();
+
+
+  if(type === "register"){
+
+    loginForm.classList.remove(
+      "active"
+    );
+
+    registerForm.classList.add(
+      "active"
+    );
+
+    loginTab.classList.remove(
+      "active"
+    );
+
+    registerTab.classList.add(
+      "active"
+    );
+
+  }
+  else{
+
+    registerForm.classList.remove(
+      "active"
+    );
+
+    loginForm.classList.add(
+      "active"
+    );
+
+    registerTab.classList.remove(
+      "active"
+    );
+
+    loginTab.classList.add(
+      "active"
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   AUTH MESSAGE
+============================================================ */
+
+function showAuthMessage(
+  message,
+  type = "error"
+){
+
+  const element =
+    document.getElementById(
+      "authMessage"
+    );
+
+  element.textContent =
+    message;
+
+  element.className =
+    "auth-message show " +
     type;
 
 }
 
 
-function clearMessage(){
+function clearAuthMessage(){
 
-  const box =
+  const element =
     document.getElementById(
-      "loginMessage"
+      "authMessage"
     );
 
-  box.textContent = "";
+  element.textContent = "";
 
-  box.className =
-    "login-message";
+  element.className =
+    "auth-message";
 
 }
 
 
-/* =========================================================
-   LOGIN
-========================================================= */
-
-async function login(event){
-
-  event.preventDefault();
-
-  const button =
-    document.getElementById(
-      "loginButton"
-    );
-
-  const email =
-    document.getElementById(
-      "loginEmail"
-    ).value.trim();
-
-  const password =
-    document.getElementById(
-      "loginPassword"
-    ).value;
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "Anmeldung läuft …";
-
-  clearMessage();
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
-
-
-  if(error){
-
-    showMessage(
-      "Anmeldung fehlgeschlagen: " +
-      error.message,
-      "error"
-    );
-
-    button.disabled = false;
-    button.textContent = "Anmelden";
-
-    return;
-
-  }
-
-
-  if(data.user){
-
-    const profile =
-      await loadProfile(
-        data.user.id
-      );
-
-
-    if(!profile){
-
-      await supabaseClient.auth.signOut();
-
-      showMessage(
-        "Für diesen Benutzer wurde kein Mitarbeiterprofil gefunden.",
-        "error"
-      );
-
-      button.disabled = false;
-      button.textContent = "Anmelden";
-
-      return;
-
-    }
-
-
-    if(profile.active !== true){
-
-      await supabaseClient.auth.signOut();
-
-      showMessage(
-        "Dieses Benutzerkonto wurde gesperrt. Bitte wende dich an die Verwaltung.",
-        "error"
-      );
-
-      button.disabled = false;
-      button.textContent = "Anmelden";
-
-      return;
-
-    }
-
-
-    currentUser =
-      data.user;
-
-    currentProfile =
-      profile;
-
-
-    await updateLastLogin(
-      data.user.id
-    );
-
-
-    showApplication();
-
-  }
-
-
-  button.disabled = false;
-  button.textContent = "Anmelden";
-
-}
-
-
-/* =========================================================
+/* ============================================================
    REGISTRIERUNG
-========================================================= */
+============================================================ */
 
 async function registerUser(event){
 
   event.preventDefault();
 
-  const button =
-    document.getElementById(
-      "registerButton"
-    );
+  clearAuthMessage();
+
 
   const name =
     document.getElementById(
@@ -1603,11 +1452,10 @@ async function registerUser(event){
     ).value;
 
 
-  if(name.length < 2){
+  if(!name){
 
-    showMessage(
-      "Bitte gib deinen vollständigen Namen ein.",
-      "error"
+    showAuthMessage(
+      "Bitte gib deinen Namen ein."
     );
 
     return;
@@ -1615,40 +1463,297 @@ async function registerUser(event){
   }
 
 
+  if(password.length < 8){
+
+    showAuthMessage(
+      "Das Passwort muss mindestens 8 Zeichen haben."
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document.getElementById(
+      "registerButton"
+    );
+
   button.disabled = true;
 
   button.textContent =
-    "Konto wird erstellt …";
+    "Registrierung läuft …";
 
-  clearMessage();
 
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signUp({
+
+        email: email,
+
+        password: password
+
+      });
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    if(!data.user){
+
+      throw new Error(
+        "Der Benutzer konnte nicht angelegt werden."
+      );
+
+    }
+
+
+    /*
+      Profil anlegen.
+
+      Neue Benutzer werden bewusst
+      als Mitarbeiter und INAKTIV angelegt.
+    */
+
+    const {
+      error: profileError
+    } =
+      await supabaseClient
+        .from("profiles")
+        .insert({
+
+          id:data.user.id,
+
+          name:name,
+
+          role:"mitarbeiter",
+
+          active:false
+
+        });
+
+
+    if(profileError){
+
+      console.error(
+        "Profilfehler:",
+        profileError
+      );
+
+      /*
+        Falls E-Mail-Bestätigung aktiviert ist,
+        kann das Auth-Konto bereits existieren.
+      */
+
+      showAuthMessage(
+        "Benutzer wurde registriert, aber das Mitarbeiterprofil konnte nicht vollständig angelegt werden. Bitte den Administrator informieren.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    showAuthMessage(
+      "Registrierung erfolgreich. Dein Zugang muss jetzt vom Administrator freigeschaltet werden.",
+      "success"
+    );
+
+
+    document.getElementById(
+      "registerForm"
+    ).reset();
+
+
+    setTimeout(
+      ()=>{
+        showAuthForm("login");
+      },
+      2500
+    );
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    showAuthMessage(
+      translateAuthError(
+        error.message
+      )
+    );
+
+  }
+  finally{
+
+    button.disabled = false;
+
+    button.textContent =
+      "Registrierung absenden";
+
+  }
+
+}
+
+
+/* ============================================================
+   LOGIN
+============================================================ */
+
+async function loginUser(event){
+
+  event.preventDefault();
+
+  clearAuthMessage();
+
+
+  const email =
+    document.getElementById(
+      "loginEmail"
+    ).value.trim();
+
+  const password =
+    document.getElementById(
+      "loginPassword"
+    ).value;
+
+
+  const button =
+    document.getElementById(
+      "loginButton"
+    );
+
+  button.disabled = true;
+
+  button.textContent =
+    "Anmeldung läuft …";
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signInWithPassword({
+
+        email:email,
+
+        password:password
+
+      });
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    if(!data.user){
+
+      throw new Error(
+        "Anmeldung fehlgeschlagen."
+      );
+
+    }
+
+
+    await loadUserProfile(
+      data.user
+    );
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    showAuthMessage(
+      translateAuthError(
+        error.message
+      )
+    );
+
+  }
+  finally{
+
+    button.disabled = false;
+
+    button.textContent =
+      "Anmelden";
+
+  }
+
+}
+
+
+/* ============================================================
+   BENUTZERPROFIL LADEN
+============================================================ */
+
+async function loadUserProfile(user){
 
   const {
-    data,
+    data:profile,
     error
   } =
-    await supabaseClient.auth.signUp({
-      email,
-      password,
-      options:{
-        data:{
-          name:name
-        }
-      }
-    });
+    await supabaseClient
+      .from("profiles")
+      .select(
+        "id,name,role,active,last_login,created_at"
+      )
+      .eq(
+        "id",
+        user.id
+      )
+      .maybeSingle();
 
 
   if(error){
 
-    showMessage(
-      "Registrierung fehlgeschlagen: " +
-      error.message,
-      "error"
+    console.error(error);
+
+    await supabaseClient.auth.signOut();
+
+    showAuthMessage(
+      "Das Benutzerprofil konnte nicht geladen werden."
     );
 
-    button.disabled = false;
-    button.textContent =
-      "Konto erstellen";
+    return;
+
+  }
+
+
+  if(!profile){
+
+    await supabaseClient.auth.signOut();
+
+    showAuthMessage(
+      "Für diesen Benutzer wurde noch kein QM-Profil angelegt."
+    );
+
+    return;
+
+  }
+
+
+  if(profile.active !== true){
+
+    await supabaseClient.auth.signOut();
+
+    showAuthMessage(
+      "Dein Benutzerkonto ist noch nicht freigeschaltet. Bitte wende dich an den Administrator."
+    );
 
     return;
 
@@ -1656,622 +1761,568 @@ async function registerUser(event){
 
 
   /*
-    Wenn Supabase die E-Mail-Bestätigung
-    verlangt, gibt es zunächst keine Session.
+    Benutzer ist freigeschaltet.
   */
 
-  if(data.user){
-
-    const {
-      error:profileError
-    } =
-      await supabaseClient
-        .from("profiles")
-        .upsert({
-          id:data.user.id,
-          name:name,
-          role:"mitarbeiter",
-          active:true
-        });
-
-
-    if(profileError){
-
-      console.error(
-        profileError
-      );
-
-      showMessage(
-        "Das Konto wurde erstellt, aber das Mitarbeiterprofil konnte nicht gespeichert werden. Bitte kontaktiere die Verwaltung.",
-        "error"
-      );
-
-    }
-    else{
-
-      if(data.session){
-
-        showMessage(
-          "Registrierung erfolgreich. Du wirst angemeldet …",
-          "success"
-        );
-
-      }
-      else{
-
-        showMessage(
-          "Registrierung erfolgreich. Falls eine E-Mail-Bestätigung aktiviert ist, bestätige bitte zuerst deine E-Mail-Adresse und melde dich danach an.",
-          "success"
-        );
-
-      }
-
-    }
-
-  }
-
-
-  button.disabled = false;
-
-  button.textContent =
-    "Konto erstellen";
+  enterPortal(
+    user,
+    profile
+  );
 
 }
 
 
-/* =========================================================
-   PROFIL LADEN
-========================================================= */
+/* ============================================================
+   PORTAL ÖFFNEN
+============================================================ */
 
-async function loadProfile(
-  userID
+async function enterPortal(
+  user,
+  profile
 ){
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("profiles")
-      .select(
-        "id,name,role,active,last_login,created_at"
-      )
-      .eq(
-        "id",
-        userID
-      )
-      .maybeSingle();
-
-
-  if(error){
-
-    console.error(
-      "Profilfehler:",
-      error
-    );
-
-    return null;
-
-  }
-
-
-  return data;
-
-}
-
-
-/* =========================================================
-   LETZTEN LOGIN SPEICHERN
-========================================================= */
-
-async function updateLastLogin(
-  userID
-){
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("profiles")
-      .update({
-        last_login:new Date().toISOString()
-      })
-      .eq(
-        "id",
-        userID
-      );
-
-
-  if(error){
-
-    console.warn(
-      "last_login konnte nicht aktualisiert werden:",
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   APP ANZEIGEN
-========================================================= */
-
-async function showApplication(){
-
   document.getElementById(
-    "loginScreen"
+    "authScreen"
   ).style.display = "none";
 
-  document.getElementById(
-    "app"
-  ).style.display = "block";
-
 
   document.getElementById(
-    "userName"
-  ).textContent =
-    currentProfile.name ||
-    currentUser.email;
-
-
-  const roleText =
-    currentProfile.role === "admin"
-      ? "Administrator"
-      : "Mitarbeiter";
-
-
-  document.getElementById(
-    "userRole"
-  ).textContent =
-    roleText;
-
-
-  if(
-    currentProfile.role === "admin"
-  ){
-
-    document.getElementById(
-      "adminNav"
-    ).classList.add("visible");
-
-    document.getElementById(
-      "adminSection"
-    ).classList.add("visible");
-
-    loadEmployees();
-
-  }
-
-
-  loadRepository();
-
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logout(){
-
-  await supabaseClient.auth.signOut();
-
-  currentUser = null;
-  currentProfile = null;
-
-  document.getElementById(
-    "app"
-  ).style.display = "none";
-
-  document.getElementById(
-    "loginScreen"
-  ).style.display = "flex";
-
-  document.getElementById(
-    "loginForm"
-  ).reset();
-
-  showLogin();
-
-}
-
-
-/* =========================================================
-   ADMIN – MITARBEITER
-========================================================= */
-
-async function loadEmployees(){
-
-  const container =
-    document.getElementById(
-      "employeeList"
-    );
-
-
-  container.innerHTML = `
-    <div class="loading">
-      <div class="spinner"></div>
-      Mitarbeiter werden geladen …
-    </div>
-  `;
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("profiles")
-      .select(
-        "id,name,role,active,last_login,created_at"
-      )
-      .order(
-        "created_at",
-        {
-          ascending:false
-        }
-      );
-
-
-  if(error){
-
-    container.innerHTML = `
-      <div class="error">
-        <strong>Mitarbeiter konnten nicht geladen werden.</strong>
-        <br><br>
-        ${escapeHTML(
-          error.message
-        )}
-        <br><br>
-        Falls hier eine RLS-/Berechtigungsfehlermeldung erscheint,
-        müssen wir noch die Supabase-Richtlinien für Administratoren
-        einrichten.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  if(!data || !data.length){
-
-    container.innerHTML = `
-      <div class="loading">
-        Noch keine Mitarbeiter vorhanden.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  let html = `
-
-    <table class="employee-table">
-
-      <thead>
-
-        <tr>
-
-          <th>Name</th>
-          <th>Rolle</th>
-          <th>Status</th>
-          <th>Letzter Login</th>
-          <th>Registriert</th>
-          <th>Aktion</th>
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-  `;
-
-
-  data.forEach(
-    employee => {
-
-      const isSelf =
-        employee.id === currentUser.id;
-
-
-      const lastLogin =
-        employee.last_login
-          ? formatDate(
-              employee.last_login
-            )
-          : "Noch kein Login";
-
-
-      const created =
-        employee.created_at
-          ? formatDate(
-              employee.created_at
-            )
-          : "—";
-
-
-      const statusClass =
-        employee.active
-          ? "active"
-          : "blocked";
-
-
-      const statusText =
-        employee.active
-          ? "Aktiv"
-          : "Gesperrt";
-
-
-      html += `
-
-        <tr>
-
-          <td>
-            <strong>
-              ${escapeHTML(
-                employee.name ||
-                "Ohne Namen"
-              )}
-            </strong>
-          </td>
-
-
-          <td>
-
-            <select
-              class="role-select"
-              onchange="changeRole(
-                '${employee.id}',
-                this.value
-              )"
-              ${isSelf ? "disabled" : ""}
-            >
-
-              <option
-                value="mitarbeiter"
-                ${employee.role === "mitarbeiter" ? "selected" : ""}
-              >
-                Mitarbeiter
-              </option>
-
-              <option
-                value="admin"
-                ${employee.role === "admin" ? "selected" : ""}
-              >
-                Administrator
-              </option>
-
-            </select>
-
-          </td>
-
-
-          <td>
-
-            <span
-              class="status ${statusClass}"
-            >
-              ${statusText}
-            </span>
-
-          </td>
-
-
-          <td>
-            ${lastLogin}
-          </td>
-
-
-          <td>
-            ${created}
-          </td>
-
-
-          <td>
-
-            ${
-              isSelf
-              ?
-              "<em>Eigenes Konto</em>"
-              :
-              employee.active
-              ?
-              `
-                <button
-                  class="small-button block"
-                  onclick="changeActive(
-                    '${employee.id}',
-                    false
-                  )"
-                >
-                  🔒 Sperren
-                </button>
-              `
-              :
-              `
-                <button
-                  class="small-button activate"
-                  onclick="changeActive(
-                    '${employee.id}',
-                    true
-                  )"
-                >
-                  ✅ Aktivieren
-                </button>
-              `
-            }
-
-          </td>
-
-        </tr>
-
-      `;
-
-    }
+    "portal"
+  ).classList.add(
+    "authenticated"
   );
 
 
-  html += `
-      </tbody>
-    </table>
-  `;
-
-
-  container.innerHTML =
-    html;
-
-}
-
-
-/* =========================================================
-   ADMIN – AKTIV / GESPERRT
-========================================================= */
-
-async function changeActive(
-  userID,
-  active
-){
-
-  if(
-    !confirm(
-      active
-        ? "Diesen Mitarbeiter wieder aktivieren?"
-        : "Diesen Mitarbeiter wirklich sperren?"
-    )
-  ){
-    return;
-  }
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("profiles")
-      .update({
-        active:active
-      })
-      .eq(
-        "id",
-        userID
-      );
-
-
-  if(error){
-
-    alert(
-      "Änderung konnte nicht gespeichert werden:\n\n" +
-      error.message
+  const userBadge =
+    document.getElementById(
+      "userBadge"
     );
 
-    return;
+
+  const displayName =
+    profile.name ||
+    user.email ||
+    "Benutzer";
+
+
+  userBadge.textContent =
+    "👤 " +
+    displayName +
+    (
+      profile.role === "admin"
+        ? " · Admin"
+        : ""
+    );
+
+
+  /*
+    Admin-Hinweis.
+  */
+
+  if(profile.role === "admin"){
+
+    document.getElementById(
+      "adminBanner"
+    ).classList.add(
+      "show"
+    );
 
   }
 
 
-  loadEmployees();
+  /*
+    Repository laden.
+  */
+
+  await loadRepository();
 
 }
 
 
-/* =========================================================
-   ADMIN – ROLLE
-========================================================= */
+/* ============================================================
+   LOGOUT
+============================================================ */
 
-async function changeRole(
-  userID,
-  role
-){
+async function logoutUser(){
+
+  await supabaseClient.auth.signOut();
+
+  location.reload();
+
+}
+
+
+/* ============================================================
+   AUTH FEHLER ÜBERSETZEN
+============================================================ */
+
+function translateAuthError(message){
+
+  const text =
+    String(message || "")
+      .toLowerCase();
+
 
   if(
-    role !== "admin" &&
-    role !== "mitarbeiter"
-  ){
-    return;
-  }
-
-
-  if(
-    !confirm(
-      "Rolle dieses Mitarbeiters wirklich ändern?"
+    text.includes(
+      "invalid login credentials"
     )
   ){
 
-    loadEmployees();
-
-    return;
+    return "E-Mail-Adresse oder Passwort ist falsch.";
 
   }
 
 
+  if(
+    text.includes(
+      "email not confirmed"
+    )
+  ){
+
+    return "Deine E-Mail-Adresse wurde noch nicht bestätigt. Bitte prüfe dein E-Mail-Postfach.";
+
+  }
+
+
+  if(
+    text.includes(
+      "user already registered"
+    )
+  ){
+
+    return "Diese E-Mail-Adresse ist bereits registriert.";
+
+  }
+
+
+  if(
+    text.includes(
+      "password"
+    ) &&
+    text.includes(
+      "8"
+    )
+  ){
+
+    return "Das Passwort erfüllt die Anforderungen nicht.";
+
+  }
+
+
+  return (
+    "Anmeldung/Registrierung fehlgeschlagen: " +
+    message
+  );
+
+}
+
+
+/* ============================================================
+   SESSION PRÜFEN
+============================================================ */
+
+async function checkSession(){
+
   const {
-    error
+    data
   } =
-    await supabaseClient
-      .from("profiles")
-      .update({
-        role:role
-      })
-      .eq(
-        "id",
-        userID
+    await supabaseClient.auth.getSession();
+
+
+  if(
+    data &&
+    data.session &&
+    data.session.user
+  ){
+
+    await loadUserProfile(
+      data.session.user
+    );
+
+  }
+  else{
+
+    document.getElementById(
+      "authScreen"
+    ).style.display = "flex";
+
+    document.getElementById(
+      "portal"
+    ).classList.remove(
+      "authenticated"
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   AUTH STATE
+============================================================ */
+
+supabaseClient.auth.onAuthStateChange(
+  async (
+    event,
+    session
+  )=>{
+
+    if(
+      event === "SIGNED_OUT"
+    ){
+
+      document.getElementById(
+        "authScreen"
+      ).style.display = "flex";
+
+      document.getElementById(
+        "portal"
+      ).classList.remove(
+        "authenticated"
+      );
+
+    }
+
+  }
+);
+
+
+/* ============================================================
+   GITHUB ICONS
+============================================================ */
+
+function folderIcon(name){
+
+  const n =
+    decodeURIComponent(
+      name
+    ).toLowerCase();
+
+
+  if(
+    n.includes("schulung") ||
+    n.includes("fob") ||
+    n.includes("fortbildung")
+  )
+    return "🎓";
+
+
+  if(n.includes("hygiene"))
+    return "🧼";
+
+
+  if(
+    n.includes("prophylax") ||
+    n.includes("expertenstandard")
+  )
+    return "🛡️";
+
+
+  if(n.includes("prozess"))
+    return "⚙️";
+
+
+  if(
+    n.includes("notfall") ||
+    n.includes("hilfe")
+  )
+    return "🚨";
+
+
+  if(n.includes("datenschutz"))
+    return "🔐";
+
+
+  if(n.includes("beschwer"))
+    return "📣";
+
+
+  if(n.includes("pflegeberatung"))
+    return "👩‍⚕️";
+
+
+  if(
+    n.includes("visiten") ||
+    n.includes("fallbesprech")
+  )
+    return "🩺";
+
+
+  if(n.includes("bilder"))
+    return "📷";
+
+
+  if(n.includes("pdl"))
+    return "👩‍⚕️";
+
+
+  if(n.includes("behandlungspflege"))
+    return "💉";
+
+
+  if(n.includes("grundpflege"))
+    return "🛏️";
+
+
+  if(
+    n.includes("chronische") ||
+    n.includes("wunden")
+  )
+    return "🩹";
+
+
+  if(n.includes("schmerzen"))
+    return "💊";
+
+
+  if(n.includes("beziehung"))
+    return "🤝";
+
+
+  if(n.includes("bezugspflege"))
+    return "👩‍⚕️";
+
+
+  if(
+    n.includes("herzbett") ||
+    n.includes("nestlagerung")
+  )
+    return "🛏️";
+
+
+  if(n.includes("aki"))
+    return "🩺";
+
+
+  return "📁";
+
+}
+
+
+/* ============================================================
+   FARBEN
+============================================================ */
+
+const folderColors = [
+
+  "#e53935",
+  "#fb8c00",
+  "#f6c700",
+  "#43a047",
+  "#00897b",
+  "#1e88e5",
+  "#3949ab",
+  "#8e24aa",
+  "#d81b60"
+
+];
+
+
+function folderColor(index){
+
+  return folderColors[
+    index %
+    folderColors.length
+  ];
+
+}
+
+
+/* ============================================================
+   SICHERHEIT
+============================================================ */
+
+function escapeHTML(text){
+
+  return String(text)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* ============================================================
+   DATEINAME
+============================================================ */
+
+function cleanFileName(name){
+
+  return decodeURIComponent(name)
+
+    .replace(
+      /\.pdf$/i,
+      ""
+    )
+
+    .replace(
+      /\.odt$/i,
+      ""
+    )
+
+    .replace(
+      /\.odg$/i,
+      ""
+    )
+
+    .replace(
+      /\.docx$/i,
+      ""
+    )
+
+    .replace(
+      /\.doc$/i,
+      ""
+    )
+
+    .replace(
+      /\.xlsx$/i,
+      ""
+    )
+
+    .replace(
+      /\.xls$/i,
+      ""
+    )
+
+    .replace(
+      /\.mp4$/i,
+      ""
+    )
+
+    .replace(
+      /\.webm$/i,
+      ""
+    )
+
+    .replace(
+      /\.mov$/i,
+      ""
+    )
+
+    .replace(
+      /_/g,
+      " "
+    );
+
+}
+
+
+/* ============================================================
+   DATEI URL
+============================================================ */
+
+function fileURL(path){
+
+  const parts =
+    path
+      .split("/")
+      .map(
+        part =>
+          encodeURIComponent(
+            decodeURIComponent(
+              part
+            )
+          )
       );
 
 
-  if(error){
+  /*
+    GitHub Pages URL.
 
-    alert(
-      "Rolle konnte nicht geändert werden:\n\n" +
-      error.message
-    );
+    Der führende Slash sorgt dafür,
+    dass die Datei immer vom
+    Repository-Root geladen wird.
+  */
 
-  }
-
-
-  loadEmployees();
-
-}
-
-
-/* =========================================================
-   DATUM
-========================================================= */
-
-function formatDate(
-  value
-){
-
-  try{
-
-    return new Intl.DateTimeFormat(
-      "de-DE",
-      {
-        dateStyle:"medium",
-        timeStyle:"short"
-      }
-    ).format(
-      new Date(value)
-    );
-
-  }
-  catch(e){
-
-    return value;
-
-  }
+  return "/" +
+    parts.join("/");
 
 }
 
 
-/* =========================================================
-   GITHUB
-========================================================= */
+/* ============================================================
+   DATEI ICON
+============================================================ */
+
+function fileIcon(path){
+
+  const n =
+    path.toLowerCase();
+
+
+  if(
+    n.endsWith(".pdf")
+  )
+    return "📕";
+
+
+  if(
+    n.endsWith(".mp4") ||
+    n.endsWith(".webm") ||
+    n.endsWith(".mov")
+  )
+    return "🎬";
+
+
+  if(
+    n.endsWith(".mp3")
+  )
+    return "🎧";
+
+
+  if(
+    n.endsWith(".ppt") ||
+    n.endsWith(".pptx")
+  )
+    return "📊";
+
+
+  if(
+    n.endsWith(".doc") ||
+    n.endsWith(".docx")
+  )
+    return "📝";
+
+
+  if(
+    n.endsWith(".xls") ||
+    n.endsWith(".xlsx")
+  )
+    return "📊";
+
+
+  return "📄";
+
+}
+
+
+/* ============================================================
+   GITHUB REPOSITORY LADEN
+============================================================ */
 
 async function loadRepository(){
 
@@ -2315,7 +2366,9 @@ async function loadRepository(){
 
 
     const errorHTML = `
+
       <div class="error">
+
         <strong>
           Dokumente konnten nicht geladen werden.
         </strong>
@@ -2323,7 +2376,9 @@ async function loadRepository(){
         <br><br>
 
         Fehler beim Abrufen der GitHub-Ordner.
+
       </div>
+
     `;
 
 
@@ -2335,35 +2390,31 @@ async function loadRepository(){
 
     document.getElementById(
       "standardFolders"
-    ).innerHTML =
-      "";
+    ).innerHTML = "";
 
 
     document.getElementById(
       "trainingFolders"
-    ).innerHTML =
-      "";
+    ).innerHTML = "";
 
 
     document.getElementById(
       "imageFolders"
-    ).innerHTML =
-      "";
+    ).innerHTML = "";
 
 
     document.getElementById(
       "pdlFolders"
-    ).innerHTML =
-      "";
+    ).innerHTML = "";
 
   }
 
 }
 
 
-/* =========================================================
+/* ============================================================
    ROOT ORDNER
-========================================================= */
+============================================================ */
 
 function rootFolders(){
 
@@ -2375,9 +2426,8 @@ function rootFolders(){
 
       if(
         item.type !== "tree"
-      ){
+      )
         return;
-      }
 
 
       if(
@@ -2399,338 +2449,9 @@ function rootFolders(){
 }
 
 
-/* =========================================================
-   ICONS
-========================================================= */
-
-function folderIcon(
-  name
-){
-
-  const n =
-    decodeURIComponent(
-      name
-    ).toLowerCase();
-
-
-  if(
-    n.includes("schulung") ||
-    n.includes("fob") ||
-    n.includes("fortbildung")
-  ){
-    return "🎓";
-  }
-
-
-  if(
-    n.includes("hygiene")
-  ){
-    return "🧼";
-  }
-
-
-  if(
-    n.includes("prophylax") ||
-    n.includes("expertenstandard")
-  ){
-    return "🛡️";
-  }
-
-
-  if(
-    n.includes("prozess")
-  ){
-    return "⚙️";
-  }
-
-
-  if(
-    n.includes("notfall") ||
-    n.includes("hilfe")
-  ){
-    return "🚨";
-  }
-
-
-  if(
-    n.includes("datenschutz")
-  ){
-    return "🔐";
-  }
-
-
-  if(
-    n.includes("beschwer")
-  ){
-    return "📣";
-  }
-
-
-  if(
-    n.includes("pflegeberatung")
-  ){
-    return "👩‍⚕️";
-  }
-
-
-  if(
-    n.includes("visiten") ||
-    n.includes("fallbesprech")
-  ){
-    return "🩺";
-  }
-
-
-  if(
-    n.includes("bilder")
-  ){
-    return "📷";
-  }
-
-
-  if(
-    n.includes("pdl")
-  ){
-    return "👩‍⚕️";
-  }
-
-
-  if(
-    n.includes("behandlungspflege")
-  ){
-    return "💉";
-  }
-
-
-  if(
-    n.includes("grundpflege")
-  ){
-    return "🛏️";
-  }
-
-
-  if(
-    n.includes("chronische") ||
-    n.includes("wunden") ||
-    n.includes("schmerzen")
-  ){
-    return "🩹";
-  }
-
-
-  if(
-    n.includes("beziehung")
-  ){
-    return "🤝";
-  }
-
-
-  if(
-    n.includes("bezugspflege")
-  ){
-    return "👩‍⚕️";
-  }
-
-
-  if(
-    n.includes("herzbett") ||
-    n.includes("nestlagerung")
-  ){
-    return "🛏️";
-  }
-
-
-  if(
-    n.includes("aki")
-  ){
-    return "🩺";
-  }
-
-
-  return "📁";
-
-}
-
-
-/* =========================================================
-   FARBEN
-========================================================= */
-
-const folderColors = [
-  "#e53935",
-  "#fb8c00",
-  "#f6c700",
-  "#43a047",
-  "#00897b",
-  "#1e88e5",
-  "#3949ab",
-  "#8e24aa",
-  "#d81b60"
-];
-
-
-function folderColor(
-  index
-){
-
-  return folderColors[
-    index %
-    folderColors.length
-  ];
-
-}
-
-
-/* =========================================================
-   SICHERHEIT
-========================================================= */
-
-function escapeHTML(
-  text
-){
-
-  return String(text)
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
-
-}
-
-
-/* =========================================================
-   DATEINAME
-========================================================= */
-
-function cleanFileName(
-  name
-){
-
-  return decodeURIComponent(
-    name
-  )
-  .replace(
-    /\.pdf$/i,
-    ""
-  )
-  .replace(
-    /\.odt$/i,
-    ""
-  )
-  .replace(
-    /\.odg$/i,
-    ""
-  )
-  .replace(
-    /\.docx$/i,
-    ""
-  )
-  .replace(
-    /\.doc$/i,
-    ""
-  )
-  .replace(
-    /\.xlsx$/i,
-    ""
-  )
-  .replace(
-    /\.xls$/i,
-    ""
-  )
-  .replace(
-    /_/g,
-    " "
-  );
-
-}
-
-
-/* =========================================================
-   DATEI URL
-========================================================= */
-
-function fileURL(
-  path
-){
-
-  const parts =
-    path
-      .split("/")
-      .map(
-        part =>
-          encodeURIComponent(
-            decodeURIComponent(
-              part
-            )
-          )
-      );
-
-
-  return "/" +
-    parts.join("/");
-
-}
-
-
-/* =========================================================
-   DATEI ICON
-========================================================= */
-
-function fileIcon(
-  path
-){
-
-  const n =
-    path.toLowerCase();
-
-
-  if(
-    n.endsWith(".pdf")
-  ){
-    return "📕";
-  }
-
-
-  if(
-    n.endsWith(".mp4") ||
-    n.endsWith(".webm") ||
-    n.endsWith(".mov")
-  ){
-    return "🎬";
-  }
-
-
-  if(
-    n.endsWith(".mp3")
-  ){
-    return "🎧";
-  }
-
-
-  return "📄";
-
-}
-
-
-/* =========================================================
+/* ============================================================
    HAUPTBEREICHE
-========================================================= */
+============================================================ */
 
 function renderMainSections(){
 
@@ -2753,14 +2474,16 @@ function renderMainSections(){
 
 
       /*
-        Teams komplett ausblenden.
+        Teams vollständig entfernen.
       */
 
       if(
         n === "teams" ||
         n.includes("team")
       ){
+
         return;
+
       }
 
 
@@ -2787,7 +2510,9 @@ function renderMainSections(){
 
       if(
         n === "schulungen" ||
-        n.includes("fortbildungskonzept")
+        n.includes(
+          "fortbildungskonzept"
+        )
       ){
 
         training.push(
@@ -2800,7 +2525,7 @@ function renderMainSections(){
 
 
       /*
-        Dokumente / PDL
+        PDL / Dokumente
       */
 
       if(
@@ -2817,7 +2542,7 @@ function renderMainSections(){
 
 
       /*
-        Standards & Verfahrensanweisungen
+        Standards & VA
       */
 
       if(
@@ -2844,14 +2569,17 @@ function renderMainSections(){
       /*
         QM-Handbuch.
 
-        QM-Handbuch selbst sowie
-        alle QM-Ordner unter main.
+        QM 1. Hilfe & Notfallmanagement
+        und weitere QM-Ordner liegen
+        teilweise direkt unter main.
+
+        Sie werden hier automatisch
+        dem QM-Handbuch zugeordnet.
       */
 
       if(
         n === "qm-handbuch" ||
-        n.startsWith("qm ") ||
-        n.startsWith("qm.")
+        n.startsWith("qm ")
       ){
 
         qm.push(
@@ -2898,9 +2626,9 @@ function renderMainSections(){
 }
 
 
-/* =========================================================
+/* ============================================================
    ORDNER KACHELN
-========================================================= */
+============================================================ */
 
 function renderFolderGrid(
   containerID,
@@ -2934,9 +2662,13 @@ function renderFolderGrid(
   ){
 
     container.innerHTML = `
+
       <div class="loading">
+
         Keine Ordner gefunden.
+
       </div>
+
     `;
 
     return;
@@ -2945,7 +2677,10 @@ function renderFolderGrid(
 
 
   folders.forEach(
-    (folder,index)=>{
+    (
+      folder,
+      index
+    )=>{
 
       const card =
         document.createElement(
@@ -3004,13 +2739,11 @@ function renderFolderGrid(
 }
 
 
-/* =========================================================
+/* ============================================================
    ORDNER ÖFFNEN
-========================================================= */
+============================================================ */
 
-function openFolder(
-  path
-){
+function openFolder(path){
 
   const panel =
     document.getElementById(
@@ -3039,17 +2772,23 @@ function openFolder(
     "📁 " +
     decodeURIComponent(
       path
-    ).replaceAll(
-      "/",
-      " / "
-    );
+    )
+      .replaceAll(
+        "/",
+        " / "
+      );
 
 
   content.innerHTML = `
+
     <div class="loading">
+
       <div class="spinner"></div>
+
       Ordner wird geöffnet …
+
     </div>
+
   `;
 
 
@@ -3070,7 +2809,9 @@ function openFolder(
             prefix
           )
         ){
+
           return false;
+
         }
 
 
@@ -3089,12 +2830,18 @@ function openFolder(
     );
 
 
+  /*
+    Unterordner
+  */
+
   const folders =
     children
+
       .filter(
         item =>
           item.type === "tree"
       )
+
       .sort(
         (a,b)=>
           a.path.localeCompare(
@@ -3107,12 +2854,18 @@ function openFolder(
       );
 
 
+  /*
+    Dateien
+  */
+
   const files =
     children
+
       .filter(
         item =>
           item.type === "blob"
       )
+
       .sort(
         (a,b)=>
           a.path.localeCompare(
@@ -3129,7 +2882,7 @@ function openFolder(
 
 
   /*
-    Unterordner
+    UNTERORDNER
   */
 
   if(
@@ -3137,16 +2890,21 @@ function openFolder(
   ){
 
     html += `
+
       <h3>
         📁 Unterordner
       </h3>
 
       <div class="subfolder-grid">
+
     `;
 
 
     folders.forEach(
-      folder => {
+      (
+        folder,
+        index
+      )=>{
 
         const name =
           folder.path.substring(
@@ -3164,15 +2922,19 @@ function openFolder(
           >
 
             <div class="subfolder-icon">
+
               ${folderIcon(name)}
+
             </div>
 
             <div class="subfolder-name">
+
               ${escapeHTML(
                 decodeURIComponent(
                   name
                 )
               )}
+
             </div>
 
           </div>
@@ -3184,14 +2946,16 @@ function openFolder(
 
 
     html += `
+
       </div>
+
     `;
 
   }
 
 
   /*
-    Dateien
+    DATEIEN
   */
 
   if(
@@ -3199,11 +2963,13 @@ function openFolder(
   ){
 
     html += `
+
       <h3>
         📄 Dokumente
       </h3>
 
       <div class="file-list">
+
     `;
 
 
@@ -3239,22 +3005,26 @@ function openFolder(
           >
 
             <div class="file-icon">
+
               ${fileIcon(name)}
+
             </div>
 
             <div>
 
               <div class="file-name">
+
                 ${escapeHTML(
-                  cleanFileName(
-                    name
-                  )
+                  cleanFileName(name)
                 )}
+
               </div>
 
               <div class="file-info">
+
                 ${extension.toUpperCase()}
                 · Zum Öffnen anklicken
+
               </div>
 
             </div>
@@ -3268,11 +3038,17 @@ function openFolder(
 
 
     html += `
+
       </div>
+
     `;
 
   }
 
+
+  /*
+    Keine Inhalte
+  */
 
   if(
     !folders.length &&
@@ -3280,10 +3056,14 @@ function openFolder(
   ){
 
     html = `
+
       <div class="loading">
+
         Dieser Ordner enthält momentan
         keine direkt sichtbaren Dateien.
+
       </div>
+
     `;
 
   }
@@ -3307,9 +3087,11 @@ function openFolder(
         element.addEventListener(
           "click",
           ()=>{
+
             openFolder(
               element.dataset.folderPath
             );
+
           }
         );
 
@@ -3325,118 +3107,28 @@ function openFolder(
 }
 
 
-/* =========================================================
+/* ============================================================
    ZURÜCK
-========================================================= */
+============================================================ */
 
 function closeFolder(){
 
-  document
-    .getElementById(
+  const panel =
+    document.getElementById(
       "contentPanel"
-    )
-    .classList.remove(
-      "active"
     );
 
-}
 
-
-/* =========================================================
-   AUTH STATUS
-========================================================= */
-
-async function checkSession(){
-
-  const {
-    data
-  } =
-    await supabaseClient.auth.getSession();
-
-
-  if(
-    data &&
-    data.session &&
-    data.session.user
-  ){
-
-    currentUser =
-      data.session.user;
-
-
-    const profile =
-      await loadProfile(
-        currentUser.id
-      );
-
-
-    if(
-      profile &&
-      profile.active === true
-    ){
-
-      currentProfile =
-        profile;
-
-
-      await updateLastLogin(
-        currentUser.id
-      );
-
-
-      showApplication();
-
-      return;
-
-    }
-
-
-    await supabaseClient.auth.signOut();
-
-  }
-
-
-  document.getElementById(
-    "loginScreen"
-  ).style.display =
-    "flex";
+  panel.classList.remove(
+    "active"
+  );
 
 }
 
 
-/* =========================================================
-   AUTH EVENTS
-========================================================= */
-
-supabaseClient.auth.onAuthStateChange(
-  async (event,session)=>{
-
-    if(
-      event === "SIGNED_OUT"
-    ){
-
-      currentUser = null;
-      currentProfile = null;
-
-      document.getElementById(
-        "app"
-      ).style.display =
-        "none";
-
-      document.getElementById(
-        "loginScreen"
-      ).style.display =
-        "flex";
-
-    }
-
-  }
-);
-
-
-/* =========================================================
+/* ============================================================
    START
-========================================================= */
+============================================================ */
 
 checkSession();
 
