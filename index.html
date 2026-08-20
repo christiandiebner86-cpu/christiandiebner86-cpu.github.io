@@ -1542,6 +1542,35 @@ let authListenerStarted = false;
 
 
 /* =========================================================
+   IGNORIERTE PFADE
+   V5:
+   Der komplette Zapke-Ordner wird ignoriert.
+   Das gilt für:
+   - Zapke
+   - Zapke/
+   - Zapke/Unterordner
+   - Zapke/Dateien
+   Groß-/Kleinschreibung spielt keine Rolle.
+========================================================= */
+
+function isIgnoredPath(path) {
+
+  const normalized =
+    String(path || "")
+      .replace(/\\/g, "/")
+      .replace(/^\/+|\/+$/g, "")
+      .toLowerCase();
+
+
+  return (
+    normalized === "zapke" ||
+    normalized.startsWith("zapke/")
+  );
+
+}
+
+
+/* =========================================================
    DOM-HILFSFUNKTION
 ========================================================= */
 
@@ -2449,8 +2478,6 @@ function updateUserHeader() {
 
 /* =========================================================
    ADMIN SICHTBARKEIT
-   WICHTIGE KORREKTUR:
-   Es gibt im HTML "id=admin", NICHT "id=adminSection".
 ========================================================= */
 
 function updateAdminVisibility() {
@@ -3400,6 +3427,9 @@ function fileIcon(path) {
 
 /* =========================================================
    GITHUB LADEN
+   V5:
+   Nach dem Abruf wird das komplette Zapke-Verzeichnis
+   aus dem Repository-Baum entfernt.
 ========================================================= */
 
 async function loadRepository() {
@@ -3437,10 +3467,22 @@ async function loadRepository() {
       await response.json();
 
 
-    repositoryTree =
+    const completeTree =
       Array.isArray(data.tree)
         ? data.tree
         : [];
+
+
+    /*
+     * V5:
+     * Zapke und ALLES darunter werden entfernt.
+     */
+    repositoryTree =
+      completeTree.filter(
+        function(item) {
+          return !isIgnoredPath(item.path);
+        }
+      );
 
 
     renderMainSections();
@@ -3507,7 +3549,10 @@ function rootFolders() {
   repositoryTree.forEach(
     function(item) {
 
-      if (item.type !== "tree") {
+      if (
+        item.type !== "tree" ||
+        isIgnoredPath(item.path)
+      ) {
         return;
       }
 
@@ -3544,6 +3589,11 @@ function renderMainSections() {
 
   roots.forEach(
     function(folder) {
+
+      if (isIgnoredPath(folder)) {
+        return;
+      }
+
 
       const n =
         folder.toLowerCase();
@@ -3655,6 +3705,14 @@ function renderFolderGrid(
   container.innerHTML = "";
 
 
+  folders =
+    folders.filter(
+      function(folder) {
+        return !isIgnoredPath(folder);
+      }
+    );
+
+
   folders.sort(
     function(a,b) {
 
@@ -3686,6 +3744,11 @@ function renderFolderGrid(
 
   folders.forEach(
     function(folder,index) {
+
+      if (isIgnoredPath(folder)) {
+        return;
+      }
+
 
       const card =
         document.createElement("div");
@@ -3731,7 +3794,11 @@ function renderFolderGrid(
       card.addEventListener(
         "click",
         function() {
-          openFolder(folder);
+
+          if (!isIgnoredPath(folder)) {
+            openFolder(folder);
+          }
+
         }
       );
 
@@ -3746,9 +3813,23 @@ function renderFolderGrid(
 
 /* =========================================================
    ORDNER ÖFFNEN
+   V5:
+   Zapke kann auch bei direktem Aufruf nicht geöffnet werden.
 ========================================================= */
 
 function openFolder(path) {
+
+  if (isIgnoredPath(path)) {
+
+    console.warn(
+      "Ignorierter Ordner wurde blockiert:",
+      path
+    );
+
+    return;
+
+  }
+
 
   const panel =
     getElement("contentPanel");
@@ -3809,6 +3890,13 @@ function openFolder(path) {
       function(item) {
 
         if (
+          isIgnoredPath(item.path)
+        ) {
+          return false;
+        }
+
+
+        if (
           !item.path.startsWith(prefix)
         ) {
           return false;
@@ -3834,7 +3922,12 @@ function openFolder(path) {
     children
       .filter(
         function(item) {
-          return item.type === "tree";
+
+          return (
+            item.type === "tree" &&
+            !isIgnoredPath(item.path)
+          );
+
         }
       )
       .sort(
@@ -3856,7 +3949,12 @@ function openFolder(path) {
     children
       .filter(
         function(item) {
-          return item.type === "blob";
+
+          return (
+            item.type === "blob" &&
+            !isIgnoredPath(item.path)
+          );
+
         }
       )
       .sort(
@@ -3890,6 +3988,11 @@ function openFolder(path) {
 
     folders.forEach(
       function(folder) {
+
+        if (isIgnoredPath(folder.path)) {
+          return;
+        }
+
 
         const name =
           folder.path.substring(
@@ -3942,6 +4045,11 @@ function openFolder(path) {
 
     files.forEach(
       function(file) {
+
+        if (isIgnoredPath(file.path)) {
+          return;
+        }
+
 
         const name =
           file.path.substring(
@@ -4033,9 +4141,19 @@ function openFolder(path) {
           "click",
           function() {
 
-            openFolder(
-              element.dataset.folderPath
-            );
+            const targetPath =
+              element.dataset.folderPath;
+
+
+            if (
+              !isIgnoredPath(targetPath)
+            ) {
+
+              openFolder(
+                targetPath
+              );
+
+            }
 
           }
         );
