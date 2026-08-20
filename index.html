@@ -7,6 +7,7 @@
 
 <title>QM-Portal – Intensivpflege-Halle-GmbH</title>
 
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -20,13 +21,12 @@
   --green-dark:#075c43;
   --red:#d93025;
   --orange:#fb8c00;
+  --blue:#1e88e5;
 }
 
 *{box-sizing:border-box}
 
-html{
-  scroll-behavior:smooth;
-}
+html{scroll-behavior:smooth}
 
 body{
   margin:0;
@@ -44,23 +44,26 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:20px;
+  padding:25px;
   background:
-    linear-gradient(135deg,#075c43,#087f5b,#13a06f);
+    radial-gradient(circle at top left,#d9f4e9,transparent 40%),
+    radial-gradient(circle at bottom right,#dbeeff,transparent 40%),
+    var(--bg);
 }
 
-.auth-box{
+.auth-card{
   width:100%;
-  max-width:460px;
+  max-width:470px;
   background:#fff;
+  border:1px solid var(--line);
   border-radius:25px;
   padding:35px;
-  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  box-shadow:0 15px 45px rgba(0,0,0,.12);
 }
 
 .auth-logo{
-  width:90px;
-  height:90px;
+  width:85px;
+  height:85px;
   margin:0 auto 20px;
   border-radius:20px;
   overflow:hidden;
@@ -68,6 +71,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
+  box-shadow:0 5px 18px rgba(0,0,0,.1);
 }
 
 .auth-logo img{
@@ -76,91 +80,111 @@ body{
   object-fit:contain;
 }
 
-.auth-box h1{
+.auth-title{
   text-align:center;
-  margin:0 0 8px;
+  margin:0;
+  font-size:27px;
 }
 
 .auth-subtitle{
   text-align:center;
   color:var(--muted);
-  margin-bottom:28px;
+  margin:8px 0 25px;
 }
 
-.auth-input{
+.auth-tabs{
+  display:flex;
+  gap:8px;
+  margin-bottom:22px;
+}
+
+.auth-tabs button{
+  flex:1;
+  border:0;
+  padding:12px;
+  border-radius:11px;
+  cursor:pointer;
+  background:#edf4f2;
+  font-weight:800;
+  color:var(--text);
+}
+
+.auth-tabs button.active{
+  background:var(--green);
+  color:#fff;
+}
+
+.auth-form label{
+  display:block;
+  margin:13px 0 6px;
+  font-weight:700;
+}
+
+.auth-form input{
   width:100%;
-  padding:14px;
+  padding:13px 14px;
   border:1px solid var(--line);
   border-radius:11px;
-  margin-bottom:12px;
   font-size:16px;
-}
-
-.auth-input:focus{
   outline:none;
-  border-color:var(--green);
-  box-shadow:0 0 0 3px rgba(8,127,91,.12);
 }
 
-.auth-button{
+.auth-form input:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(8,127,91,.1);
+}
+
+.auth-submit{
   width:100%;
-  border:0;
+  margin-top:20px;
   padding:14px;
-  border-radius:11px;
-  background:var(--green);
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(135deg,#075c43,#087f5b);
   color:#fff;
   font-size:16px;
   font-weight:800;
   cursor:pointer;
-  margin-top:5px;
 }
 
-.auth-button:hover{
-  background:var(--green-dark);
-}
-
-.auth-secondary{
-  background:#e8f4ef;
-  color:var(--green-dark);
-}
-
-.auth-secondary:hover{
-  background:#d7eee5;
+.auth-submit:hover{
+  filter:brightness(1.08);
 }
 
 .auth-message{
-  margin-top:15px;
-  padding:12px;
-  border-radius:10px;
   display:none;
+  margin-top:15px;
+  padding:13px;
+  border-radius:10px;
+  font-size:14px;
 }
 
 .auth-message.error{
   display:block;
   background:#fff0f0;
-  color:#9b2525;
+  color:#8c2929;
   border:1px solid #efcaca;
 }
 
 .auth-message.success{
   display:block;
-  background:#eaf8f1;
-  color:#14643f;
+  background:#edf9f3;
+  color:#17613f;
   border:1px solid #c5e8d5;
 }
 
 /* =========================================================
-   APP
+   PORTAL
 ========================================================= */
 
-#app{
+#portal{
   display:none;
 }
 
 header{
   background:linear-gradient(135deg,#075c43,#087f5b,#13a06f);
   color:#fff;
-  padding:30px 18px;
+  padding:25px 18px;
   box-shadow:0 5px 20px rgba(0,0,0,.15);
 }
 
@@ -190,6 +214,10 @@ header{
   object-fit:contain;
 }
 
+.header-text{
+  flex:1;
+}
+
 .header-text h1{
   margin:0 0 5px;
   font-size:30px;
@@ -200,41 +228,38 @@ header{
   opacity:.9;
 }
 
-/* =========================================================
-   USER BAR
-========================================================= */
-
-.user-bar{
-  background:#075c43;
-  color:#fff;
-  padding:9px 15px;
-}
-
-.user-bar-inner{
-  max-width:1200px;
-  margin:auto;
+.user-box{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  gap:15px;
+  gap:10px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.25);
+  padding:10px 12px;
+  border-radius:13px;
 }
 
 .user-info{
-  font-size:14px;
+  text-align:right;
+  line-height:1.25;
 }
 
-.logout-button{
+.user-name{
+  font-weight:800;
+}
+
+.user-role{
+  font-size:12px;
+  opacity:.85;
+}
+
+.logout-btn{
   border:0;
-  background:#fff;
-  color:#075c43;
-  padding:8px 13px;
   border-radius:9px;
+  padding:8px 11px;
+  background:#fff;
+  color:var(--green-dark);
   font-weight:800;
   cursor:pointer;
-}
-
-.logout-button:hover{
-  background:#e7f5ef;
 }
 
 /* =========================================================
@@ -259,22 +284,16 @@ nav{
   overflow-x:auto;
 }
 
-nav a,
-nav button{
+nav a{
   color:var(--text);
   text-decoration:none;
   padding:10px 14px;
   border-radius:10px;
   white-space:nowrap;
   font-weight:700;
-  border:0;
-  background:transparent;
-  cursor:pointer;
-  font-size:15px;
 }
 
-nav a:hover,
-nav button:hover{
+nav a:hover{
   background:#e5f4ee;
   color:var(--green-dark);
 }
@@ -353,9 +372,7 @@ main{
   cursor:pointer;
   overflow:hidden;
   box-shadow:0 6px 18px rgba(0,0,0,.06);
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease;
+  transition:transform .2s ease,box-shadow .2s ease;
 }
 
 .folder-card:hover{
@@ -520,13 +537,11 @@ main{
    ADMIN
 ========================================================= */
 
-#adminPanel{
+#adminSection{
   display:none;
-  margin-top:42px;
-  scroll-margin-top:80px;
 }
 
-.admin-box{
+.admin-panel{
   background:#fff;
   border:1px solid var(--line);
   border-radius:22px;
@@ -536,8 +551,8 @@ main{
 
 .admin-header{
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
   gap:15px;
   margin-bottom:20px;
 }
@@ -547,99 +562,126 @@ main{
 }
 
 .admin-badge{
-  background:#fff2c7;
-  color:#805b00;
+  background:#fff3cd;
+  color:#795500;
+  border:1px solid #efd98a;
   padding:8px 12px;
   border-radius:10px;
   font-weight:800;
 }
 
-.table-wrap{
+.admin-table-wrap{
   overflow-x:auto;
 }
 
-.user-table{
+.admin-table{
   width:100%;
   border-collapse:collapse;
+  min-width:760px;
 }
 
-.user-table th,
-.user-table td{
+.admin-table th{
   text-align:left;
-  padding:13px 10px;
+  background:#f2f7f5;
+  padding:13px;
+  border-bottom:1px solid var(--line);
+}
+
+.admin-table td{
+  padding:13px;
   border-bottom:1px solid var(--line);
   vertical-align:middle;
 }
 
-.user-table th{
-  background:#f5faf8;
-}
-
 .status{
   display:inline-block;
-  padding:5px 9px;
-  border-radius:8px;
-  font-size:13px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
   font-weight:800;
 }
 
 .status.active{
-  background:#e4f7eb;
-  color:#18703d;
+  background:#def5e9;
+  color:#17613f;
 }
 
-.status.blocked{
-  background:#ffe7e7;
-  color:#a12626;
+.status.inactive{
+  background:#ffe1e1;
+  color:#8c2929;
 }
 
-.role{
+.role-badge{
   display:inline-block;
-  padding:5px 9px;
-  border-radius:8px;
-  background:#edf1ff;
-  color:#3c4e9a;
-  font-size:13px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
   font-weight:800;
+  background:#e9eefc;
+  color:#304c9b;
 }
 
 .admin-actions{
   display:flex;
-  gap:6px;
   flex-wrap:wrap;
+  gap:6px;
 }
 
-.admin-action{
+.admin-actions button{
   border:0;
   border-radius:8px;
-  padding:7px 10px;
+  padding:8px 10px;
+  cursor:pointer;
   font-weight:700;
+}
+
+.btn-lock{
+  background:#ffe4e4;
+  color:#9a2929;
+}
+
+.btn-unlock{
+  background:#dff5e8;
+  color:#17613f;
+}
+
+.btn-role{
+  background:#e8efff;
+  color:#304c9b;
+}
+
+.btn-name{
+  background:#fff1d9;
+  color:#8a5700;
+}
+
+.btn-refresh{
+  background:#e5f4ee;
+  color:var(--green-dark);
+  border:0;
+  border-radius:10px;
+  padding:10px 14px;
+  font-weight:800;
   cursor:pointer;
 }
 
-.admin-action.block{
-  background:#ffe5e5;
-  color:#9d2424;
+.admin-message{
+  display:none;
+  margin-bottom:15px;
+  padding:12px;
+  border-radius:10px;
 }
 
-.admin-action.activate{
-  background:#e4f6eb;
-  color:#16663a;
+.admin-message.success{
+  display:block;
+  background:#edf9f3;
+  color:#17613f;
 }
 
-.admin-action.admin{
-  background:#fff0c7;
-  color:#765500;
-}
-
-.admin-action:hover{
-  filter:brightness(.96);
-}
-
-.admin-note{
-  margin-top:18px;
-  color:var(--muted);
-  font-size:13px;
+.admin-message.error{
+  display:block;
+  background:#fff0f0;
+  color:#8c2929;
 }
 
 /* =========================================================
@@ -697,10 +739,11 @@ footer p{
    MOBILE
 ========================================================= */
 
-@media(max-width:650px){
+@media(max-width:700px){
 
   .header-inner{
     align-items:flex-start;
+    flex-wrap:wrap;
   }
 
   .logo{
@@ -716,6 +759,15 @@ footer p{
     font-size:14px;
   }
 
+  .user-box{
+    width:100%;
+  }
+
+  .user-info{
+    text-align:left;
+    flex:1;
+  }
+
   .hero{
     padding:24px;
   }
@@ -728,11 +780,9 @@ footer p{
     grid-template-columns:1fr;
   }
 
-  .user-bar-inner{
-    align-items:flex-start;
-    flex-direction:column;
+  .auth-card{
+    padding:25px;
   }
-
 }
 </style>
 </head>
@@ -740,12 +790,12 @@ footer p{
 <body>
 
 <!-- =========================================================
-     LOGIN
+     LOGIN / REGISTRIERUNG
 ========================================================= -->
 
 <div id="authScreen">
 
-  <div class="auth-box">
+  <div class="auth-card">
 
     <div class="auth-logo">
       <img
@@ -754,56 +804,93 @@ footer p{
       >
     </div>
 
-    <h1>QM-Portal</h1>
+    <h1 class="auth-title">QM-Portal</h1>
 
-    <div class="auth-subtitle">
+    <p class="auth-subtitle">
       Intensivpflege-Halle-GmbH
+    </p>
+
+    <div class="auth-tabs">
+      <button id="loginTab" class="active" onclick="showLogin()">
+        🔐 Anmelden
+      </button>
+
+      <button id="registerTab" onclick="showRegister()">
+        👤 Registrieren
+      </button>
     </div>
 
-    <input
-      id="authName"
-      class="auth-input"
-      type="text"
-      placeholder="Name"
-      autocomplete="name"
+    <!-- LOGIN -->
+
+    <form id="loginForm" class="auth-form">
+
+      <label for="loginEmail">E-Mail-Adresse</label>
+
+      <input
+        id="loginEmail"
+        type="email"
+        autocomplete="email"
+        required
+      >
+
+      <label for="loginPassword">Passwort</label>
+
+      <input
+        id="loginPassword"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button class="auth-submit" type="submit">
+        🔐 Anmelden
+      </button>
+
+    </form>
+
+    <!-- REGISTRIERUNG -->
+
+    <form
+      id="registerForm"
+      class="auth-form"
+      style="display:none"
     >
 
-    <input
-      id="authEmail"
-      class="auth-input"
-      type="email"
-      placeholder="E-Mail-Adresse"
-      autocomplete="email"
-    >
+      <label for="registerName">Name</label>
 
-    <input
-      id="authPassword"
-      class="auth-input"
-      type="password"
-      placeholder="Passwort"
-      autocomplete="current-password"
-    >
+      <input
+        id="registerName"
+        type="text"
+        autocomplete="name"
+        required
+      >
 
-    <button
-      id="loginButton"
-      class="auth-button"
-      onclick="login()"
-    >
-      🔐 Einloggen
-    </button>
+      <label for="registerEmail">E-Mail-Adresse</label>
 
-    <button
-      id="registerButton"
-      class="auth-button auth-secondary"
-      onclick="register()"
-    >
-      📝 Registrieren
-    </button>
+      <input
+        id="registerEmail"
+        type="email"
+        autocomplete="email"
+        required
+      >
 
-    <div
-      id="authMessage"
-      class="auth-message"
-    ></div>
+      <label for="registerPassword">Passwort</label>
+
+      <input
+        id="registerPassword"
+        type="password"
+        autocomplete="new-password"
+        minlength="6"
+        required
+      >
+
+      <button class="auth-submit" type="submit">
+        👤 Konto erstellen
+      </button>
+
+    </form>
+
+    <div id="authMessage" class="auth-message"></div>
 
   </div>
 
@@ -811,10 +898,10 @@ footer p{
 
 
 <!-- =========================================================
-     APP
+     PORTAL
 ========================================================= -->
 
-<div id="app">
+<div id="portal">
 
 <header>
 
@@ -825,16 +912,47 @@ footer p{
       <img
         src="https://www.intensivpflege-halle.de/wp-content/uploads/2021/01/cropped-logo.png"
         alt="Intensivpflege-Halle-GmbH"
-        onerror="
-          this.style.display='none';
-        "
       >
 
     </div>
 
     <div class="header-text">
+
       <h1>QM-Portal</h1>
-      <p>Qualitätsmanagement · Intensivpflege-Halle-GmbH</p>
+
+      <p>
+        Qualitätsmanagement · Intensivpflege-Halle-GmbH
+      </p>
+
+    </div>
+
+    <div class="user-box">
+
+      <div class="user-info">
+
+        <div
+          id="currentUserName"
+          class="user-name"
+        >
+          Benutzer
+        </div>
+
+        <div
+          id="currentUserRole"
+          class="user-role"
+        >
+          Mitarbeiter
+        </div>
+
+      </div>
+
+      <button
+        class="logout-btn"
+        onclick="logout()"
+      >
+        Abmelden
+      </button>
+
     </div>
 
   </div>
@@ -842,47 +960,29 @@ footer p{
 </header>
 
 
-<div class="user-bar">
-
-  <div class="user-bar-inner">
-
-    <div
-      id="userInfo"
-      class="user-info"
-    >
-      Angemeldet
-    </div>
-
-    <button
-      class="logout-button"
-      onclick="logout()"
-    >
-      🚪 Abmelden
-    </button>
-
-  </div>
-
-</div>
-
-
 <nav>
 
   <div class="nav-inner">
 
     <a href="#start">🏠 Start</a>
+
     <a href="#qm">📚 QM-Handbuch</a>
+
     <a href="#standards">📋 Standards</a>
+
     <a href="#schulungen">🎓 Schulungen</a>
+
     <a href="#bilder">📷 Bilderlaubnis</a>
+
     <a href="#pdl">👩‍⚕️ PDL-Anweisungen</a>
 
-    <button
-      id="adminNavButton"
-      onclick="showAdmin()"
+    <a
+      id="adminNav"
+      href="#admin"
       style="display:none"
     >
-      👑 Admin
-    </button>
+      🛡️ Adminbereich
+    </a>
 
   </div>
 
@@ -890,6 +990,10 @@ footer p{
 
 
 <main>
+
+<!-- =========================================================
+     START
+========================================================= -->
 
 <section id="start" class="hero">
 
@@ -901,6 +1005,7 @@ footer p{
   </p>
 
   <p>
+    Die Ordner werden automatisch aus dem GitHub-Repository geladen.
     Klicke auf einen Ordner, um dessen Dateien und Unterordner anzuzeigen.
   </p>
 
@@ -914,8 +1019,11 @@ footer p{
 <section id="qm" class="section">
 
   <div class="section-title">
+
     <span class="section-title-icon">📚</span>
+
     <h2>QM-Handbuch</h2>
+
   </div>
 
   <div id="qmFolders" class="folder-grid">
@@ -937,8 +1045,11 @@ footer p{
 <section id="standards" class="section">
 
   <div class="section-title">
+
     <span class="section-title-icon">📋</span>
+
     <h2>Standards & Verfahrensanweisungen</h2>
+
   </div>
 
   <div id="standardFolders" class="folder-grid">
@@ -960,8 +1071,11 @@ footer p{
 <section id="schulungen" class="section">
 
   <div class="section-title">
+
     <span class="section-title-icon">🎓</span>
+
     <h2>Schulungen & Unterweisungen</h2>
+
   </div>
 
   <div id="trainingFolders" class="folder-grid">
@@ -983,8 +1097,11 @@ footer p{
 <section id="bilder" class="section">
 
   <div class="section-title">
+
     <span class="section-title-icon">📷</span>
+
     <h2>Bilderlaubnis</h2>
+
   </div>
 
   <div id="imageFolders" class="folder-grid">
@@ -1006,8 +1123,11 @@ footer p{
 <section id="pdl" class="section">
 
   <div class="section-title">
+
     <span class="section-title-icon">👩‍⚕️</span>
+
     <h2>Anweisungen von PDL an Mitarbeiter</h2>
+
   </div>
 
   <div id="pdlFolders" class="folder-grid">
@@ -1023,10 +1143,107 @@ footer p{
 
 
 <!-- =========================================================
+     ADMINBEREICH
+========================================================= -->
+
+<section
+  id="admin"
+  class="section"
+  style="display:none"
+>
+
+  <div class="section-title">
+
+    <span class="section-title-icon">🛡️</span>
+
+    <h2>Adminbereich</h2>
+
+  </div>
+
+  <div class="admin-panel">
+
+    <div class="admin-header">
+
+      <div>
+        <h2>👥 Mitarbeiterverwaltung</h2>
+        <p style="color:var(--muted)">
+          Verwaltung der registrierten Benutzer.
+        </p>
+      </div>
+
+      <div class="admin-badge">
+        🛡️ Administrator
+      </div>
+
+    </div>
+
+    <div
+      id="adminMessage"
+      class="admin-message"
+    ></div>
+
+    <button
+      class="btn-refresh"
+      onclick="loadAdminProfiles()"
+    >
+      🔄 Aktualisieren
+    </button>
+
+    <br><br>
+
+    <div class="admin-table-wrap">
+
+      <table class="admin-table">
+
+        <thead>
+
+          <tr>
+
+            <th>Name</th>
+
+            <th>Rolle</th>
+
+            <th>Status</th>
+
+            <th>Letzter Login</th>
+
+            <th>Aktionen</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="adminUsers">
+
+          <tr>
+
+            <td colspan="5">
+              <div class="loading">
+                Mitarbeiter werden geladen …
+              </div>
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
      CONTENT PANEL
 ========================================================= -->
 
-<section id="contentPanel">
+<section
+  id="contentPanel"
+  class="content-panel"
+>
 
   <button
     class="back-button"
@@ -1044,50 +1261,14 @@ footer p{
 
 </section>
 
-
-<!-- =========================================================
-     ADMINBEREICH
-========================================================= -->
-
-<section
-  id="adminPanel"
-  class="section"
->
-
-  <div class="admin-box">
-
-    <div class="admin-header">
-
-      <h2>👑 Adminbereich</h2>
-
-      <span class="admin-badge">
-        Administrator
-      </span>
-
-    </div>
-
-    <p>
-      Hier kannst du die registrierten Mitarbeiter verwalten.
-    </p>
-
-    <div
-      id="adminContent"
-      class="loading"
-    >
-      <div class="spinner"></div>
-      Mitarbeiter werden geladen …
-    </div>
-
-  </div>
-
-</section>
-
 </main>
 
 
 <footer>
 
-  <p><strong>Intensivpflege-Halle-GmbH</strong></p>
+  <p>
+    <strong>Intensivpflege-Halle-GmbH</strong>
+  </p>
 
   <p>
     Internes Qualitätsmanagement-Portal
@@ -1099,7 +1280,6 @@ footer p{
 
 
 <script>
-
 /* =========================================================
    SUPABASE
 ========================================================= */
@@ -1139,1011 +1319,64 @@ const API =
   BRANCH +
   "?recursive=1";
 
+
 let repositoryTree = [];
+
 let currentUser = null;
+
 let currentProfile = null;
 
 
 /* =========================================================
-   AUTH MESSAGE
-========================================================= */
-
-function showAuthMessage(
-  message,
-  type="error"
-){
-
-  const box =
-    document.getElementById(
-      "authMessage"
-    );
-
-  box.textContent = message;
-
-  box.className =
-    "auth-message " + type;
-
-}
-
-
-/* =========================================================
-   REGISTRIEREN
-========================================================= */
-
-async function register(){
-
-  const name =
-    document.getElementById(
-      "authName"
-    ).value.trim();
-
-  const email =
-    document.getElementById(
-      "authEmail"
-    ).value.trim();
-
-  const password =
-    document.getElementById(
-      "authPassword"
-    ).value;
-
-
-  if(!name){
-
-    showAuthMessage(
-      "Bitte deinen Namen eingeben."
-    );
-
-    return;
-
-  }
-
-
-  if(!email || !password){
-
-    showAuthMessage(
-      "Bitte E-Mail und Passwort eingeben."
-    );
-
-    return;
-
-  }
-
-
-  if(password.length < 6){
-
-    showAuthMessage(
-      "Das Passwort muss mindestens 6 Zeichen haben."
-    );
-
-    return;
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.auth.signUp({
-      email:email,
-      password:password,
-      options:{
-        data:{
-          name:name
-        }
-      }
-    });
-
-
-  if(error){
-
-    showAuthMessage(
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  /*
-    Falls Supabase die E-Mail-Bestätigung
-    deaktiviert hat, ist der Benutzer
-    direkt eingeloggt.
-  */
-
-  if(data.user){
-
-    await createOwnProfile(
-      data.user,
-      name
-    );
-
-  }
-
-
-  showAuthMessage(
-    "Registrierung erfolgreich. Falls eine E-Mail-Bestätigung aktiviert ist, prüfe jetzt dein Postfach.",
-    "success"
-  );
-
-}
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-async function login(){
-
-  const email =
-    document.getElementById(
-      "authEmail"
-    ).value.trim();
-
-  const password =
-    document.getElementById(
-      "authPassword"
-    ).value;
-
-
-  if(!email || !password){
-
-    showAuthMessage(
-      "Bitte E-Mail und Passwort eingeben."
-    );
-
-    return;
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.auth.signInWithPassword({
-      email:email,
-      password:password
-    });
-
-
-  if(error){
-
-    showAuthMessage(
-      "Anmeldung fehlgeschlagen: " +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  currentUser =
-    data.user;
-
-
-  await afterLogin();
-
-}
-
-
-/* =========================================================
-   EIGENES PROFIL
-========================================================= */
-
-async function createOwnProfile(
-  user,
-  name
-){
-
-  if(!user)
-    return;
-
-
-  const {
-    data:existing
-  } =
-    await supabaseClient
-      .from("profiles")
-      .select("id")
-      .eq("id",user.id)
-      .maybeSingle();
-
-
-  if(existing)
-    return;
-
-
-  await supabaseClient
-    .from("profiles")
-    .insert({
-      id:user.id,
-      name:
-        name ||
-        user.user_metadata?.name ||
-        user.email,
-      role:"mitarbeiter",
-      active:true,
-      last_login:new Date().toISOString()
-    });
-
-}
-
-
-/* =========================================================
-   LOGIN NACHBEREITUNG
-========================================================= */
-
-async function afterLogin(){
-
-  if(!currentUser)
-    return;
-
-
-  await createOwnProfile(
-    currentUser,
-    currentUser.user_metadata?.name ||
-    currentUser.email
-  );
-
-
-  /*
-    Letzten Login aktualisieren.
-  */
-
-  await supabaseClient
-    .from("profiles")
-    .update({
-      last_login:new Date().toISOString()
-    })
-    .eq("id",currentUser.id);
-
-
-  /*
-    Eigenes Profil laden.
-  */
-
-  const {
-    data:profile,
-    error
-  } =
-    await supabaseClient
-      .from("profiles")
-      .select("*")
-      .eq("id",currentUser.id)
-      .maybeSingle();
-
-
-  if(error){
-
-    console.error(
-      "Profil konnte nicht geladen werden:",
-      error
-    );
-
-  }
-
-
-  currentProfile =
-    profile;
-
-
-  /*
-    Gesperrte Benutzer dürfen
-    das Portal nicht verwenden.
-  */
-
-  if(
-    profile &&
-    profile.active === false
-  ){
-
-    await supabaseClient.auth.signOut();
-
-    showAuthMessage(
-      "Dein Benutzerkonto ist derzeit gesperrt."
-    );
-
-    return;
-
-  }
-
-
-  showApplication();
-
-
-  /*
-    Adminbereich nur für Admins.
-  */
-
-  if(
-    profile &&
-    profile.role === "admin"
-  ){
-
-    document.getElementById(
-      "adminNavButton"
-    ).style.display =
-      "block";
-
-  }
-  else{
-
-    document.getElementById(
-      "adminNavButton"
-    ).style.display =
-      "none";
-
-  }
-
-
-  updateUserBar();
-
-}
-
-
-/* =========================================================
-   APP ANZEIGEN
-========================================================= */
-
-function showApplication(){
-
-  document.getElementById(
-    "authScreen"
-  ).style.display =
-    "none";
-
-  document.getElementById(
-    "app"
-  ).style.display =
-    "block";
-
-}
-
-
-/* =========================================================
-   USER BAR
-========================================================= */
-
-function updateUserBar(){
-
-  if(!currentUser)
-    return;
-
-
-  const name =
-    currentProfile?.name ||
-    currentUser.user_metadata?.name ||
-    currentUser.email;
-
-
-  const role =
-    currentProfile?.role === "admin"
-      ? "👑 Administrator"
-      : "👤 Mitarbeiter";
-
-
-  document.getElementById(
-    "userInfo"
-  ).textContent =
-    `${role} · ${name} · ${currentUser.email}`;
-
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logout(){
-
-  await supabaseClient.auth.signOut();
-
-  currentUser = null;
-  currentProfile = null;
-
-  document.getElementById(
-    "app"
-  ).style.display =
-    "none";
-
-  document.getElementById(
-    "authScreen"
-  ).style.display =
-    "flex";
-
-  document.getElementById(
-    "authPassword"
-  ).value = "";
-
-}
-
-
-/* =========================================================
-   ADMIN ÖFFNEN
-========================================================= */
-
-async function showAdmin(){
-
-  if(
-    !currentProfile ||
-    currentProfile.role !== "admin"
-  ){
-
-    alert(
-      "Du hast keine Administrator-Berechtigung."
-    );
-
-    return;
-
-  }
-
-
-  const panel =
-    document.getElementById(
-      "adminPanel"
-    );
-
-
-  panel.style.display =
-    "block";
-
-
-  panel.scrollIntoView({
-    behavior:"smooth",
-    block:"start"
-  });
-
-
-  await loadUsers();
-
-}
-
-
-/* =========================================================
-   BENUTZER LADEN
-========================================================= */
-
-async function loadUsers(){
-
-  const container =
-    document.getElementById(
-      "adminContent"
-    );
-
-
-  container.innerHTML = `
-    <div class="loading">
-      <div class="spinner"></div>
-      Mitarbeiter werden geladen …
-    </div>
-  `;
-
-
-  /*
-    Diese Abfrage funktioniert,
-    wenn die von dir eingerichtete
-    Admin-RLS-Regel SELECT für Admins
-    erlaubt.
-  */
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("profiles")
-      .select(
-        "id,name,role,active,last_login,created_at"
-      )
-      .order(
-        "created_at",
-        {
-          ascending:false
-        }
-      );
-
-
-  if(error){
-
-    container.innerHTML = `
-      <div class="error">
-
-        <strong>
-          Mitarbeiter konnten nicht geladen werden.
-        </strong>
-
-        <br><br>
-
-        ${escapeHTML(
-          error.message
-        )}
-
-        <br><br>
-
-        Bitte prüfe die RLS-Regel für
-        <strong>profiles</strong>.
-
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  if(!data || !data.length){
-
-    container.innerHTML = `
-      <div class="loading">
-        Noch keine Benutzer vorhanden.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  let html = `
-
-    <div class="table-wrap">
-
-      <table class="user-table">
-
-        <thead>
-
-          <tr>
-            <th>Name</th>
-            <th>E-Mail</th>
-            <th>Rolle</th>
-            <th>Status</th>
-            <th>Letzter Login</th>
-            <th>Aktionen</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-  `;
-
-
-  data.forEach(
-    user => {
-
-      const isSelf =
-        user.id === currentUser.id;
-
-
-      const statusHTML =
-        user.active
-          ? `<span class="status active">🟢 Aktiv</span>`
-          : `<span class="status blocked">🔴 Gesperrt</span>`;
-
-
-      const roleHTML =
-        user.role === "admin"
-          ? `<span class="role">👑 Admin</span>`
-          : `<span class="role">👤 Mitarbeiter</span>`;
-
-
-      const lastLogin =
-        user.last_login
-          ? formatDate(user.last_login)
-          : "Noch nie";
-
-
-      html += `
-
-        <tr>
-
-          <td>
-            <strong>
-              ${escapeHTML(
-                user.name || "Unbekannt"
-              )}
-            </strong>
-          </td>
-
-          <td>
-            ${escapeHTML(
-              user.id === currentUser.id
-                ? currentUser.email
-                : "Benutzerkonto"
-            )}
-          </td>
-
-          <td>
-            ${roleHTML}
-          </td>
-
-          <td>
-            ${statusHTML}
-          </td>
-
-          <td>
-            ${escapeHTML(
-              lastLogin
-            )}
-          </td>
-
-          <td>
-
-            <div class="admin-actions">
-
-      `;
-
-
-      /*
-        Eigenen Account nicht sperren.
-      */
-
-      if(!isSelf){
-
-        if(user.active){
-
-          html += `
-
-            <button
-              class="admin-action block"
-              onclick="changeUserStatus(
-                '${user.id}',
-                false
-              )"
-            >
-              🔒 Sperren
-            </button>
-
-          `;
-
-        }
-        else{
-
-          html += `
-
-            <button
-              class="admin-action activate"
-              onclick="changeUserStatus(
-                '${user.id}',
-                true
-              )"
-            >
-              🔓 Entsperren
-            </button>
-
-          `;
-
-        }
-
-
-        if(user.role !== "admin"){
-
-          html += `
-
-            <button
-              class="admin-action admin"
-              onclick="makeAdmin(
-                '${user.id}'
-              )"
-            >
-              👑 Admin
-            </button>
-
-          `;
-
-        }
-
-      }
-      else{
-
-        html += `
-          <span
-            style="
-              color:var(--muted);
-              font-size:13px;
-            "
-          >
-            Dein Konto
-          </span>
-        `;
-
-      }
-
-
-      html += `
-
-            </div>
-
-          </td>
-
-        </tr>
-
-      `;
-
-    }
-  );
-
-
-  html += `
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-    <div class="admin-note">
-
-      Änderungen werden direkt in Supabase gespeichert.
-      Die tatsächliche Berechtigung wird durch die
-      Supabase-RLS-Regeln geschützt.
-
-    </div>
-
-  `;
-
-
-  container.innerHTML =
-    html;
-
-}
-
-
-/* =========================================================
-   BENUTZER SPERREN / ENTSPERREN
-========================================================= */
-
-async function changeUserStatus(
-  userId,
-  active
-){
-
-  if(
-    !currentProfile ||
-    currentProfile.role !== "admin"
-  ){
-
-    alert(
-      "Keine Berechtigung."
-    );
-
-    return;
-
-  }
-
-
-  const action =
-    active
-      ? "entsperren"
-      : "sperren";
-
-
-  if(
-    !confirm(
-      `Möchtest du diesen Benutzer wirklich ${action}?`
-    )
-  ){
-
-    return;
-
-  }
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("profiles")
-      .update({
-        active:active
-      })
-      .eq("id",userId);
-
-
-  if(error){
-
-    alert(
-      "Änderung konnte nicht gespeichert werden:\n\n" +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  await loadUsers();
-
-}
-
-
-/* =========================================================
-   ADMIN MACHEN
-========================================================= */
-
-async function makeAdmin(
-  userId
-){
-
-  if(
-    !currentProfile ||
-    currentProfile.role !== "admin"
-  ){
-
-    alert(
-      "Keine Berechtigung."
-    );
-
-    return;
-
-  }
-
-
-  if(
-    !confirm(
-      "Soll dieser Mitarbeiter Administrator werden?"
-    )
-  ){
-
-    return;
-
-  }
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("profiles")
-      .update({
-        role:"admin"
-      })
-      .eq("id",userId);
-
-
-  if(error){
-
-    alert(
-      "Rolle konnte nicht geändert werden:\n\n" +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  await loadUsers();
-
-}
-
-
-/* =========================================================
-   DATUM
-========================================================= */
-
-function formatDate(
-  value
-){
-
-  try{
-
-    return new Date(value)
-      .toLocaleString(
-        "de-DE",
-        {
-          dateStyle:"short",
-          timeStyle:"short"
-        }
-      );
-
-  }
-  catch{
-
-    return value;
-
-  }
-
-}
-
-
-/* =========================================================
-   GITHUB ICONS
+   ICONS
 ========================================================= */
 
 function folderIcon(name){
 
   const n =
-    decodeURIComponent(name)
-      .toLowerCase();
+    decodeURIComponent(name).toLowerCase();
 
-  if(
-    n.includes("schulung") ||
-    n.includes("fob") ||
-    n.includes("fortbildung")
-  )
-    return "🎓";
+  if(n.includes("schulung")) return "🎓";
+  if(n.includes("fob")) return "🎓";
+  if(n.includes("fortbildung")) return "🎓";
 
-  if(n.includes("hygiene"))
-    return "🧼";
+  if(n.includes("hygiene")) return "🧼";
+  if(n.includes("prophylax")) return "🛡️";
+  if(n.includes("expertenstandard")) return "📖";
 
-  if(
-    n.includes("prophylax") ||
-    n.includes("expertenstandard")
-  )
-    return "🛡️";
+  if(n.includes("prozess")) return "⚙️";
 
-  if(n.includes("prozess"))
-    return "⚙️";
+  if(n.includes("notfall")) return "🚨";
+  if(n.includes("hilfe")) return "🆘";
 
-  if(
-    n.includes("notfall") ||
-    n.includes("hilfe")
-  )
-    return "🚨";
+  if(n.includes("datenschutz")) return "🔐";
+  if(n.includes("beschwer")) return "📣";
 
-  if(n.includes("datenschutz"))
-    return "🔐";
+  if(n.includes("pflegeberatung")) return "👩‍⚕️";
+  if(n.includes("visiten")) return "🩺";
+  if(n.includes("fallbesprech")) return "🩺";
 
-  if(n.includes("beschwer"))
-    return "📣";
+  if(n.includes("bilder")) return "📷";
+  if(n.includes("pdl")) return "👩‍⚕️";
 
-  if(
-    n.includes("pflegeberatung") ||
-    n.includes("pdl")
-  )
-    return "👩‍⚕️";
+  if(n.includes("behandlungspflege")) return "💉";
+  if(n.includes("grundpflege")) return "🛏️";
 
-  if(
-    n.includes("visiten") ||
-    n.includes("fallbesprech")
-  )
-    return "🩺";
+  if(n.includes("chronische")) return "🩹";
+  if(n.includes("wunden")) return "🩹";
+  if(n.includes("schmerzen")) return "💊";
 
-  if(n.includes("bilder"))
-    return "📷";
+  if(n.includes("beziehung")) return "🤝";
+  if(n.includes("bezugspflege")) return "👩‍⚕️";
 
-  if(n.includes("behandlungspflege"))
-    return "💉";
+  if(n.includes("herzbett")) return "🛏️";
+  if(n.includes("nestlagerung")) return "🛏️";
 
-  if(n.includes("grundpflege"))
-    return "🛏️";
-
-  if(
-    n.includes("chronische") ||
-    n.includes("wunden")
-  )
-    return "🩹";
-
-  if(n.includes("schmerzen"))
-    return "💊";
-
-  if(n.includes("beziehung"))
-    return "🤝";
-
-  if(n.includes("bezugspflege"))
-    return "👩‍⚕️";
-
-  if(n.includes("herzbett"))
-    return "🛏️";
-
-  if(n.includes("nestlagerung"))
-    return "🛏️";
-
-  if(n.includes("aki"))
-    return "🩺";
+  if(n.includes("aki")) return "🩺";
 
   return "📁";
-
 }
 
-
-/* =========================================================
-   FARBEN
-========================================================= */
 
 const folderColors = [
   "#e53935",
@@ -2168,7 +1401,7 @@ function folderColor(index){
 
 
 /* =========================================================
-   HTML SICHERN
+   SICHERHEIT / HTML
 ========================================================= */
 
 function escapeHTML(text){
@@ -2182,10 +1415,6 @@ function escapeHTML(text){
 
 }
 
-
-/* =========================================================
-   DATEINAME
-========================================================= */
 
 function cleanFileName(name){
 
@@ -2203,7 +1432,1075 @@ function cleanFileName(name){
 
 
 /* =========================================================
-   DATEI URL
+   AUTH TABS
+========================================================= */
+
+function showLogin(){
+
+  document.getElementById("loginForm").style.display =
+    "block";
+
+  document.getElementById("registerForm").style.display =
+    "none";
+
+  document.getElementById("loginTab").classList.add("active");
+
+  document.getElementById("registerTab").classList.remove("active");
+
+  clearAuthMessage();
+
+}
+
+
+function showRegister(){
+
+  document.getElementById("loginForm").style.display =
+    "none";
+
+  document.getElementById("registerForm").style.display =
+    "block";
+
+  document.getElementById("loginTab").classList.remove("active");
+
+  document.getElementById("registerTab").classList.add("active");
+
+  clearAuthMessage();
+
+}
+
+
+/* =========================================================
+   AUTH MESSAGE
+========================================================= */
+
+function showAuthMessage(
+  text,
+  type="error"
+){
+
+  const box =
+    document.getElementById(
+      "authMessage"
+    );
+
+  box.textContent = text;
+
+  box.className =
+    "auth-message " + type;
+
+}
+
+
+function clearAuthMessage(){
+
+  const box =
+    document.getElementById(
+      "authMessage"
+    );
+
+  box.textContent = "";
+
+  box.className =
+    "auth-message";
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+document
+  .getElementById("loginForm")
+  .addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+      clearAuthMessage();
+
+      const email =
+        document
+          .getElementById("loginEmail")
+          .value
+          .trim();
+
+      const password =
+        document
+          .getElementById("loginPassword")
+          .value;
+
+
+      const {
+        error
+      } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+
+      if(error){
+
+        showAuthMessage(
+          "Anmeldung fehlgeschlagen: " +
+          error.message
+        );
+
+        return;
+
+      }
+
+      await initializePortal();
+
+    }
+  );
+
+
+/* =========================================================
+   REGISTRIERUNG
+========================================================= */
+
+document
+  .getElementById("registerForm")
+  .addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+      clearAuthMessage();
+
+      const name =
+        document
+          .getElementById("registerName")
+          .value
+          .trim();
+
+      const email =
+        document
+          .getElementById("registerEmail")
+          .value
+          .trim();
+
+      const password =
+        document
+          .getElementById("registerPassword")
+          .value;
+
+
+      if(!name){
+
+        showAuthMessage(
+          "Bitte deinen Namen eingeben."
+        );
+
+        return;
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.signUp({
+
+          email,
+          password,
+
+          options:{
+            data:{
+              name:name
+            }
+          }
+
+        });
+
+
+      if(error){
+
+        showAuthMessage(
+          "Registrierung fehlgeschlagen: " +
+          error.message
+        );
+
+        return;
+
+      }
+
+
+      /*
+        Wenn E-Mail-Bestätigung deaktiviert ist,
+        ist user vorhanden und wir können direkt
+        das Profil anlegen.
+      */
+
+      if(data.user){
+
+        const {
+          error:profileError
+        } =
+          await supabaseClient
+            .from("profiles")
+            .upsert({
+
+              id:data.user.id,
+
+              name:name,
+
+              role:"mitarbeiter",
+
+              active:true
+
+            });
+
+
+        if(profileError){
+
+          console.error(profileError);
+
+          showAuthMessage(
+            "Konto wurde erstellt, aber das Profil konnte nicht angelegt werden. " +
+            "Bitte Administrator informieren."
+          );
+
+          return;
+
+        }
+
+      }
+
+
+      if(!data.session){
+
+        showAuthMessage(
+          "Registrierung erfolgreich. Bitte bestätige deine E-Mail-Adresse und melde dich anschließend an.",
+          "success"
+        );
+
+      }
+      else{
+
+        await initializePortal();
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   PORTAL INITIALISIEREN
+========================================================= */
+
+async function initializePortal(){
+
+  const {
+    data
+  } =
+    await supabaseClient.auth.getUser();
+
+  if(!data.user){
+
+    showAuthScreen();
+
+    return;
+
+  }
+
+
+  currentUser =
+    data.user;
+
+
+  await ensureProfile();
+
+
+  if(!currentProfile){
+
+    showAuthMessage(
+      "Für dieses Konto konnte kein Profil gefunden werden."
+    );
+
+    await logout();
+
+    return;
+
+  }
+
+
+  /*
+    Gesperrte Benutzer dürfen das Portal nicht benutzen.
+  */
+
+  if(currentProfile.active !== true){
+
+    showAuthMessage(
+      "Dieses Benutzerkonto wurde gesperrt. Bitte wende dich an einen Administrator."
+    );
+
+    await supabaseClient.auth.signOut();
+
+    showAuthScreen();
+
+    return;
+
+  }
+
+
+  showPortal();
+
+
+  updateUserHeader();
+
+
+  /*
+    Adminbereich nur für aktive Admins.
+  */
+
+  if(
+    currentProfile.role === "admin" &&
+    currentProfile.active === true
+  ){
+
+    document.getElementById(
+      "adminNav"
+    ).style.display = "block";
+
+    document.getElementById(
+      "admin"
+    ).style.display = "block";
+
+    document.getElementById(
+      "adminSection"
+    ).style.display = "block";
+
+    await loadAdminProfiles();
+
+  }
+  else{
+
+    document.getElementById(
+      "adminNav"
+    ).style.display = "none";
+
+    document.getElementById(
+      "admin"
+    ).style.display = "none";
+
+  }
+
+
+  await loadRepository();
+
+}
+
+
+/* =========================================================
+   PROFIL SICHERSTELLEN
+========================================================= */
+
+async function ensureProfile(){
+
+  if(!currentUser)
+    return;
+
+
+  const {
+    data:profile,
+    error
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id",currentUser.id)
+      .maybeSingle();
+
+
+  if(error){
+
+    console.error(
+      "Profil konnte nicht geladen werden:",
+      error
+    );
+
+    currentProfile = null;
+
+    return;
+
+  }
+
+
+  if(profile){
+
+    currentProfile =
+      profile;
+
+    return;
+
+  }
+
+
+  /*
+    Falls das Profil bei der Registrierung
+    noch nicht erstellt wurde.
+  */
+
+  const name =
+    currentUser.user_metadata?.name ||
+    currentUser.email ||
+    "Mitarbeiter";
+
+
+  const {
+    data:newProfile,
+    error:insertError
+  } =
+    await supabaseClient
+      .from("profiles")
+      .insert({
+
+        id:currentUser.id,
+
+        name:name,
+
+        role:"mitarbeiter",
+
+        active:true
+
+      })
+      .select()
+      .single();
+
+
+  if(insertError){
+
+    console.error(
+      "Profil konnte nicht erstellt werden:",
+      insertError
+    );
+
+    currentProfile = null;
+
+    return;
+
+  }
+
+
+  currentProfile =
+    newProfile;
+
+}
+
+
+/* =========================================================
+   USER HEADER
+========================================================= */
+
+function updateUserHeader(){
+
+  const name =
+    currentProfile?.name ||
+    currentUser?.email ||
+    "Benutzer";
+
+
+  const role =
+    currentProfile?.role === "admin"
+      ? "🛡️ Administrator"
+      : "👤 Mitarbeiter";
+
+
+  document.getElementById(
+    "currentUserName"
+  ).textContent = name;
+
+
+  document.getElementById(
+    "currentUserRole"
+  ).textContent = role;
+
+}
+
+
+/* =========================================================
+   PORTAL ANZEIGEN
+========================================================= */
+
+function showPortal(){
+
+  document.getElementById(
+    "authScreen"
+  ).style.display = "none";
+
+  document.getElementById(
+    "portal"
+  ).style.display = "block";
+
+}
+
+
+function showAuthScreen(){
+
+  document.getElementById(
+    "portal"
+  ).style.display = "none";
+
+  document.getElementById(
+    "authScreen"
+  ).style.display = "flex";
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout(){
+
+  await supabaseClient.auth.signOut();
+
+  currentUser = null;
+
+  currentProfile = null;
+
+  showAuthScreen();
+
+}
+
+
+/* =========================================================
+   ADMIN MESSAGE
+========================================================= */
+
+function showAdminMessage(
+  text,
+  type="success"
+){
+
+  const box =
+    document.getElementById(
+      "adminMessage"
+    );
+
+  box.textContent = text;
+
+  box.className =
+    "admin-message " + type;
+
+}
+
+
+/* =========================================================
+   ADMIN PROFILE LADEN
+========================================================= */
+
+async function loadAdminProfiles(){
+
+  if(
+    !currentProfile ||
+    currentProfile.role !== "admin" ||
+    currentProfile.active !== true
+  ){
+
+    return;
+
+  }
+
+
+  const tbody =
+    document.getElementById(
+      "adminUsers"
+    );
+
+
+  tbody.innerHTML = `
+
+    <tr>
+
+      <td colspan="5">
+
+        <div class="loading">
+
+          <div class="spinner"></div>
+
+          Mitarbeiter werden geladen …
+
+        </div>
+
+      </td>
+
+    </tr>
+
+  `;
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select(
+        "id,name,role,active,last_login,created_at"
+      )
+      .order(
+        "name",
+        {
+          ascending:true,
+          nullsFirst:false
+        }
+      );
+
+
+  if(error){
+
+    console.error(error);
+
+    tbody.innerHTML = `
+
+      <tr>
+
+        <td colspan="5">
+
+          <div class="error">
+
+            Mitarbeiter konnten nicht geladen werden.
+
+            <br><br>
+
+            ${escapeHTML(error.message)}
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    `;
+
+    return;
+
+  }
+
+
+  if(!data || !data.length){
+
+    tbody.innerHTML = `
+
+      <tr>
+
+        <td colspan="5">
+
+          Keine Mitarbeiter gefunden.
+
+        </td>
+
+      </tr>
+
+    `;
+
+    return;
+
+  }
+
+
+  tbody.innerHTML = "";
+
+
+  data.forEach(
+    profile => {
+
+      const tr =
+        document.createElement("tr");
+
+
+      const lastLogin =
+        profile.last_login
+          ? new Date(
+              profile.last_login
+            ).toLocaleString(
+              "de-DE"
+            )
+          : "Noch kein Login";
+
+
+      const isSelf =
+        profile.id === currentUser.id;
+
+
+      const actionButtons =
+        isSelf
+
+          ? `
+            <span style="color:var(--muted);font-size:13px">
+              Eigenes Admin-Konto
+            </span>
+          `
+
+          : `
+
+            ${
+              profile.active
+
+              ? `
+                <button
+                  class="btn-lock"
+                  onclick="changeUserStatus(
+                    '${profile.id}',
+                    false
+                  )"
+                >
+                  🔒 Sperren
+                </button>
+              `
+
+              : `
+                <button
+                  class="btn-unlock"
+                  onclick="changeUserStatus(
+                    '${profile.id}',
+                    true
+                  )"
+                >
+                  🔓 Entsperren
+                </button>
+              `
+            }
+
+
+            <button
+              class="btn-role"
+              onclick="changeUserRole(
+                '${profile.id}',
+                '${profile.role}'
+              )"
+            >
+              👑 Rolle
+            </button>
+
+
+            <button
+              class="btn-name"
+              onclick="changeUserName(
+                '${profile.id}',
+                ${JSON.stringify(profile.name || "")}
+              )"
+            >
+              ✏️ Name
+            </button>
+
+          `;
+
+
+      tr.innerHTML = `
+
+        <td>
+
+          <strong>
+            ${escapeHTML(
+              profile.name ||
+              "Ohne Namen"
+            )}
+          </strong>
+
+        </td>
+
+
+        <td>
+
+          <span class="role-badge">
+
+            ${
+              profile.role === "admin"
+                ? "🛡️ Admin"
+                : "👤 Mitarbeiter"
+            }
+
+          </span>
+
+        </td>
+
+
+        <td>
+
+          <span
+            class="status ${
+              profile.active
+                ? "active"
+                : "inactive"
+            }"
+          >
+
+            ${
+              profile.active
+                ? "🟢 Aktiv"
+                : "🔴 Gesperrt"
+            }
+
+          </span>
+
+        </td>
+
+
+        <td>
+
+          ${escapeHTML(lastLogin)}
+
+        </td>
+
+
+        <td>
+
+          <div class="admin-actions">
+
+            ${actionButtons}
+
+          </div>
+
+        </td>
+
+      `;
+
+
+      tbody.appendChild(tr);
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   ADMIN – STATUS
+========================================================= */
+
+async function changeUserStatus(
+  userId,
+  active
+){
+
+  if(
+    !currentProfile ||
+    currentProfile.role !== "admin"
+  ){
+
+    return;
+
+  }
+
+
+  const action =
+    active
+      ? "entsperren"
+      : "sperren";
+
+
+  if(
+    !confirm(
+      `Mitarbeiter wirklich ${action}?`
+    )
+  ){
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient.rpc(
+      "admin_update_profile",
+      {
+        target_user_id:userId,
+        new_active:active
+      }
+    );
+
+
+  if(error){
+
+    console.error(error);
+
+    showAdminMessage(
+      "Änderung fehlgeschlagen: " +
+      error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  showAdminMessage(
+    active
+      ? "Mitarbeiter wurde entsperrt."
+      : "Mitarbeiter wurde gesperrt.",
+    "success"
+  );
+
+
+  await loadAdminProfiles();
+
+}
+
+
+/* =========================================================
+   ADMIN – ROLLE
+========================================================= */
+
+async function changeUserRole(
+  userId,
+  currentRole
+){
+
+  if(
+    !currentProfile ||
+    currentProfile.role !== "admin"
+  ){
+
+    return;
+
+  }
+
+
+  const newRole =
+    currentRole === "admin"
+      ? "mitarbeiter"
+      : "admin";
+
+
+  const question =
+    currentRole === "admin"
+
+      ? "Soll dieser Benutzer wirklich zum Mitarbeiter zurückgestuft werden?"
+
+      : "Soll dieser Benutzer wirklich Administrator werden?";
+
+
+  if(!confirm(question))
+    return;
+
+
+  const {
+    error
+  } =
+    await supabaseClient.rpc(
+      "admin_update_profile",
+      {
+        target_user_id:userId,
+        new_role:newRole
+      }
+    );
+
+
+  if(error){
+
+    console.error(error);
+
+    showAdminMessage(
+      "Rollenänderung fehlgeschlagen: " +
+      error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  showAdminMessage(
+    "Rolle wurde erfolgreich geändert.",
+    "success"
+  );
+
+
+  await loadAdminProfiles();
+
+}
+
+
+/* =========================================================
+   ADMIN – NAME
+========================================================= */
+
+async function changeUserName(
+  userId,
+  currentName
+){
+
+  if(
+    !currentProfile ||
+    currentProfile.role !== "admin"
+  ){
+
+    return;
+
+  }
+
+
+  const newName =
+    prompt(
+      "Neuen Namen eingeben:",
+      currentName
+    );
+
+
+  if(
+    newName === null ||
+    !newName.trim()
+  ){
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient.rpc(
+      "admin_update_profile",
+      {
+        target_user_id:userId,
+        new_name:newName.trim()
+      }
+    );
+
+
+  if(error){
+
+    console.error(error);
+
+    showAdminMessage(
+      "Namensänderung fehlgeschlagen: " +
+      error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  showAdminMessage(
+    "Name wurde geändert.",
+    "success"
+  );
+
+
+  await loadAdminProfiles();
+
+}
+
+
+/* =========================================================
+   GITHUB FILE URL
 ========================================================= */
 
 function fileURL(path){
@@ -2218,8 +2515,18 @@ function fileURL(path){
           )
       );
 
-  return "/" +
-    parts.join("/");
+  /*
+    Absolute URL verwenden.
+    Dadurch funktionieren die Dateien auch,
+    wenn GitHub Pages eine andere Basis-URL hat.
+  */
+
+  return (
+    "https://" +
+    OWNER +
+    ".github.io/" +
+    parts.join("/")
+  );
 
 }
 
@@ -2245,6 +2552,14 @@ function fileIcon(path){
 
   if(n.endsWith(".mp3"))
     return "🎧";
+
+  if(
+    n.endsWith(".jpg") ||
+    n.endsWith(".jpeg") ||
+    n.endsWith(".png") ||
+    n.endsWith(".webp")
+  )
+    return "🖼️";
 
   if(
     n.endsWith(".doc") ||
@@ -2305,19 +2620,20 @@ async function loadRepository(){
 
     console.error(error);
 
-
     const errorHTML = `
+
       <div class="error">
+
         <strong>
           Dokumente konnten nicht geladen werden.
         </strong>
 
         <br><br>
 
-        ${escapeHTML(
-          error.message
-        )}
+        Fehler beim Abrufen der GitHub-Ordner.
+
       </div>
+
     `;
 
 
@@ -2325,6 +2641,26 @@ async function loadRepository(){
       "qmFolders"
     ).innerHTML =
       errorHTML;
+
+
+    document.getElementById(
+      "standardFolders"
+    ).innerHTML = "";
+
+
+    document.getElementById(
+      "trainingFolders"
+    ).innerHTML = "";
+
+
+    document.getElementById(
+      "imageFolders"
+    ).innerHTML = "";
+
+
+    document.getElementById(
+      "pdlFolders"
+    ).innerHTML = "";
 
   }
 
@@ -2349,9 +2685,7 @@ function rootFolders(){
 
       if(!item.path.includes("/")){
 
-        result.push(
-          item.path
-        );
+        result.push(item.path);
 
       }
 
@@ -2395,8 +2729,11 @@ function renderMainSections(){
       if(
         n === "teams" ||
         n.includes("team")
-      )
+      ){
+
         return;
+
+      }
 
 
       /*
@@ -2404,10 +2741,11 @@ function renderMainSections(){
       */
 
       if(
-        n === "bilderlaubnis"
+        n.includes("bilderlaubnis")
       ){
 
         bilder.push(folder);
+
         return;
 
       }
@@ -2419,33 +2757,24 @@ function renderMainSections(){
 
       if(
         n === "schulungen" ||
-        n.includes("fortbildungskonzept")
+        n.includes("fortbildung") ||
+        n.includes("fob")
       ){
 
         training.push(folder);
+
         return;
 
       }
 
 
       /*
-        PDL / Dokumente
-      */
-
-      if(n === "dokumente"){
-
-        pdl.push(folder);
-        return;
-
-      }
-
-
-      /*
-        Standards
+        Standards / VA
       */
 
       if(
         n.startsWith("va ") ||
+        n.startsWith("va_") ||
         n.includes("behandlungspflege") ||
         n.includes("grundpflege") ||
         n.includes("beziehungsgestaltung") ||
@@ -2457,6 +2786,24 @@ function renderMainSections(){
       ){
 
         standards.push(folder);
+
+        return;
+
+      }
+
+
+      /*
+        PDL / Dokumente
+      */
+
+      if(
+        n === "pdl" ||
+        n.includes("pdl-anweisung") ||
+        n.includes("pdl anweisung")
+      ){
+
+        pdl.push(folder);
+
         return;
 
       }
@@ -2465,8 +2812,8 @@ function renderMainSections(){
       /*
         QM-Handbuch.
 
-        QM-Ordner direkt unter main
-        werden hier angezeigt.
+        QM-Ordner direkt unter main werden
+        automatisch hier einsortiert.
       */
 
       if(
@@ -2476,6 +2823,7 @@ function renderMainSections(){
       ){
 
         qm.push(folder);
+
         return;
 
       }
@@ -2489,20 +2837,24 @@ function renderMainSections(){
     qm
   );
 
+
   renderFolderGrid(
     "standardFolders",
     standards
   );
+
 
   renderFolderGrid(
     "trainingFolders",
     training
   );
 
+
   renderFolderGrid(
     "imageFolders",
     bilder
   );
+
 
   renderFolderGrid(
     "pdlFolders",
@@ -2513,7 +2865,7 @@ function renderMainSections(){
 
 
 /* =========================================================
-   ORDNER GRID
+   ORDNER KACHELN
 ========================================================= */
 
 function renderFolderGrid(
@@ -2546,9 +2898,13 @@ function renderFolderGrid(
   if(!folders.length){
 
     container.innerHTML = `
+
       <div class="loading">
+
         Keine Ordner gefunden.
+
       </div>
+
     `;
 
     return;
@@ -2578,17 +2934,25 @@ function renderFolderGrid(
       card.innerHTML = `
 
         <div class="folder-icon">
+
           ${folderIcon(folder)}
+
         </div>
 
+
         <div class="folder-name">
+
           ${escapeHTML(
             decodeURIComponent(folder)
           )}
+
         </div>
 
+
         <div class="folder-description">
+
           Ordner öffnen →
+
         </div>
 
       `;
@@ -2596,8 +2960,10 @@ function renderFolderGrid(
 
       card.addEventListener(
         "click",
-        ()=>{
+        () => {
+
           openFolder(folder);
+
         }
       );
 
@@ -2634,9 +3000,7 @@ function openFolder(path){
     );
 
 
-  panel.classList.add(
-    "active"
-  );
+  panel.classList.add("active");
 
 
   breadcrumb.textContent =
@@ -2646,10 +3010,15 @@ function openFolder(path){
 
 
   content.innerHTML = `
+
     <div class="loading">
+
       <div class="spinner"></div>
+
       Ordner wird geöffnet …
+
     </div>
+
   `;
 
 
@@ -2657,14 +3026,21 @@ function openFolder(path){
     path + "/";
 
 
+  /*
+    Nur direkte Inhalte.
+  */
+
   const children =
     repositoryTree.filter(
       item => {
 
         if(
           !item.path.startsWith(prefix)
-        )
+        ){
+
           return false;
+
+        }
 
 
         const rest =
@@ -2721,16 +3097,18 @@ function openFolder(path){
   let html = "";
 
 
-  /*
-    Unterordner
-  */
+  /* =======================================================
+     UNTERORDNER
+  ======================================================= */
 
   if(folders.length){
 
     html += `
+
       <h3>📁 Unterordner</h3>
 
       <div class="subfolder-grid">
+
     `;
 
 
@@ -2753,13 +3131,17 @@ function openFolder(path){
           >
 
             <div class="subfolder-icon">
+
               ${folderIcon(name)}
+
             </div>
 
             <div class="subfolder-name">
+
               ${escapeHTML(
                 decodeURIComponent(name)
               )}
+
             </div>
 
           </div>
@@ -2771,24 +3153,26 @@ function openFolder(path){
 
 
     html += `
+
       </div>
+
     `;
 
   }
 
 
-  /*
-    Dateien
-  */
+  /* =======================================================
+     DATEIEN
+  ======================================================= */
 
   if(files.length){
 
     html += `
-      <h3>
-        📄 Dokumente
-      </h3>
+
+      <h3>📄 Dokumente</h3>
 
       <div class="file-list">
+
     `;
 
 
@@ -2822,20 +3206,31 @@ function openFolder(path){
           >
 
             <div class="file-icon">
+
               ${fileIcon(name)}
+
             </div>
+
 
             <div>
 
               <div class="file-name">
+
                 ${escapeHTML(
                   cleanFileName(name)
                 )}
+
               </div>
 
+
               <div class="file-info">
-                ${extension.toUpperCase()}
+
+                ${escapeHTML(
+                  extension.toUpperCase()
+                )}
+
                 · Zum Öffnen anklicken
+
               </div>
 
             </div>
@@ -2849,7 +3244,9 @@ function openFolder(path){
 
 
     html += `
+
       </div>
+
     `;
 
   }
@@ -2861,10 +3258,14 @@ function openFolder(path){
   ){
 
     html = `
+
       <div class="loading">
+
         Dieser Ordner enthält momentan
         keine direkt sichtbaren Dateien.
+
       </div>
+
     `;
 
   }
@@ -2873,6 +3274,10 @@ function openFolder(path){
   content.innerHTML =
     html;
 
+
+  /*
+    Unterordner aktivieren.
+  */
 
   content
     .querySelectorAll(
@@ -2883,10 +3288,12 @@ function openFolder(path){
 
         element.addEventListener(
           "click",
-          ()=>{
+          () => {
+
             openFolder(
               element.dataset.folderPath
             );
+
           }
         );
 
@@ -2912,67 +3319,51 @@ function closeFolder(){
     .getElementById(
       "contentPanel"
     )
-    .classList.remove(
-      "active"
-    );
+    .classList.remove("active");
 
 }
 
 
 /* =========================================================
-   SESSION PRÜFEN
-========================================================= */
-
-async function checkSession(){
-
-  const {
-    data
-  } =
-    await supabaseClient.auth.getSession();
-
-
-  if(
-    data &&
-    data.session &&
-    data.session.user
-  ){
-
-    currentUser =
-      data.session.user;
-
-
-    await afterLogin();
-
-  }
-  else{
-
-    document.getElementById(
-      "authScreen"
-    ).style.display =
-      "flex";
-
-  }
-
-}
-
-
-/* =========================================================
-   AUTH ÄNDERUNGEN
+   AUTH SESSION
 ========================================================= */
 
 supabaseClient.auth.onAuthStateChange(
-  async (event,session)=>{
+  async (event,session) => {
 
     if(
-      event === "SIGNED_IN" &&
-      session &&
-      session.user
+      event === "SIGNED_OUT" ||
+      !session
     ){
 
-      currentUser =
-        session.user;
+      currentUser = null;
 
-      await afterLogin();
+      currentProfile = null;
+
+      showAuthScreen();
+
+      return;
+
+    }
+
+
+    if(
+      event === "SIGNED_IN" ||
+      event === "INITIAL_SESSION"
+    ){
+
+      /*
+        Kleine Verzögerung verhindert,
+        dass mehrere Auth-Events gleichzeitig
+        die Initialisierung auslösen.
+      */
+
+      setTimeout(
+        () => {
+          initializePortal();
+        },
+        0
+      );
 
     }
 
@@ -2984,10 +3375,26 @@ supabaseClient.auth.onAuthStateChange(
    START
 ========================================================= */
 
-loadRepository();
+(async function(){
 
-checkSession();
+  const {
+    data
+  } =
+    await supabaseClient.auth.getSession();
 
+
+  if(data.session){
+
+    await initializePortal();
+
+  }
+  else{
+
+    showAuthScreen();
+
+  }
+
+})();
 </script>
 
 </body>
