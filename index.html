@@ -2,21 +2,21 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>QM-Portal – Intensivpflege-Halle-GmbH</title>
 
 <style>
+
 :root{
   --bg:#f4f7f8;
   --card:#ffffff;
   --text:#17313a;
-  --muted:#64767d;
+  --muted:#61747b;
   --accent:#167c80;
   --accent2:#0e5f63;
   --line:#dce6e8;
   --hover:#eaf5f5;
-  --danger:#a94442;
 }
 
 *{
@@ -29,10 +29,11 @@ html{
 
 body{
   margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
   background:var(--bg);
   color:var(--text);
 }
+
 
 /* HEADER */
 
@@ -43,43 +44,32 @@ header{
 }
 
 .wrap{
-  max-width:1150px;
+  max-width:1100px;
   margin:auto;
 }
 
 .brand{
   display:flex;
   justify-content:space-between;
-  align-items:center;
   gap:20px;
+  align-items:center;
 }
 
 .brand h1{
-  margin:0 0 7px;
+  margin:0 0 6px;
   font-size:30px;
 }
 
 .brand p{
   margin:0;
-  opacity:.92;
+  opacity:.9;
 }
 
-.logo-text{
-  font-weight:700;
-  font-size:15px;
-  text-align:right;
-  opacity:.95;
+.logo-box{
+  font-size:50px;
+  white-space:nowrap;
 }
 
-.badge{
-  display:inline-block;
-  background:#d9eeee;
-  color:var(--accent2);
-  padding:6px 11px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:700;
-}
 
 /* NAVIGATION */
 
@@ -88,13 +78,13 @@ nav{
   border-bottom:1px solid var(--line);
   position:sticky;
   top:0;
-  z-index:20;
+  z-index:10;
 }
 
 nav .wrap{
   display:flex;
-  gap:7px;
-  overflow-x:auto;
+  gap:8px;
+  overflow:auto;
   padding:10px 12px;
 }
 
@@ -110,10 +100,11 @@ nav a:hover{
   background:var(--hover);
 }
 
+
 /* MAIN */
 
 main{
-  padding:30px 16px 50px;
+  padding:30px 16px;
 }
 
 .hero{
@@ -128,8 +119,7 @@ main{
   border:1px solid var(--line);
   border-radius:14px;
   padding:22px;
-  box-shadow:0 4px 18px rgba(22,52,58,.06);
-  margin-bottom:18px;
+  box-shadow:0 4px 18px #16343a0b;
 }
 
 .hero .card:first-child{
@@ -149,45 +139,70 @@ h3{
   color:var(--muted);
 }
 
-/* QUICK LINKS */
+.badge{
+  display:inline-block;
+  background:#d9eeee;
+  color:var(--accent2);
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
+}
 
-.quick-links{
+
+/* SCHNELLAUSWAHL */
+
+.quick{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:15px;
 }
 
-.quick-links a{
+.quick a{
   display:block;
-  padding:12px;
-  background:#f7fafb;
-  border:1px solid var(--line);
-  border-radius:9px;
-  color:var(--text);
   text-decoration:none;
+  color:var(--text);
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px;
 }
 
-.quick-links a:hover{
+.quick a:hover{
   background:var(--hover);
 }
 
-/* FOLDER */
+
+/* SUCHFELD */
+
+.search{
+  width:100%;
+  padding:13px 15px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  font-size:16px;
+  margin:10px 0 18px;
+}
+
+
+/* ORDNER */
 
 .folder{
   border:1px solid var(--line);
   border-radius:12px;
-  background:#fff;
   margin:12px 0;
+  background:#fff;
   overflow:hidden;
 }
 
 .folder summary{
   cursor:pointer;
   list-style:none;
-  padding:16px 18px;
+  padding:17px 18px;
   font-weight:700;
   font-size:16px;
-  background:#f8fbfb;
+  background:#fff;
   user-select:none;
 }
 
@@ -199,12 +214,12 @@ h3{
   content:"▶";
   display:inline-block;
   margin-right:10px;
-  font-size:11px;
   color:var(--accent);
-  transition:.15s;
+  font-size:12px;
+  transition:.2s;
 }
 
-.folder[open] > summary:before{
+.folder[open] summary:before{
   transform:rotate(90deg);
 }
 
@@ -212,17 +227,20 @@ h3{
   background:var(--hover);
 }
 
-/* FILE LIST */
-
-.file-list{
-  padding:8px 14px 14px;
+.folder-content{
+  padding:5px 16px 16px;
+  border-top:1px solid var(--line);
 }
+
+
+/* DATEIEN */
 
 .file{
   display:flex;
   align-items:center;
-  gap:10px;
-  padding:11px 12px;
+  justify-content:space-between;
+  gap:15px;
+  padding:13px 10px;
   border-bottom:1px solid #edf2f3;
 }
 
@@ -230,62 +248,62 @@ h3{
   border-bottom:0;
 }
 
-.file a{
-  color:var(--accent2);
-  text-decoration:none;
-  flex:1;
+.file-name{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
 }
 
-.file a:hover{
-  text-decoration:underline;
+.file-name span{
+  overflow-wrap:anywhere;
 }
 
 .file-icon{
-  flex:none;
+  flex-shrink:0;
+  font-size:20px;
 }
 
-/* LOADING */
+.open-button{
+  flex-shrink:0;
+  display:inline-block;
+  background:var(--accent);
+  color:#fff;
+  text-decoration:none;
+  padding:8px 12px;
+  border-radius:8px;
+  font-size:14px;
+  font-weight:600;
+}
+
+.open-button:hover{
+  background:var(--accent2);
+}
+
+
+/* STATUS */
 
 .loading{
   color:var(--muted);
-  padding:14px;
-  font-size:14px;
+  padding:15px 5px;
 }
 
 .error{
-  color:var(--danger);
-  padding:14px;
-  background:#fff5f5;
+  color:#9b2929;
+  background:#fff2f2;
+  border:1px solid #f0caca;
+  padding:12px;
   border-radius:8px;
-  margin:8px;
-  font-size:14px;
+  margin-top:10px;
 }
-
-/* EMPTY */
 
 .empty{
-  padding:15px;
   color:var(--muted);
+  padding:15px 5px;
 }
 
-/* SEARCH */
 
-.search{
-  width:100%;
-  padding:13px 15px;
-  border:1px solid var(--line);
-  border-radius:10px;
-  font-size:16px;
-  margin:8px 0 16px;
-  outline:none;
-}
-
-.search:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(22,124,128,.1);
-}
-
-/* TEAMS */
+/* SONSTIGE BEREICHE */
 
 .grid2{
   display:grid;
@@ -293,38 +311,38 @@ h3{
   gap:16px;
 }
 
-.item{
+.info-box{
   padding:16px;
   border:1px solid var(--line);
   border-radius:10px;
   background:#fff;
 }
 
-.item strong{
+.info-box strong{
   display:block;
   margin-bottom:6px;
 }
 
+
 /* FOOTER */
 
 footer{
+  margin-top:30px;
   background:#17313a;
   color:#dce9eb;
-  padding:28px 16px;
+  padding:26px 16px;
 }
 
 .small{
   font-size:14px;
-  line-height:1.6;
 }
+
 
 /* MOBILE */
 
 @media(max-width:750px){
 
-  .hero,
-  .grid2,
-  .quick-links{
+  .hero{
     grid-template-columns:1fr;
   }
 
@@ -332,19 +350,36 @@ footer{
     display:block;
   }
 
-  .logo-text{
-    text-align:left;
+  .logo-box{
     margin-top:15px;
+  }
+
+  .quick{
+    grid-template-columns:1fr;
+  }
+
+  .grid2{
+    grid-template-columns:1fr;
   }
 
   .file{
     align-items:flex-start;
+    flex-direction:column;
   }
+
+  .open-button{
+    width:100%;
+    text-align:center;
+  }
+
 }
+
 </style>
 </head>
 
+
 <body>
+
 
 <!-- =========================================================
      HEADER
@@ -352,20 +387,26 @@ footer{
 
 <header>
 
-  <div class="wrap brand">
+<div class="wrap brand">
 
-    <div>
-      <h1>QM-Portal</h1>
-      <p>Qualitätsmanagement · Intensivpflege-Halle-GmbH</p>
-    </div>
+<div>
 
-    <div class="logo-text">
-      <span class="badge">Interne QM-Übersicht</span>
-    </div>
+<h1>QM-Portal</h1>
 
-  </div>
+<p>
+Qualitätsmanagement · Intensivpflege-Halle-GmbH
+</p>
+
+</div>
+
+<div class="logo-box">
+🏥
+</div>
+
+</div>
 
 </header>
+
 
 
 <!-- =========================================================
@@ -374,530 +415,625 @@ footer{
 
 <nav>
 
-  <div class="wrap">
+<div class="wrap">
 
-    <a href="#start">Start</a>
+<a href="#start">Start</a>
 
-    <a href="#qm">QM-Handbuch</a>
+<a href="#qm">📚 QM-Handbuch</a>
 
-    <a href="#standards">Standards</a>
+<a href="#standards">📋 Standards</a>
 
-    <a href="#checklisten">Checklisten</a>
+<a href="#schulungen">🎓 Schulungen</a>
 
-    <a href="#teams">Teams</a>
+<a href="#bilder">📷 Bilderlaubnis</a>
 
-    <a href="#schulungen">Schulungen</a>
+<a href="#pdl">👩‍⚕️ PDL-Anweisungen</a>
 
-    <a href="#bilderlaubnis">Bilderlaubnis</a>
+<a href="#teams">👥 Teams</a>
 
-    <a href="#kontakt">Kontakt</a>
+<a href="#kontakt">📞 Kontakt</a>
 
-  </div>
+</div>
 
 </nav>
 
 
-<!-- =========================================================
-     HAUPTBEREICH
-========================================================= -->
 
-<main class="wrap">
+<main class="wrap" id="start">
 
 
 <!-- =========================================================
-     START
+     WILLKOMMEN
 ========================================================= -->
 
-<section id="start" class="hero">
+<section class="hero">
 
-  <div class="card">
+<div class="card">
 
-    <h2>Willkommen im QM-Portal</h2>
+<h2>Willkommen im QM-Portal</h2>
 
-    <p>
-      Diese Website dient als zentrale Oberfläche für die interne
-      Qualitätsmanagement-Dokumentation der
-      Intensivpflege-Halle-GmbH.
-    </p>
+<p>
+Diese Website dient als zentrale Oberfläche für die interne
+Qualitätsmanagement-Dokumentation der Intensivpflege-Halle-GmbH.
+</p>
 
-    <p class="muted">
-      Wählen Sie einen Bereich aus. Die darin enthaltenen Ordner
-      und Dokumente werden erst beim Öffnen angezeigt.
-    </p>
+<p class="muted">
+Wählen Sie einen Bereich aus. Die jeweiligen Dokumente werden
+erst angezeigt, wenn der entsprechende Ordner geöffnet wird.
+</p>
 
-  </div>
+</div>
 
 
-  <div class="card">
+<div class="card">
 
-    <h3>Schnellzugriff</h3>
+<h3>Schnellzugriff</h3>
 
-    <div class="quick-links">
+<div class="quick">
 
-      <a href="#qm">
-        📚 QM-Handbuch
-      </a>
+<a href="#qm">
+📚<br>
+<strong>QM-Handbuch</strong>
+</a>
 
-      <a href="#standards">
-        📋 Standards
-      </a>
+<a href="#standards">
+📋<br>
+<strong>Standards</strong>
+</a>
 
-      <a href="#schulungen">
-        🎓 Schulungen
-      </a>
+<a href="#schulungen">
+🎓<br>
+<strong>Schulungen</strong>
+</a>
 
-      <a href="#bilderlaubnis">
-        📷 Bilderlaubnis
-      </a>
+<a href="#bilder">
+📷<br>
+<strong>Bilderlaubnis</strong>
+</a>
 
-    </div>
+<a href="#pdl">
+👩‍⚕️<br>
+<strong>PDL-Anweisungen</strong>
+</a>
 
-  </div>
+<a href="#kontakt">
+📞<br>
+<strong>Kontakt</strong>
+</a>
+
+</div>
+
+</div>
 
 </section>
 
 
+
 <!-- =========================================================
-     QM-HANDBUCH
+     QM HANDBUCH
 ========================================================= -->
 
 <section id="qm" class="card">
 
-  <h2>📚 QM-Handbuch</h2>
+<h2>📚 QM-Handbuch</h2>
 
-  <p class="muted">
-    QM-Handbuch und zugehörige Dokumentationen.
-    Klicken Sie auf einen Ordner, um die enthaltenen Dateien anzuzeigen.
-  </p>
-
-
-  <!-- HYGIENE -->
-
-  <details class="folder" data-folder="QM-Handbuch/Hygiene">
-
-    <summary>
-      🧼 Hygiene
-    </summary>
-
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
-
-  </details>
+<p class="muted">
+Bereiche des Qualitätsmanagement-Handbuchs.
+Klicken Sie auf einen Ordner, um die enthaltenen Dokumente zu sehen.
+</p>
 
 
-  <!-- PREVENTION -->
+<!-- Hygiene -->
 
-  <details
-    class="folder"
-    data-folder="QM-Handbuch/Prevention Prophylaxen & Expertenstandards">
+<details class="folder" data-folder="QM-Handbuch/Hygiene">
 
-    <summary>
-      🛡️ Prevention Prophylaxen & Expertenstandards
-    </summary>
+<summary>
+🧼 Hygiene
+</summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
 
 
-  <!-- PROZESSE PD -->
+<!-- Prevention -->
 
-  <details
-    class="folder"
-    data-folder="QM-Handbuch/Prozesse PD">
+<details
+class="folder"
+data-folder="QM-Handbuch/Prevention Prophylaxen & Expertenstandards">
 
-    <summary>
-      📁 Prozesse PD
-    </summary>
+<summary>
+🛡️ Prevention / Prophylaxen & Expertenstandards
+</summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
 
+
+<!-- Prozesse PD -->
+
+<details
+class="folder"
+data-folder="QM-Handbuch/Prozesse PD">
+
+<summary>
+⚙️ Prozesse PD
+</summary>
+
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
+
+</details>
+
+
+<!-- Allgemeines Fortbildungskonzept -->
+
+<details
+class="folder"
+data-folder="QM Allgemeines Fortbildungskonzept">
+
+<summary>
+🎓 Allgemeines Fortbildungskonzept
+</summary>
+
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
+
+</details>
+
+
+<!-- Beschwerdemanagement -->
+
+<details
+class="folder"
+data-folder="QM Beschwerdemanagement">
+
+<summary>
+📣 Beschwerdemanagement
+</summary>
+
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
+
+</details>
+
+
+<!-- Datenschutz -->
+
+<details
+class="folder"
+data-folder="QM Datenschutz">
+
+<summary>
+🔐 Datenschutz
+</summary>
+
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
+
+</details>
+
+
+<!-- Patienten Angehörige -->
+
+<details
+class="folder"
+data-folder="QM Pat.&Angehörige, Wertsachen, Schlüssel, Bewertungen">
+
+<summary>
+👨‍👩‍👧 Patienten & Angehörige / Wertsachen / Schlüssel / Bewertungen
+</summary>
+
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
+
+</details>
+
+
+<!-- Pflegeberatung -->
+
+<details
+class="folder"
+data-folder="QM Pflegeberatungseinsatz § 37">
+
+<summary>
+🏠 Pflegeberatungseinsatz § 37
+</summary>
+
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
+
+</details>
+
+
+<!-- Visiten -->
+
+<details
+class="folder"
+data-folder="QM Visiten_Fallbesprechungen_Dienstberatungen usw">
+
+<summary>
+👥 Visiten / Fallbesprechungen / Dienstberatungen
+</summary>
+
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
+
+</details>
 
 </section>
+
 
 
 <!-- =========================================================
      STANDARDS & VERFAHRENSANWEISUNGEN
 ========================================================= -->
 
-<section id="standards" class="card">
+<section id="standards" class="card" style="margin-top:16px">
 
-  <h2>📋 Standards & Verfahrensanweisungen</h2>
+<h2>📋 Standards & Verfahrensanweisungen</h2>
 
-  <p class="muted">
-    Freigegebene Standards, Verfahrensanweisungen und
-    Arbeitsanweisungen. Klicken Sie auf einen Ordner,
-    um die darin enthaltenen Dokumente anzuzeigen.
-  </p>
-
-
-  <!-- VA AKI PATIENTEN -->
-
-  <details
-    class="folder"
-    data-folder="VA AKI Patienten">
-
-    <summary>
-      🏥 VA AKI Patienten
-    </summary>
-
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
-
-  </details>
+<p class="muted">
+Freigegebene Standards, Verfahrensanweisungen und Arbeitsanweisungen.
+Die Dokumente werden erst beim Öffnen des jeweiligen Ordners geladen.
+</p>
 
 
-  <!-- VA BEHANDLUNGSPFLEGE -->
+<!-- AKI -->
 
-  <details
-    class="folder"
-    data-folder="VA Behandlungspflege">
+<details class="folder" data-folder="VA AKI Patienten">
 
-    <summary>
-      💉 VA Behandlungspflege
-    </summary>
+<summary>
+🏥 VA AKI Patienten
+</summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
 
 
-  <!-- VA BEZIEHUNGSGESTALTUNG -->
+<!-- Behandlungspflege -->
 
-  <details
-    class="folder"
-    data-folder="VA Beziehungsgestaltung">
+<details class="folder" data-folder="VA Behandlungspflege">
 
-    <summary>
-      🤝 VA Beziehungsgestaltung
-    </summary>
+<summary>
+💉 VA Behandlungspflege
+</summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
 
 
-  <!-- VA BEZUGSPFLEGE -->
+<!-- Beziehungsgestaltung -->
 
-  <details
-    class="folder"
-    data-folder="VA Bezugspflege">
+<details class="folder" data-folder="VA Beziehungsgestaltung">
 
-    <summary>
-      👥 VA Bezugspflege
-    </summary>
+<summary>
+🤝 VA Beziehungsgestaltung
+</summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
 
 
-  <!-- VA CHRONISCHE WUNDEN & SCHMERZEN -->
+<!-- Bezugspflege -->
 
-  <details
-    class="folder"
-    data-folder="VA Chronische Wunden & Schmerzen">
+<details class="folder" data-folder="VA Bezugspflege">
 
-    <summary>
-      🩹 VA Chronische Wunden & Schmerzen
-    </summary>
+<summary>
+👥 VA Bezugspflege
+</summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
 
 
-  <!-- VA GRUNDPFLEGE -->
+<!-- Chronische Wunden -->
 
-  <details
-    class="folder"
-    data-folder="VA Grundpflege">
+<details
+class="folder"
+data-folder="VA Chronische Wunden & Schmerzen">
 
-    <summary>
-      🧑‍⚕️ VA Grundpflege
-    </summary>
+<summary>
+🩹 VA Chronische Wunden & Schmerzen
+</summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
 
 
-  <!-- VA HERZBETTLAGERUNG -->
+<!-- Grundpflege -->
 
-  <details
-    class="folder"
-    data-folder="VA Herzbettlagerung">
+<details class="folder" data-folder="VA Grundpflege">
 
-    <summary>
-      🛏️ VA Herzbettlagerung
-    </summary>
+<summary>
+🧑‍⚕️ VA Grundpflege
+</summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
 
 
-  <!-- VA NESTLAGERUNG -->
+<!-- Herzbettlagerung -->
 
-  <details
-    class="folder"
-    data-folder="VA Nestlagerung">
+<details class="folder" data-folder="VA Herzbettlagerung">
 
-    <summary>
-      🛏️ VA Nestlagerung
-    </summary>
+<summary>
+🛏️ VA Herzbettlagerung
+</summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
 
 
-  <!-- ANWEISUNGEN PDL -->
+<!-- Nestlagerung -->
 
-  <details
-    class="folder"
-    data-folder="dokumente/Anweisungen von PDL an Mitarbeiter">
+<details class="folder" data-folder="VA Nestlagerung">
 
-    <summary>
-      👩‍⚕️ Anweisungen von PDL an Mitarbeiter
-    </summary>
+<summary>
+🛏️ VA Nestlagerung
+</summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
+
 
 </section>
 
-
-<!-- =========================================================
-     CHECKLISTEN
-========================================================= -->
-
-<section id="checklisten" class="card">
-
-  <h2>✅ Checklisten</h2>
-
-  <p class="muted">
-    Bereich für Checklisten und QM-Formblätter.
-  </p>
-
-  <div class="item">
-
-    <strong>
-      Checklisten
-    </strong>
-
-    <span class="muted">
-      Weitere Checklisten können zukünftig hier ergänzt werden.
-    </span>
-
-  </div>
-
-</section>
-
-
-<!-- =========================================================
-     TEAMS
-========================================================= -->
-
-<section id="teams" class="card">
-
-  <h2>👥 Teams</h2>
-
-  <div class="grid2">
-
-    <div class="item">
-
-      <strong>TEAM SÜD</strong>
-
-      <div>
-        1:1 Team Petersberg / OT Wallwitz
-      </div>
-
-      <div>
-        Klingner / Jungck
-      </div>
-
-    </div>
-
-
-    <div class="item">
-
-      <strong>TEAM NORD</strong>
-
-      <div>
-        1:1 Team Wolfsburg / Wollscheid
-      </div>
-
-      <div>
-        1:1 Team Bernburg / Barchend
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
 
 
 <!-- =========================================================
      SCHULUNGEN
 ========================================================= -->
 
-<section id="schulungen" class="card">
+<section id="schulungen" class="card" style="margin-top:16px">
 
-  <h2>🎓 Schulungen & Unterweisungen</h2>
+<h2>🎓 Schulungen & Unterweisungen</h2>
 
-  <p class="muted">
-    Schulungsunterlagen und Fortbildungsnachweise.
-  </p>
+<p class="muted">
+Schulungsunterlagen, Fortbildungen und Unterweisungsdokumente.
+</p>
 
 
-  <details
-    class="folder"
-    data-folder="Schulungen">
+<details
+class="folder"
+data-folder="Schulungen">
 
-   <summary>
-  🎓 Schulungen / FOB
+<summary>
+🎓 Schulungen / FOB
 </summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
 
 </section>
+
 
 
 <!-- =========================================================
      BILDERLAUBNIS
 ========================================================= -->
 
-<section id="bilderlaubnis" class="card">
+<section id="bilder" class="card" style="margin-top:16px">
 
-  <h2>📷 Bilderlaubnis</h2>
+<h2>📷 Bilderlaubnis</h2>
 
-  <p class="muted">
-    Unterlagen zur Einwilligung und Bildnutzung.
-  </p>
+<p class="muted">
+Formulare und Unterlagen zur Einwilligung und Nutzung von
+Bildern und Videos.
+</p>
 
 
-  <details
-    class="folder"
-    data-folder="Bilderlaubnis">
+<details
+class="folder"
+data-folder="Bilderlaubnis">
 
-    <summary>
-      📁 Bilderlaubnis
-    </summary>
+<summary>
+📷 Bilderlaubnis – Dokumente
+</summary>
 
-    <div class="folder-content">
-      <div class="loading">
-        Dateien werden geladen …
-      </div>
-    </div>
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
 
-  </details>
+</details>
 
 </section>
+
+
+
+<!-- =========================================================
+     PDL ANWEISUNGEN
+========================================================= -->
+
+<section id="pdl" class="card" style="margin-top:16px">
+
+<h2>👩‍⚕️ Anweisungen von PDL an Mitarbeiter</h2>
+
+<p class="muted">
+Interne Anweisungen und Dienstanweisungen der Pflegedienstleitung.
+</p>
+
+
+<details
+class="folder"
+data-folder="dokumente/Anweisungen von PDL an Mitarbeiter">
+
+<summary>
+👩‍⚕️ Anweisungen von PDL an Mitarbeiter
+</summary>
+
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
+
+</details>
+
+</section>
+
+
+
+<!-- =========================================================
+     DOKUMENTE
+========================================================= -->
+
+<section class="card" style="margin-top:16px">
+
+<h2>📁 Weitere Dokumente</h2>
+
+<p class="muted">
+Weitere Dokumente aus dem Dokumentenbereich.
+</p>
+
+
+<details
+class="folder"
+data-folder="dokumente">
+
+<summary>
+📁 Dokumente
+</summary>
+
+<div class="folder-content">
+<div class="loading">Dateien werden geladen …</div>
+</div>
+
+</details>
+
+</section>
+
+
+
+<!-- =========================================================
+     TEAMS
+========================================================= -->
+
+<section id="teams" class="card" style="margin-top:16px">
+
+<h2>👥 Teams</h2>
+
+<div class="grid2">
+
+<div class="info-box">
+
+<strong>TEAM SÜD</strong>
+
+<div>
+1:1 Team Petersberg / OT Wallwitz
+</div>
+
+<div>
+Klingner / Jungck
+</div>
+
+</div>
+
+
+<div class="info-box">
+
+<strong>TEAM NORD</strong>
+
+<div>
+1:1 Team Wolfsburg / Wollscheid
+</div>
+
+<div>
+1:1 Team Bernburg / Barchend
+</div>
+
+</div>
+
+</div>
+
+</section>
+
 
 
 <!-- =========================================================
      KONTAKT
 ========================================================= -->
 
-<section id="kontakt" class="card">
+<section id="kontakt" class="card" style="margin-top:16px">
 
-  <h2>📞 Kontakt</h2>
+<h2>📞 Kontakt</h2>
 
-  <p>
+<p>
 
-    <strong>
-      Intensivpflege-Halle-GmbH
-    </strong>
+<strong>
+Intensivpflege-Halle-GmbH
+</strong>
 
-    <br>
+<br>
 
-    Wilhelm-von-Klewiz-Straße 11
+Wilhelm-von-Klewiz-Str. 11
 
-    <br>
+<br>
 
-    06132 Halle (Saale)
+06132 Halle (Saale)
 
-  </p>
+</p>
 
 
-  <p>
+<p>
 
-    Telefon:
-    +49 (0)3493 82 38 868
+Telefon:
++49 (0)3493–82 38 868
 
-    <br>
+<br>
 
-    Fax:
-    +49 (0)3493 82 39 882
+Fax:
++49 (0)3493-82 39 882
 
-    <br>
+<br>
 
-    E-Mail:
-    intensivpflegehalle@gmail.com
+E-Mail:
+intensivpflegehalle@gmail.com
 
-  </p>
+</p>
 
 </section>
 
 
 </main>
+
 
 
 <!-- =========================================================
@@ -906,123 +1042,170 @@ footer{
 
 <footer>
 
-  <div class="wrap small">
+<div class="wrap small">
 
-    <strong>
-      Internes QM-Portal · Intensivpflege-Halle-GmbH
-    </strong>
+Internes QM-Portal · Intensivpflege-Halle-GmbH
 
-    <br>
+<br><br>
 
-    Dokumente werden aus dem GitHub-Repository geladen.
+Dokumentenverwaltung über GitHub Pages
 
-  </div>
+</div>
 
 </footer>
 
 
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
 
 <script>
 
 /*
-==============================================================
- GITHUB EINSTELLUNGEN
-==============================================================
+=========================================================
+GITHUB KONFIGURATION
+=========================================================
 */
 
-const GITHUB_USER = "christiandiebner86-cpu";
+const GITHUB_USER =
+"christiandiebner86-cpu";
 
 const GITHUB_REPO =
-  "christiandiebner86-cpu.github.io";
+"christiandiebner86-cpu.github.io";
 
 const GITHUB_BRANCH =
-  "main";
+"main";
 
 
 /*
-==============================================================
- GITHUB API
-==============================================================
+=========================================================
+GITHUB API
+=========================================================
 */
 
-function githubApiUrl(path){
+function githubApiUrl(folder){
 
-  return (
+  const parts = folder
+    .split("/")
+    .filter(Boolean)
+    .map(part => encodeURIComponent(part));
+
+  return
     "https://api.github.com/repos/" +
     GITHUB_USER +
     "/" +
     GITHUB_REPO +
     "/contents/" +
-    path.split("/")
-      .map(part => encodeURIComponent(part))
-      .join("/") +
+    parts.join("/") +
     "?ref=" +
-    encodeURIComponent(GITHUB_BRANCH)
-  );
-
+    GITHUB_BRANCH;
 }
 
 
 /*
-==============================================================
- GITHUB PAGES DATEIPFAD
-==============================================================
+=========================================================
+GITHUB PAGES DATEI-URL
+=========================================================
 */
 
-function githubPagesUrl(path){
+function githubPagesUrl(folder,file){
 
-  return (
-    "/" +
-    path.split("/")
-      .map(part => encodeURIComponent(part))
-      .join("/")
-  );
+  const parts = folder
+    .split("/")
+    .filter(Boolean)
+    .concat([file])
+    .map(part => encodeURIComponent(part));
 
+  return "/" + parts.join("/");
 }
 
 
 /*
-==============================================================
- DATEIEN LADEN
-==============================================================
+=========================================================
+DATEI ICON
+=========================================================
 */
 
-async function loadFolder(folderElement){
+function getFileIcon(name){
+
+  const lower =
+    name.toLowerCase();
+
+  if(lower.endsWith(".pdf"))
+    return "📄";
+
+  if(lower.endsWith(".mp4") ||
+     lower.endsWith(".webm") ||
+     lower.endsWith(".mov"))
+    return "🎥";
+
+  if(lower.endsWith(".doc") ||
+     lower.endsWith(".docx") ||
+     lower.endsWith(".odt"))
+    return "📝";
+
+  if(lower.endsWith(".xls") ||
+     lower.endsWith(".xlsx") ||
+     lower.endsWith(".ods"))
+    return "📊";
+
+  if(lower.endsWith(".ppt") ||
+     lower.endsWith(".pptx") ||
+     lower.endsWith(".odp"))
+    return "📊";
+
+  return "📎";
+}
+
+
+/*
+=========================================================
+DATEINAME LESBAR MACHEN
+=========================================================
+*/
+
+function cleanFileName(name){
+
+  return name
+    .replace(/\.[^/.]+$/,"")
+    .replace(/_/g," ");
+}
+
+
+/*
+=========================================================
+ORDNER LADEN
+=========================================================
+*/
+
+async function loadFolder(details){
+
+  const folder =
+    details.dataset.folder;
 
   const content =
-    folderElement.querySelector(".folder-content");
+    details.querySelector(".folder-content");
 
-  const folderPath =
-    folderElement.dataset.folder;
-
-
-  /*
-  Verhindert mehrfaches Laden
-  */
-
-  if(folderElement.dataset.loaded === "true"){
+  if(details.dataset.loaded === "true")
     return;
-  }
 
 
   content.innerHTML =
-    '<div class="loading">📂 Ordner wird geladen …</div>';
+    '<div class="loading">⏳ Dateien werden geladen …</div>';
 
 
   try{
 
     const response =
-      await fetch(githubApiUrl(folderPath));
+      await fetch(githubApiUrl(folder),{
+        headers:{
+          "Accept":
+          "application/vnd.github+json"
+        }
+      });
 
 
     if(!response.ok){
 
       throw new Error(
-        "GitHub API Fehler: " +
-        response.status
+        "GitHub konnte den Ordner nicht laden."
       );
 
     }
@@ -1033,204 +1216,126 @@ async function loadFolder(folderElement){
 
 
     /*
-    Sortierung:
-    zuerst Ordner, danach Dateien
+    Dateien herausfiltern
     */
 
-    items.sort((a,b) => {
-
-      if(a.type === b.type){
-        return a.name.localeCompare(
-          b.name,
-          "de",
-          {numeric:true}
-        );
-      }
-
-      return a.type === "dir" ? -1 : 1;
-
-    });
+    const files =
+      items.filter(item =>
+        item.type === "file"
+      );
 
 
-    content.innerHTML = "";
-
-
-    if(items.length === 0){
-
-      content.innerHTML =
-        '<div class="empty">Dieser Ordner ist leer.</div>';
-
-      folderElement.dataset.loaded = "true";
-
-      return;
-
-    }
+    const directories =
+      items.filter(item =>
+        item.type === "dir"
+      );
 
 
     /*
-    ==========================================================
-     INHALT
-    ==========================================================
+    Keine Dateien
     */
 
-    items.forEach(item => {
+    if(files.length === 0 &&
+       directories.length === 0){
+
+      content.innerHTML =
+        '<div class="empty">📁 Dieser Ordner enthält derzeit keine Dateien.</div>';
+
+      details.dataset.loaded = "true";
+
+      return;
+    }
 
 
-      /*
-      ----------------------------------------------------------
-       UNTERORDNER
-      ----------------------------------------------------------
-      */
-
-      if(item.type === "dir"){
-
-        const subFolder =
-          document.createElement("details");
-
-        subFolder.className =
-          "folder";
+    let html = "";
 
 
-        subFolder.dataset.folder =
-          item.path;
+    /*
+    Unterordner anzeigen
+    */
 
+    directories.forEach(dir => {
 
-        const summary =
-          document.createElement("summary");
+      html += `
 
-        summary.textContent =
-          "📁 " + item.name;
+        <div class="file">
 
+          <div class="file-name">
 
-        const subContent =
-          document.createElement("div");
+            <span class="file-icon">📁</span>
 
-        subContent.className =
-          "folder-content";
+            <span>
+              ${escapeHtml(dir.name)}
+            </span>
 
+          </div>
 
-        subContent.innerHTML =
-          '<div class="loading">Dateien werden geladen …</div>';
+          <a
+            class="open-button"
+            href="${githubFolderUrl(dir.path)}"
+            target="_blank"
+            rel="noopener">
 
+            Ordner öffnen
 
-        subFolder.appendChild(summary);
+          </a>
 
-        subFolder.appendChild(subContent);
+        </div>
 
-        content.appendChild(subFolder);
-
-
-        /*
-        Beim Öffnen des Unterordners laden
-        */
-
-        subFolder.addEventListener(
-          "toggle",
-          function(){
-
-            if(subFolder.open){
-
-              loadFolder(subFolder);
-
-            }
-
-          }
-        );
-
-
-        return;
-
-      }
-
-
-      /*
-      ----------------------------------------------------------
-       DATEI
-      ----------------------------------------------------------
-      */
-
-      if(item.type === "file"){
-
-        const fileRow =
-          document.createElement("div");
-
-        fileRow.className =
-          "file";
-
-
-        const icon =
-          document.createElement("span");
-
-        icon.className =
-          "file-icon";
-
-
-        /*
-        PDF
-        */
-
-        if(
-          item.name
-            .toLowerCase()
-            .endsWith(".pdf")
-        ){
-
-          icon.textContent = "📄";
-
-        }
-
-        /*
-        Andere Dateien
-        */
-
-        else{
-
-          icon.textContent = "📎";
-
-        }
-
-
-        const link =
-          document.createElement("a");
-
-
-        /*
-        WICHTIG:
-        Datei wird über GitHub Pages geöffnet.
-        */
-
-        link.href =
-          githubPagesUrl(item.path);
-
-
-        /*
-        PDF in neuem Tab öffnen
-        */
-
-        link.target =
-          "_blank";
-
-
-        link.rel =
-          "noopener";
-
-
-        link.textContent =
-          item.name;
-
-
-        fileRow.appendChild(icon);
-
-        fileRow.appendChild(link);
-
-        content.appendChild(fileRow);
-
-      }
+      `;
 
     });
 
 
-    folderElement.dataset.loaded = "true";
+    /*
+    Dateien anzeigen
+    */
+
+    files.forEach(file => {
+
+      const url =
+        githubPagesUrl(folder,file.name);
+
+      const icon =
+        getFileIcon(file.name);
+
+
+      html += `
+
+        <div class="file">
+
+          <div class="file-name">
+
+            <span class="file-icon">
+              ${icon}
+            </span>
+
+            <span>
+              ${escapeHtml(cleanFileName(file.name))}
+            </span>
+
+          </div>
+
+          <a
+            class="open-button"
+            href="${url}"
+            target="_blank"
+            rel="noopener">
+
+            Öffnen
+
+          </a>
+
+        </div>
+
+      `;
+
+    });
+
+
+    content.innerHTML = html;
+
+    details.dataset.loaded = "true";
 
 
   }catch(error){
@@ -1238,23 +1343,31 @@ async function loadFolder(folderElement){
     console.error(error);
 
 
-    content.innerHTML =
+    const githubUrl =
+      githubFolderUrl(folder);
 
-      '<div class="error">' +
 
-      '❌ Die Dateien konnten nicht geladen werden.<br><br>' +
+    content.innerHTML = `
 
-      '<strong>Ordner:</strong> ' +
+      <div class="error">
 
-      folderPath +
+        ❌ Die Dateien konnten momentan nicht automatisch
+        geladen werden.
 
-      '<br><br>' +
+        <br><br>
 
-      'Bitte prüfen Sie, ob der Ordner im ' +
+        <a
+          href="${githubUrl}"
+          target="_blank"
+          rel="noopener">
 
-      'GitHub-Repository im Branch <strong>main</strong> vorhanden ist.' +
+          📁 Ordner direkt auf GitHub öffnen
 
-      '</div>';
+        </a>
+
+      </div>
+
+    `;
 
   }
 
@@ -1262,22 +1375,70 @@ async function loadFolder(folderElement){
 
 
 /*
-==============================================================
- ORDNER-EVENTS
-==============================================================
+=========================================================
+GITHUB ORDNER URL
+=========================================================
+*/
+
+function githubFolderUrl(folder){
+
+  const parts =
+    folder
+      .split("/")
+      .filter(Boolean)
+      .map(part =>
+        encodeURIComponent(part)
+      );
+
+  return (
+    "https://github.com/" +
+    GITHUB_USER +
+    "/" +
+    GITHUB_REPO +
+    "/tree/" +
+    GITHUB_BRANCH +
+    "/" +
+    parts.join("/")
+  );
+
+}
+
+
+/*
+=========================================================
+HTML SICHER MACHEN
+=========================================================
+*/
+
+function escapeHtml(text){
+
+  return text
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/*
+=========================================================
+ALLE ORDNER ÜBERWACHEN
+=========================================================
 */
 
 document
-  .querySelectorAll("details[data-folder]")
+  .querySelectorAll(".folder")
   .forEach(folder => {
 
     folder.addEventListener(
       "toggle",
       function(){
 
-        if(folder.open){
+        if(this.open){
 
-          loadFolder(folder);
+          loadFolder(this);
 
         }
 
@@ -1287,46 +1448,8 @@ document
   });
 
 
-/*
-==============================================================
- AUTOMATISCH ZUM ANGEKLICKTEN BEREICH
-==============================================================
-*/
-
-window.addEventListener(
-  "hashchange",
-  function(){
-
-    const id =
-      window.location.hash.substring(1);
-
-    if(!id){
-      return;
-    }
-
-    const element =
-      document.getElementById(id);
-
-    if(element){
-
-      setTimeout(
-        () => {
-
-          element.scrollIntoView({
-            behavior:"smooth",
-            block:"start"
-          });
-
-        },
-        100
-      );
-
-    }
-
-  }
-);
-
 </script>
+
 
 </body>
 </html>
