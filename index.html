@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -1519,6 +1518,12 @@ const REPOSITORY =
 const BRANCH =
   "main";
 
+const DOCUMENT_ROOT =
+  "dokumente";
+
+const PDL_FOLDER =
+  "dokumente/Anweisungen von PDL an Mitarbeiter";
+
 const GITHUB_API =
   "https://api.github.com/repos/" +
   OWNER +
@@ -1540,38 +1545,18 @@ let portalInitialized = false;
 let initializationRunning = false;
 let authListenerStarted = false;
 
-
-/* =========================================================
-   IGNORIERTE PFADE
-   V5:
-   Der komplette Zapke-Ordner wird ignoriert.
-   Das gilt für:
-   - Zapke
-   - Zapke/
-   - Zapke/Unterordner
-   - Zapke/Dateien
-   Groß-/Kleinschreibung spielt keine Rolle.
-========================================================= */
-
-function isIgnoredPath(path) {
-
-  const normalized =
-    String(path || "")
-      .replace(/\\/g, "/")
-      .replace(/^\/+|\/+$/g, "")
-      .toLowerCase();
-
-
-  return (
-    normalized === "zapke" ||
-    normalized.startsWith("zapke/")
-  );
-
-}
+/*
+ * Wichtig:
+ * Während einer Registrierung darf ein möglicher
+ * Supabase SIGNED_IN Event NICHT dazu führen,
+ * dass der neue Benutzer automatisch das Portal
+ * betritt.
+ */
+let registrationInProgress = false;
 
 
 /* =========================================================
-   DOM-HILFSFUNKTION
+   DOM
 ========================================================= */
 
 function getElement(id) {
@@ -1671,6 +1656,58 @@ function escapeHTML(text) {
 
 
 /* =========================================================
+   PFAD NORMALISIEREN
+========================================================= */
+
+function normalizePath(path) {
+
+  return String(path || "")
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "");
+
+}
+
+
+/* =========================================================
+   ZAPKE AUSSCHLIESSEN
+========================================================= */
+
+function isExcludedPath(path) {
+
+  const normalized =
+    normalizePath(path)
+      .toLowerCase();
+
+
+  const parts =
+    normalized.split("/");
+
+
+  /*
+   * Der komplette Zapke-Unterordner
+   * wird niemals angezeigt.
+   *
+   * Damit werden sowohl
+   *
+   * dokumente/Zapke/...
+   *
+   * als auch
+   *
+   * dokumente/Anweisungen von PDL an Mitarbeiter/Zapke/...
+   *
+   * ausgeschlossen.
+   */
+
+  return parts.some(
+    function(part) {
+      return part === "zapke";
+    }
+  );
+
+}
+
+
+/* =========================================================
    DATEINAME
 ========================================================= */
 
@@ -1696,13 +1733,14 @@ function cleanFileName(name) {
 
 
 /* =========================================================
-   FOLDER ICON
+   ORDNER ICON
 ========================================================= */
 
 function folderIcon(name) {
 
   const n =
     String(name).toLowerCase();
+
 
   if (n.includes("schulung")) return "🎓";
   if (n.includes("fortbildung")) return "🎓";
@@ -1720,6 +1758,7 @@ function folderIcon(name) {
   if (n.includes("fallbesprech")) return "🩺";
   if (n.includes("bilder")) return "📷";
   if (n.includes("pdl")) return "👩‍⚕️";
+  if (n.includes("anweisung")) return "👩‍⚕️";
   if (n.includes("behandlungspflege")) return "💉";
   if (n.includes("grundpflege")) return "🛏️";
   if (n.includes("chronische")) return "🩹";
@@ -1976,6 +2015,14 @@ function setupLoginForm() {
 
       try {
 
+        /*
+         * Erst normal bei Supabase anmelden.
+         *
+         * Danach wird das Profil geprüft.
+         * Ein gesperrtes Konto wird sofort wieder
+         * ausgeloggt und bekommt keinen Portalzugriff.
+         */
+
         const result =
           await withTimeout(
             supabaseClient.auth.signInWithPassword({
@@ -1989,6 +2036,58 @@ function setupLoginForm() {
 
         if (result.error) {
           throw result.error;
+        }
+
+
+        currentUser =
+          result.data &&
+          result.data.user
+            ? result.data.user
+            : null;
+
+
+        if (!currentUser) {
+
+          throw new Error(
+            "Es konnte kein Benutzerkonto ermittelt werden."
+          );
+
+        }
+
+
+        await ensureProfile();
+
+
+        if (!currentProfile) {
+
+          await supabaseClient.auth.signOut();
+
+          currentUser = null;
+
+          throw new Error(
+            "Für dieses Konto wurde noch kein Profil angelegt."
+          );
+
+        }
+
+
+        if (currentProfile.active !== true) {
+
+          await supabaseClient.auth.signOut();
+
+          currentUser = null;
+          currentProfile = null;
+          portalInitialized = false;
+
+          showAuthScreen();
+
+          showAuthMessage(
+            "Dein Konto wurde registriert, ist aber noch nicht freigeschaltet. Bitte warte auf die Freigabe durch einen Administrator.",
+            "error"
+          );
+
+          return;
+
         }
 
 
@@ -2091,6 +2190,18 @@ function setupRegisterForm() {
       }
 
 
+      if (!email) {
+
+        showAuthMessage(
+          "Bitte eine E-Mail-Adresse eingeben.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
       if (password.length < 6) {
 
         showAuthMessage(
@@ -2124,7 +2235,19 @@ function setupRegisterForm() {
       }
 
 
+      registrationInProgress = true;
+
+
       try {
+
+        /*
+         * WICHTIG:
+         *
+         * Das Konto wird zwar bei Supabase Auth angelegt,
+         * aber das Profil wird mit active=false angelegt.
+         *
+         * Es erfolgt KEINE automatische Anmeldung.
+         */
 
         const result =
           await withTimeout(
@@ -2161,29 +2284,83 @@ function setupRegisterForm() {
         }
 
 
-        if (result.data.session) {
+        /*
+         * Falls Supabase direkt eine Session erzeugt,
+         * wird diese sofort beendet.
+         *
+         * Dadurch kann der neue Benutzer niemals
+         * direkt ins Portal gelangen.
+         */
 
-          await createProfileIfMissing(
+        if (
+          result.data &&
+          result.data.session
+        ) {
+
+          try {
+
+            await supabaseClient.auth.signOut();
+
+          }
+          catch (signOutError) {
+
+            console.error(
+              "Registrierungs-Logout:",
+              signOutError
+            );
+
+          }
+
+        }
+
+
+        /*
+         * Profil immer als INAKTIV anlegen.
+         */
+
+        const profile =
+          await createPendingProfile(
             user,
             name
           );
 
-          showAuthMessage(
-            "Konto wurde erfolgreich erstellt.",
-            "success"
-          );
 
-          await initializePortal();
+        /*
+         * Sicherheitshalber lokale Benutzerinformationen
+         * zurücksetzen.
+         */
 
+        currentUser = null;
+        currentProfile = null;
+        portalInitialized = false;
+
+
+        showAuthScreen();
+        showLogin();
+
+
+        showAuthMessage(
+          "Registrierung erfolgreich. Dein Konto wurde angelegt und wartet jetzt auf die Freischaltung durch einen Administrator. Du kannst dich erst nach der Freigabe anmelden.",
+          "success"
+        );
+
+
+        /*
+         * Formular leeren.
+         */
+
+        if (nameElement) {
+          nameElement.value = "";
         }
-        else {
 
-          showAuthMessage(
-            "Registrierung erfolgreich. Bitte bestätige deine E-Mail-Adresse und melde dich anschließend an.",
-            "success"
-          );
-
+        if (emailElement) {
+          emailElement.value = "";
         }
+
+        if (passwordElement) {
+          passwordElement.value = "";
+        }
+
 
       }
       catch (error) {
@@ -2192,6 +2369,7 @@ function setupRegisterForm() {
           "Registrierung:",
           error
         );
+
 
         showAuthMessage(
           "Registrierung fehlgeschlagen: " +
@@ -2204,6 +2382,8 @@ function setupRegisterForm() {
 
       }
       finally {
+
+        registrationInProgress = false;
 
         if (button) {
 
@@ -2222,25 +2402,31 @@ function setupRegisterForm() {
 
 
 /* =========================================================
-   PROFIL ANLEGEN
+   PENDING PROFILE
 ========================================================= */
 
-async function createProfileIfMissing(
+async function createPendingProfile(
   user,
   fallbackName
 ) {
 
   if (!user) {
-    return null;
+    throw new Error(
+      "Kein Benutzer für die Profilerstellung vorhanden."
+    );
   }
 
 
   const existing =
-    await supabaseClient
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .maybeSingle();
+    await withTimeout(
+      supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle(),
+      10000,
+      "Das Benutzerprofil konnte nicht geprüft werden."
+    );
 
 
   if (existing.error) {
@@ -2249,7 +2435,17 @@ async function createProfileIfMissing(
 
 
   if (existing.data) {
+
+    /*
+     * Besonders wichtig:
+     *
+     * Wenn das Profil bereits existiert,
+     * wird es bei einer erneuten Registrierung
+     * NICHT automatisch freigeschaltet.
+     */
+
     return existing.data;
+
   }
 
 
@@ -2264,16 +2460,20 @@ async function createProfileIfMissing(
 
 
   const inserted =
-    await supabaseClient
-      .from("profiles")
-      .insert({
-        id: user.id,
-        name: name,
-        role: "mitarbeiter",
-        active: true
-      })
-      .select()
-      .single();
+    await withTimeout(
+      supabaseClient
+        .from("profiles")
+        .insert({
+          id: user.id,
+          name: name,
+          role: "mitarbeiter",
+          active: false
+        })
+        .select()
+        .single(),
+      10000,
+      "Das Benutzerprofil konnte nicht angelegt werden."
+    );
 
 
   if (inserted.error) {
@@ -2342,7 +2542,7 @@ async function ensureProfile() {
   }
 
 
-  let profile =
+  const profile =
     await loadCurrentProfile();
 
 
@@ -2350,6 +2550,13 @@ async function ensureProfile() {
     return;
   }
 
+
+  /*
+   * Nur für bestehende Konten ohne Profil.
+   *
+   * Auch hier wird sicherheitshalber
+   * active=false gesetzt.
+   */
 
   const metadata =
     currentUser.user_metadata || {};
@@ -2363,11 +2570,26 @@ async function ensureProfile() {
 
   try {
 
-    profile =
-      await createProfileIfMissing(
-        currentUser,
-        name
-      );
+    const inserted =
+      await supabaseClient
+        .from("profiles")
+        .insert({
+          id: currentUser.id,
+          name: name,
+          role: "mitarbeiter",
+          active: false
+        })
+        .select()
+        .single();
+
+
+    if (inserted.error) {
+      throw inserted.error;
+    }
+
+
+    currentProfile =
+      inserted.data || null;
 
   }
   catch (error) {
@@ -2378,13 +2600,8 @@ async function ensureProfile() {
     );
 
     currentProfile = null;
-    return;
 
   }
-
-
-  currentProfile =
-    profile || null;
 
 }
 
@@ -2523,6 +2740,15 @@ function updateAdminVisibility() {
 
 async function initializePortal() {
 
+  /*
+   * Niemals während der Registrierung starten.
+   */
+
+  if (registrationInProgress) {
+    return;
+  }
+
+
   if (initializationRunning) {
     return;
   }
@@ -2584,22 +2810,33 @@ async function initializePortal() {
 
     if (!currentProfile) {
 
-      throw new Error(
-        "Für dieses Konto konnte kein Profil gefunden werden."
+      await supabaseClient.auth.signOut();
+
+      currentUser = null;
+      currentProfile = null;
+      portalInitialized = false;
+
+      showAuthScreen();
+
+      showAuthMessage(
+        "Für dieses Konto konnte kein Benutzerprofil gefunden werden.",
+        "error"
       );
+
+      return;
 
     }
 
 
+    /*
+     * ENTSCHEIDENDER SCHUTZ:
+     *
+     * Nur active=true darf ins Portal.
+     */
+
     if (
       currentProfile.active !== true
     ) {
-
-      showAuthMessage(
-        "Dieses Benutzerkonto wurde gesperrt. Bitte wende dich an einen Administrator.",
-        "error"
-      );
-
 
       await supabaseClient.auth.signOut();
 
@@ -2608,7 +2845,15 @@ async function initializePortal() {
       currentProfile = null;
       portalInitialized = false;
 
+
       showAuthScreen();
+
+
+      showAuthMessage(
+        "Dein Konto ist noch nicht freigeschaltet. Bitte warte auf die Freigabe durch einen Administrator.",
+        "error"
+      );
+
 
       return;
 
@@ -2889,7 +3134,7 @@ async function loadAdminProfiles() {
                     data-action="unlock"
                     data-user-id="${escapeHTML(profile.id)}"
                   >
-                    🔓 Entsperren
+                    🔓 Freischalten
                   </button>
                 `
             }
@@ -2949,7 +3194,7 @@ async function loadAdminProfiles() {
               ${
                 profile.active
                   ? "🟢 Aktiv"
-                  : "🔴 Gesperrt"
+                  : "🔴 Wartet auf Freischaltung"
               }
             </span>
           </td>
@@ -3085,7 +3330,7 @@ async function changeUserStatus(
 
   const action =
     active
-      ? "entsperren"
+      ? "freischalten"
       : "sperren";
 
 
@@ -3123,7 +3368,7 @@ async function changeUserStatus(
 
     showAdminMessage(
       active
-        ? "Mitarbeiter wurde entsperrt."
+        ? "Mitarbeiter wurde freigeschaltet."
         : "Mitarbeiter wurde gesperrt.",
       "success"
     );
@@ -3407,7 +3652,8 @@ function fileIcon(path) {
     n.endsWith(".jpg") ||
     n.endsWith(".jpeg") ||
     n.endsWith(".png") ||
-    n.endsWith(".webp")
+    n.endsWith(".webp") ||
+    n.endsWith(".svg")
   ) return "🖼️";
 
   if (
@@ -3427,9 +3673,6 @@ function fileIcon(path) {
 
 /* =========================================================
    GITHUB LADEN
-   V5:
-   Nach dem Abruf wird das komplette Zapke-Verzeichnis
-   aus dem Repository-Baum entfernt.
 ========================================================= */
 
 async function loadRepository() {
@@ -3467,22 +3710,14 @@ async function loadRepository() {
       await response.json();
 
 
-    const completeTree =
-      Array.isArray(data.tree)
-        ? data.tree
-        : [];
-
-
-    /*
-     * V5:
-     * Zapke und ALLES darunter werden entfernt.
-     */
     repositoryTree =
-      completeTree.filter(
-        function(item) {
-          return !isIgnoredPath(item.path);
-        }
-      );
+      Array.isArray(data.tree)
+        ? data.tree.filter(
+            function(item) {
+              return !isExcludedPath(item.path);
+            }
+          )
+        : [];
 
 
     renderMainSections();
@@ -3538,12 +3773,15 @@ async function loadRepository() {
 
 
 /* =========================================================
-   ROOT FOLDER
+   DOKUMENTEN ROOT
 ========================================================= */
 
-function rootFolders() {
+function documentRootFolders() {
 
   const result = [];
+
+  const prefix =
+    DOCUMENT_ROOT + "/";
 
 
   repositoryTree.forEach(
@@ -3551,14 +3789,30 @@ function rootFolders() {
 
       if (
         item.type !== "tree" ||
-        isIgnoredPath(item.path)
+        !item.path.startsWith(prefix)
       ) {
         return;
       }
 
 
-      if (!item.path.includes("/")) {
+      const rest =
+        item.path.substring(
+          prefix.length
+        );
+
+
+      /*
+       * Nur direkte Unterordner von
+       * "dokumente" zurückgeben.
+       */
+
+      if (
+        rest.length > 0 &&
+        !rest.includes("/")
+      ) {
+
         result.push(item.path);
+
       }
 
     }
@@ -3571,13 +3825,79 @@ function rootFolders() {
 
 
 /* =========================================================
+   PDL ORDNER
+========================================================= */
+
+function findPDLFolder() {
+
+  /*
+   * Zuerst exakt den vom Benutzer angegebenen
+   * Pfad suchen.
+   */
+
+  const exact =
+    repositoryTree.find(
+      function(item) {
+
+        return (
+          item.type === "tree" &&
+          normalizePath(item.path)
+            .toLowerCase() ===
+          normalizePath(PDL_FOLDER)
+            .toLowerCase()
+        );
+
+      }
+    );
+
+
+  if (exact) {
+    return exact.path;
+  }
+
+
+  /*
+   * Fallback:
+   * Alle direkten Unterordner von "dokumente"
+   * durchsuchen.
+   */
+
+  const folders =
+    documentRootFolders();
+
+
+  const match =
+    folders.find(
+      function(path) {
+
+        const n =
+          path.toLowerCase();
+
+
+        return (
+          n.includes("anweisungen von pdl") ||
+          n.includes("pdl anweisungen") ||
+          n.includes("pdl-anweisungen") ||
+          n.includes("pdl")
+        );
+
+      }
+    );
+
+
+  return match || null;
+
+}
+
+
+/* =========================================================
    HAUPTBEREICHE
 ========================================================= */
 
 function renderMainSections() {
 
   const roots =
-    rootFolders();
+    documentRootFolders();
 
 
   const qm = [];
@@ -3587,25 +3907,50 @@ function renderMainSections() {
   const pdl = [];
 
 
+  /*
+   * Exakt den gewünschten PDL-Ordner
+   * unter "dokumente" verwenden.
+   */
+
+  const pdlFolder =
+    findPDLFolder();
+
+
   roots.forEach(
     function(folder) {
 
-      if (isIgnoredPath(folder)) {
+      if (isExcludedPath(folder)) {
         return;
       }
 
 
       const n =
-        folder.toLowerCase();
+        folder
+          .substring(
+            DOCUMENT_ROOT.length + 1
+          )
+          .toLowerCase();
 
+
+      /*
+       * PDL
+       */
 
       if (
-        n === "teams" ||
-        n.includes("team")
+        pdlFolder &&
+        normalizePath(folder).toLowerCase() ===
+        normalizePath(pdlFolder).toLowerCase()
       ) {
+
+        pdl.push(folder);
         return;
+
       }
 
+
+      /*
+       * Bilderlaubnis
+       */
 
       if (
         n.includes("bilderlaubnis")
@@ -3616,6 +3961,10 @@ function renderMainSections() {
 
       }
 
+
+      /*
+       * Schulungen
+       */
 
       if (
         n === "schulungen" ||
@@ -3628,6 +3977,10 @@ function renderMainSections() {
 
       }
 
+
+      /*
+       * Standards
+       */
 
       if (
         n.startsWith("va ") ||
@@ -3648,17 +4001,9 @@ function renderMainSections() {
       }
 
 
-      if (
-        n === "pdl" ||
-        n.includes("pdl-anweisung") ||
-        n.includes("pdl anweisung")
-      ) {
-
-        pdl.push(folder);
-        return;
-
-      }
-
+      /*
+       * QM
+       */
 
       if (
         n === "qm-handbuch" ||
@@ -3675,11 +4020,53 @@ function renderMainSections() {
   );
 
 
-  renderFolderGrid("qmFolders", qm);
-  renderFolderGrid("standardFolders", standards);
-  renderFolderGrid("trainingFolders", training);
-  renderFolderGrid("imageFolders", bilder);
-  renderFolderGrid("pdlFolders", pdl);
+  /*
+   * Falls der PDL-Ordner aus irgendeinem Grund
+   * nicht direkt erkannt wurde, aber vorhanden ist,
+   * trotzdem anzeigen.
+   */
+
+  if (
+    pdlFolder &&
+    !pdl.some(
+      function(folder) {
+        return (
+          normalizePath(folder).toLowerCase() ===
+          normalizePath(pdlFolder).toLowerCase()
+        );
+      }
+    )
+  ) {
+
+    pdl.push(pdlFolder);
+
+  }
+
+
+  renderFolderGrid(
+    "qmFolders",
+    qm
+  );
+
+  renderFolderGrid(
+    "standardFolders",
+    standards
+  );
+
+  renderFolderGrid(
+    "trainingFolders",
+    training
+  );
+
+  renderFolderGrid(
+    "imageFolders",
+    bilder
+  );
+
+  renderFolderGrid(
+    "pdlFolders",
+    pdl
+  );
 
 }
 
@@ -3707,8 +4094,17 @@ function renderFolderGrid(
 
   folders =
     folders.filter(
-      function(folder) {
-        return !isIgnoredPath(folder);
+      function(folder, index, array) {
+
+        if (isExcludedPath(folder)) {
+          return false;
+        }
+
+
+        return (
+          array.indexOf(folder) === index
+        );
+
       }
     );
 
@@ -3745,11 +4141,6 @@ function renderFolderGrid(
   folders.forEach(
     function(folder,index) {
 
-      if (isIgnoredPath(folder)) {
-        return;
-      }
-
-
       const card =
         document.createElement("div");
 
@@ -3776,9 +4167,24 @@ function renderFolderGrid(
       }
 
 
+      /*
+       * Nur den Ordnernamen anzeigen,
+       * nicht den kompletten GitHub-Pfad.
+       */
+
+      const displayParts =
+        displayName.split("/");
+
+
+      displayName =
+        displayParts[
+          displayParts.length - 1
+        ];
+
+
       card.innerHTML = `
         <div class="folder-icon">
-          ${folderIcon(folder)}
+          ${folderIcon(displayName)}
         </div>
 
         <div class="folder-name">
@@ -3794,11 +4200,7 @@ function renderFolderGrid(
       card.addEventListener(
         "click",
         function() {
-
-          if (!isIgnoredPath(folder)) {
-            openFolder(folder);
-          }
-
+          openFolder(folder);
         }
       );
 
@@ -3813,21 +4215,12 @@ function renderFolderGrid(
 
 /* =========================================================
    ORDNER ÖFFNEN
-   V5:
-   Zapke kann auch bei direktem Aufruf nicht geöffnet werden.
 ========================================================= */
 
 function openFolder(path) {
 
-  if (isIgnoredPath(path)) {
-
-    console.warn(
-      "Ignorierter Ordner wurde blockiert:",
-      path
-    );
-
+  if (isExcludedPath(path)) {
     return;
-
   }
 
 
@@ -3890,7 +4283,8 @@ function openFolder(path) {
       function(item) {
 
         if (
-          isIgnoredPath(item.path)
+          item.type !== "tree" &&
+          item.type !== "blob"
         ) {
           return false;
         }
@@ -3899,6 +4293,11 @@ function openFolder(path) {
         if (
           !item.path.startsWith(prefix)
         ) {
+          return false;
+        }
+
+
+        if (isExcludedPath(item.path)) {
           return false;
         }
 
@@ -3922,12 +4321,7 @@ function openFolder(path) {
     children
       .filter(
         function(item) {
-
-          return (
-            item.type === "tree" &&
-            !isIgnoredPath(item.path)
-          );
-
+          return item.type === "tree";
         }
       )
       .sort(
@@ -3949,12 +4343,7 @@ function openFolder(path) {
     children
       .filter(
         function(item) {
-
-          return (
-            item.type === "blob" &&
-            !isIgnoredPath(item.path)
-          );
-
+          return item.type === "blob";
         }
       )
       .sort(
@@ -3988,11 +4377,6 @@ function openFolder(path) {
 
     folders.forEach(
       function(folder) {
-
-        if (isIgnoredPath(folder.path)) {
-          return;
-        }
-
 
         const name =
           folder.path.substring(
@@ -4045,11 +4429,6 @@ function openFolder(path) {
 
     files.forEach(
       function(file) {
-
-        if (isIgnoredPath(file.path)) {
-          return;
-        }
-
 
         const name =
           file.path.substring(
@@ -4141,19 +4520,9 @@ function openFolder(path) {
           "click",
           function() {
 
-            const targetPath =
-              element.dataset.folderPath;
-
-
-            if (
-              !isIgnoredPath(targetPath)
-            ) {
-
-              openFolder(
-                targetPath
-              );
-
-            }
+            openFolder(
+              element.dataset.folderPath
+            );
 
           }
         );
@@ -4211,6 +4580,54 @@ function startAuthListener() {
         "Supabase Auth Event:",
         event
       );
+
+
+      /*
+       * Während Registrierung niemals
+       * automatisch initializePortal() starten.
+       */
+
+      if (registrationInProgress) {
+
+        if (
+          event === "SIGNED_IN" &&
+          session
+        ) {
+
+          /*
+           * Die Registrierung hat möglicherweise
+           * direkt eine Session erzeugt.
+           *
+           * Diese wird nicht als Portalzugang
+           * akzeptiert.
+           */
+
+          setTimeout(
+            async function() {
+
+              try {
+
+                await supabaseClient.auth.signOut();
+
+              }
+              catch (error) {
+
+                console.error(
+                  "Registrierungs-SignOut:",
+                  error
+                );
+
+              }
+
+            },
+            0
+          );
+
+        }
+
+        return;
+
+      }
 
 
       if (
@@ -4297,6 +4714,14 @@ async function startApplication() {
     }
 
 
+    /*
+     * Falls bereits eine Session existiert,
+     * wird sie NICHT automatisch als gültig betrachtet.
+     *
+     * initializePortal() prüft das Profil und
+     * insbesondere active=true.
+     */
+
     if (
       result.data &&
       result.data.session
@@ -4360,4 +4785,3 @@ else {
 
 </body>
 </html>
-```
