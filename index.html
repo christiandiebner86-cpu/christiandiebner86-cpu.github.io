@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -2088,10 +2087,11 @@ function setupRegisterForm() {
          * automatisch freigeschaltet.
          */
 
-        await createProfileIfMissing(
-          user,
-          name
-        );
+        /*
+         * Das Benutzerprofil wird automatisch durch den
+         * Supabase-Trigger handle_new_user() angelegt.
+         * Der Browser schreibt hier NICHT direkt in profiles.
+         */
 
 
         /*
@@ -2154,67 +2154,6 @@ function setupRegisterForm() {
    role   = mitarbeiter
 ========================================================= */
 
-async function createProfileIfMissing(
-  user,
-  fallbackName
-) {
-
-  if (!user) {
-    return null;
-  }
-
-
-  const existing =
-    await supabaseClient
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .maybeSingle();
-
-
-  if (existing.error) {
-    throw existing.error;
-  }
-
-
-  if (existing.data) {
-    return existing.data;
-  }
-
-
-  const name =
-    fallbackName ||
-    (
-      user.user_metadata &&
-      user.user_metadata.name
-    ) ||
-    user.email ||
-    "Mitarbeiter";
-
-
-  const inserted =
-    await supabaseClient
-      .from("profiles")
-      .insert({
-        id: user.id,
-        name: name,
-        role: "mitarbeiter",
-        active: false
-      })
-      .select()
-      .single();
-
-
-  if (inserted.error) {
-    throw inserted.error;
-  }
-
-
-  return inserted.data;
-
-}
-
-
 /* =========================================================
    PROFIL LADEN
 ========================================================= */
@@ -2264,44 +2203,19 @@ async function loadCurrentProfile() {
 async function ensureProfile() {
 
   if (!currentUser) {
-
     currentProfile = null;
     return;
-
   }
 
+  await loadCurrentProfile();
 
-  let profile =
-    await loadCurrentProfile();
-
-
-  if (profile) {
-    return;
-  }
-
-
-  const metadata =
-    currentUser.user_metadata || {};
-
-
-  const name =
-    metadata.name ||
-    currentUser.email ||
-    "Mitarbeiter";
-
-
-  profile =
-    await createProfileIfMissing(
-      currentUser,
-      name
+  if (!currentProfile) {
+    throw new Error(
+      "Für dieses Konto konnte kein Benutzerprofil gefunden werden."
     );
-
-
-  currentProfile =
-    profile || null;
+  }
 
 }
-
 
 /* =========================================================
    PORTAL
