@@ -1512,7 +1512,7 @@ footer p {
   <button
     class="back-button"
     type="button"
-    onclick="closeFolder()"
+    onclick="goBackFolder()"
   >
     ← Zurück
   </button>
@@ -1624,6 +1624,7 @@ const GITHUB_API =
 ========================================================= */
 
 let repositoryTree = [];
+let currentFolderPath = "";
 let currentUser = null;
 let currentProfile = null;
 let portalInitialized = false;
@@ -4110,6 +4111,9 @@ function openFolder(path, anchorCard) {
   }
 
 
+  currentFolderPath = path;
+
+
   const panel =
     getElement("contentPanel");
 
@@ -4489,6 +4493,40 @@ function openFolder(path, anchorCard) {
 
 
 /* =========================================================
+   EINE ORDNEREBENE ZURÜCK
+========================================================= */
+
+function goBackFolder() {
+
+  if (!currentFolderPath) {
+    closeFolder();
+    return;
+  }
+
+  const parts =
+    currentFolderPath
+      .split("/")
+      .filter(Boolean);
+
+  /*
+   * Befinden wir uns bereits im Hauptordner,
+   * wird der aufgeklappte Bereich geschlossen.
+   */
+  if (parts.length <= 1) {
+    closeFolder();
+    return;
+  }
+
+  parts.pop();
+
+  const parentPath =
+    parts.join("/");
+
+  openFolder(parentPath);
+}
+
+
+/* =========================================================
    ORDNER SCHLIESSEN
 ========================================================= */
 
@@ -4507,6 +4545,8 @@ function closeFolder() {
     .forEach(function(card) {
       card.classList.remove("is-open");
     });
+
+  currentFolderPath = "";
 
 }
 
