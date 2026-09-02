@@ -545,6 +545,123 @@ main {
 }
 
 /* =========================================================
+   DOKUMENTSUCHE
+========================================================= */
+
+.document-search {
+  margin-top: 26px;
+  padding: 20px;
+  background: #f8fbfa;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+.document-search-label {
+  display: block;
+  font-weight: 800;
+  margin-bottom: 9px;
+}
+
+.document-search-box {
+  position: relative;
+}
+
+.document-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 14px 46px 14px 15px;
+  font: inherit;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+}
+
+.document-search-input:focus {
+  border-color: #8fc9b3;
+  box-shadow: 0 0 0 3px rgba(8,127,91,.10);
+}
+
+.document-search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 20px;
+}
+
+.document-search-hint {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.search-results {
+  display: none;
+  margin-top: 13px;
+  gap: 9px;
+}
+
+.search-results.active {
+  display: grid;
+}
+
+.search-result-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
+  text-decoration: none;
+  transition: .18s ease;
+}
+
+.search-result-card:hover {
+  background: #f0f8f5;
+  border-color: #b6d8ca;
+  transform: translateX(2px);
+}
+
+.search-result-name {
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.search-result-path {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.search-empty {
+  padding: 15px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px dashed var(--line);
+  color: var(--muted);
+}
+
+/* Wenn der Inhaltsbereich in ein Ordner-Raster verschoben wird,
+   nimmt er die komplette Breite ein. */
+.folder-grid > #contentPanel {
+  grid-column: 1 / -1;
+  width: auto;
+  margin-top: 0;
+}
+
+.folder-card.is-open {
+  border-color: #8fc9b3;
+  box-shadow: 0 10px 26px rgba(0,0,0,.10);
+}
+
+/* =========================================================
    ADMIN
 ========================================================= */
 
@@ -1075,6 +1192,37 @@ footer p {
     id="portalStatus"
     class="portal-status"
   ></div>
+
+  <div class="document-search">
+
+    <label
+      class="document-search-label"
+      for="documentSearch"
+    >
+      🔎 Dokument suchen
+    </label>
+
+    <div class="document-search-box">
+      <input
+        id="documentSearch"
+        class="document-search-input"
+        type="search"
+        placeholder="z. B. Wunddokumentation, Händehygiene, Urlaub …"
+        autocomplete="off"
+      >
+      <span class="document-search-icon">🔍</span>
+    </div>
+
+    <div class="document-search-hint">
+      Die Suche durchsucht alle Dokumentnamen im QM-Portal.
+    </div>
+
+    <div
+      id="documentSearchResults"
+      class="search-results"
+    ></div>
+
+  </div>
 
 </section>
 
@@ -3642,6 +3790,178 @@ function renderMainSections() {
 
 
 /* =========================================================
+   DOKUMENTSUCHE
+========================================================= */
+
+function normalizeSearchText(value) {
+
+  return String(value || "")
+    .toLocaleLowerCase("de-DE")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[_-]+/g, " ");
+
+}
+
+
+function renderDocumentSearch(query) {
+
+  const results =
+    getElement("documentSearchResults");
+
+  if (!results) {
+    return;
+  }
+
+  const searchTerm =
+    normalizeSearchText(query).trim();
+
+  if (searchTerm.length < 2) {
+    results.classList.remove("active");
+    results.innerHTML = "";
+    return;
+  }
+
+  const terms =
+    searchTerm
+      .split(/\s+/)
+      .filter(Boolean);
+
+  const matches =
+    repositoryTree
+      .filter(function(item) {
+
+        if (item.type !== "blob") {
+          return false;
+        }
+
+        const lowerPath =
+          String(item.path || "")
+            .toLowerCase();
+
+        if (lowerPath.includes("zapke")) {
+          return false;
+        }
+
+        const searchable =
+          normalizeSearchText(
+            cleanFileName(item.path) +
+            " " +
+            item.path
+          );
+
+        return terms.every(function(term) {
+          return searchable.includes(term);
+        });
+
+      })
+      .sort(function(a,b) {
+
+        const aName = normalizeSearchText(
+          cleanFileName(a.path.split("/").pop())
+        );
+
+        const bName = normalizeSearchText(
+          cleanFileName(b.path.split("/").pop())
+        );
+
+        const aStarts = aName.startsWith(searchTerm) ? 0 : 1;
+        const bStarts = bName.startsWith(searchTerm) ? 0 : 1;
+
+        if (aStarts !== bStarts) {
+          return aStarts - bStarts;
+        }
+
+        return a.path.localeCompare(
+          b.path,
+          "de",
+          { numeric: true }
+        );
+
+      })
+      .slice(0, 40);
+
+  results.classList.add("active");
+
+  if (!matches.length) {
+    results.innerHTML = `
+      <div class="search-empty">
+        Kein Dokument zu „${escapeHTML(query)}“ gefunden.
+      </div>
+    `;
+    return;
+  }
+
+  results.innerHTML =
+    matches.map(function(file) {
+
+      const parts =
+        String(file.path).split("/");
+
+      const rawName =
+        parts.pop() || file.path;
+
+      const folderPath =
+        parts.join(" / ");
+
+      return `
+        <a
+          class="search-result-card"
+          href="${escapeHTML(fileURL(file.path))}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div class="file-icon">
+            ${fileIcon(rawName)}
+          </div>
+
+          <div>
+            <div class="search-result-name">
+              ${escapeHTML(cleanFileName(rawName))}
+            </div>
+
+            <div class="search-result-path">
+              ${escapeHTML(folderPath || "Hauptordner")}
+              · In neuem Tab öffnen
+            </div>
+          </div>
+        </a>
+      `;
+
+    }).join("");
+
+}
+
+
+function setupDocumentSearch() {
+
+  const input =
+    getElement("documentSearch");
+
+  if (!input || input.dataset.ready === "true") {
+    return;
+  }
+
+  input.dataset.ready = "true";
+
+  input.addEventListener(
+    "input",
+    function() {
+      renderDocumentSearch(input.value);
+    }
+  );
+
+  input.addEventListener(
+    "search",
+    function() {
+      renderDocumentSearch(input.value);
+    }
+  );
+
+}
+
+
+/* =========================================================
    ORDNER GRID
 ========================================================= */
 
@@ -3758,7 +4078,7 @@ function renderFolderGrid(
       card.addEventListener(
         "click",
         function() {
-          openFolder(folder);
+          openFolder(folder, card);
         }
       );
 
@@ -3775,7 +4095,7 @@ function renderFolderGrid(
    ORDNER ÖFFNEN
 ========================================================= */
 
-function openFolder(path) {
+function openFolder(path, anchorCard) {
 
   /*
    * Zapke niemals öffnen.
@@ -3806,6 +4126,24 @@ function openFolder(path) {
     !breadcrumb
   ) {
     return;
+  }
+
+
+  /*
+   * Hauptordner direkt unter der angeklickten Karte öffnen.
+   * Bei Unterordnern bleibt derselbe Bereich an dieser Stelle.
+   */
+  if (anchorCard) {
+
+    document
+      .querySelectorAll(".folder-card.is-open")
+      .forEach(function(card) {
+        card.classList.remove("is-open");
+      });
+
+    anchorCard.classList.add("is-open");
+    anchorCard.insertAdjacentElement("afterend", panel);
+
   }
 
 
@@ -4147,12 +4485,6 @@ function openFolder(path) {
       }
     );
 
-
-  panel.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-
 }
 
 
@@ -4169,6 +4501,12 @@ function closeFolder() {
   if (panel) {
     panel.classList.remove("active");
   }
+
+  document
+    .querySelectorAll(".folder-card.is-open")
+    .forEach(function(card) {
+      card.classList.remove("is-open");
+    });
 
 }
 
@@ -4246,6 +4584,8 @@ function startAuthListener() {
 ========================================================= */
 
 async function startApplication() {
+
+  setupDocumentSearch();
 
   setupLoginForm();
   setupRegisterForm();
