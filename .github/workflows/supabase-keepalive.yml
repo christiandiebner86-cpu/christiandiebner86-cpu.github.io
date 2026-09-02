@@ -1,0 +1,21 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    - cron: "15 7 * * *"
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Supabase ansprechen
+        run: |
+          curl --fail \
+            -X POST \
+            "https://syvcomshcexhnxhplqhx.supabase.co/rest/v1/rpc/keep_alive" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{}'
