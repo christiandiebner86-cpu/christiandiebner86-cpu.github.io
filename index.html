@@ -1926,6 +1926,41 @@ function setupLoginForm() {
         }
 
 
+        /*
+         * Letzten erfolgreichen Login automatisch speichern.
+         * Die Supabase-RPC record_last_login() verwendet auth.uid(),
+         * damit nur der Login-Zeitpunkt des angemeldeten Benutzers
+         * aktualisiert wird. Ein Fehler hier blockiert den Portal-Login nicht.
+         */
+        try {
+
+          const lastLoginResult =
+            await withTimeout(
+              supabaseClient.rpc(
+                "record_last_login"
+              ),
+              10000,
+              "Der letzte Login konnte nicht gespeichert werden."
+            );
+
+          if (lastLoginResult.error) {
+            console.warn(
+              "Letzter Login konnte nicht gespeichert werden:",
+              lastLoginResult.error
+            );
+          }
+
+        }
+        catch (lastLoginError) {
+
+          console.warn(
+            "Letzter Login konnte nicht gespeichert werden:",
+            lastLoginError
+          );
+
+        }
+
+
         await initializePortal();
 
       }
