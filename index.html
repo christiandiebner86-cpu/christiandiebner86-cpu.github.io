@@ -545,6 +545,36 @@ main {
 }
 
 /* =========================================================
+   STARTSEITEN-BILD
+========================================================= */
+
+.hero-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr);
+  gap: 28px;
+  align-items: center;
+}
+
+.hero-copy {
+  min-width: 0;
+}
+
+.hero-image-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image {
+  display: block;
+  width: min(100%, 390px);
+  height: auto;
+  border-radius: 20px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.08));
+}
+
+/* =========================================================
    DOKUMENTSUCHE
 ========================================================= */
 
@@ -916,6 +946,27 @@ footer p {
     font-size: 24px;
   }
 
+  .hero-intro {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .hero-image-wrap {
+    order: 2;
+  }
+
+  .hero-image {
+    width: min(100%, 310px);
+  }
+
+  .document-search {
+    padding: 16px;
+  }
+
+  .document-search-input {
+    font-size: 16px;
+  }
+
   .folder-grid {
     grid-template-columns: 1fr;
   }
@@ -1173,20 +1224,35 @@ footer p {
   class="hero"
 >
 
-  <h2>
-    Willkommen im QM-Portal
-  </h2>
+  <div class="hero-intro">
 
-  <p>
-    Diese Website dient als zentrale Oberfläche
-    für die interne Qualitätsmanagement-Dokumentation
-    der Intensivpflege-Halle-GmbH.
-  </p>
+    <div class="hero-copy">
+      <h2>
+        Willkommen im QM-Portal
+      </h2>
 
-  <p>
-    Die Dokumente werden automatisch aus dem
-    GitHub-Repository geladen.
-  </p>
+      <p>
+        Diese Website dient als zentrale Oberfläche
+        für die interne Qualitätsmanagement-Dokumentation
+        der Intensivpflege-Halle-GmbH.
+      </p>
+
+      <p>
+        Die Dokumente werden automatisch aus dem
+        GitHub-Repository geladen.
+      </p>
+    </div>
+
+    <div class="hero-image-wrap">
+      <img
+        class="hero-image"
+        src="qm-portal.jpg"
+        alt="Medizinische Illustration für das QM-Portal"
+        loading="eager"
+      >
+    </div>
+
+  </div>
 
   <div
     id="portalStatus"
