@@ -1,0 +1,1223 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dienstplan – QM-Portal Intensivpflege-Halle-GmbH</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#d8dee8;--accent:#2563eb;--leader:#fff3bf;--conflict:#fee2e2}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:#111827;color:#fff;padding:18px 22px}header h1{margin:0;font-size:22px}header p{margin:5px 0 0;color:#cbd5e1;font-size:14px}
+main{max-width:1550px;margin:auto;padding:20px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.04);margin-bottom:18px}
+h2,h3{margin-top:0}label{display:block;font-size:13px;font-weight:700;margin:8px 0 5px}input,select,button{font:inherit}
+input,select{padding:9px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff}button{border:0;border-radius:8px;padding:9px 13px;font-weight:700;cursor:pointer}
+.primary{background:#2563eb;color:#fff}.secondary{background:#e5e7eb;color:#111827}.warning{background:#fef3c7;color:#92400e}
+.hidden{display:none!important}.toolbar{display:flex;gap:12px;align-items:end;flex-wrap:wrap}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.notice{padding:11px 13px;border-radius:9px;background:#eff6ff;color:#1e3a8a;margin-bottom:14px}.small{font-size:12px;color:var(--muted)}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:800;margin-right:5px}.ok{background:#dcfce7;color:#166534}.wait{background:#fef3c7;color:#92400e}
+.login-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:separate;border-spacing:0;min-width:2100px;width:100%;background:#fff}th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:0;text-align:center}
+thead th{position:sticky;top:0;background:#eef2f7;z-index:3;height:58px;min-width:62px}thead th:first-child{left:0;z-index:5;min-width:200px}
+tbody th{position:sticky;left:0;background:#fff;z-index:2;min-width:200px;padding:8px;text-align:left}.day{font-weight:800}.weekday{font-size:11px;color:var(--muted)}
+.cell{width:100%;height:55px;border:0;background:transparent;text-align:center;outline:none}.cell:focus{box-shadow:inset 0 0 0 2px var(--accent);background:#eff6ff}.weekend{background:#f8fafc}
+.leader-edited{box-shadow:inset 0 0 0 3px #eab308!important}.conflict{box-shadow:inset 0 0 0 3px #ef4444!important}.dienst-tag{background:#86efac!important}.dienst-nacht{background:#fdba74!important}.dienst-wf{background:#fde047!important}.dienst-urlaub{background:#93c5fd!important}.dienst-flex{background:#d8b4fe!important}
+.log{width:100%;border-collapse:collapse;min-width:850px}.log th,.log td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}.log th{background:#f8fafc}
+.legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}.swatch{width:24px;height:18px;border-radius:4px;display:inline-block}
+@media(max-width:900px){.login-grid{grid-template-columns:1fr}main{padding:10px}.card{padding:12px}}
+
+.suggestions{display:grid;gap:8px;margin-top:12px}
+.suggestion{border:1px solid #d8dee8;border-radius:10px;padding:10px 12px;background:#f8fafc}
+.suggestion strong{display:block;margin-bottom:3px}
+.suggestion.missing{background:#fff7ed;border-color:#fed7aa}
+.suggestion.conflict-note{background:#fff1f2;border-color:#fecdd3}
+.suggestion.good{background:#ecfdf5;border-color:#bbf7d0}
+
+
+#employeeWishTable th:first-child,
+  #employeeWishTable td:first-child{width:70px !important;min-width:70px !important}
+  #employeeWishTable select{font-size:8px;height:25px}
+}
+
+
+/* Einheitliche Monatskalender für Mitarbeiter, Teamleitung und Admin */
+#employeeWishTable,
+#leaderOwnTable,
+#leadTable,
+#adminTable{
+  width:100%;
+  table-layout:auto;
+}
+#employeeWishTable th,
+#employeeWishTable td,
+#leaderOwnTable th,
+#leaderOwnTable td,
+#leadTable th,
+#leadTable td,
+#adminTable th,
+#adminTable td{
+  text-align:center;
+  vertical-align:middle;
+}
+#employeeWishTable th:first-child,
+#employeeWishTable td:first-child,
+#leaderOwnTable th:first-child,
+#leaderOwnTable td:first-child,
+#leadTable th:first-child,
+#leadTable td:first-child,
+#adminTable th:first-child,
+#adminTable td:first-child{
+  min-width:130px;
+  text-align:left;
+}
+
+
+/* Größere, gut lesbare Dienstkürzel */
+#employeeWishTable select,
+#leaderOwnTable select,
+#leadTable select,
+#adminTable select{
+  font-size:15px !important;
+  font-weight:700;
+  min-width:42px;
+  height:34px;
+  padding:2px 3px;
+  text-align:center;
+  text-align-last:center;
+}
+#employeeWishTable th,
+#leaderOwnTable th,
+#leadTable th,
+#adminTable th{
+  font-size:13px;
+}
+#employeeWishTable td,
+#leaderOwnTable td,
+#leadTable td,
+#adminTable td{
+  padding:3px !important;
+}
+
+
+/* =========================================================
+   QM-PORTAL-INTEGRATION
+========================================================= */
+:root{
+  --portal-bg:#f5f7f8;
+  --portal-card:#ffffff;
+  --portal-text:#26343b;
+  --portal-muted:#68777e;
+  --portal-line:#dfe7e9;
+  --portal-green:#76a82b;
+  --portal-green-dark:#4f7818;
+  --portal-blue:#139ed0;
+}
+body{
+  margin:0;
+  background:var(--portal-bg);
+  color:var(--portal-text);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+.qm-header{
+  background:linear-gradient(135deg,#4f7818 0%,#76a82b 48%,#139ed0 100%);
+  color:#fff;
+  padding:18px;
+  box-shadow:0 5px 20px rgba(0,0,0,.15);
+}
+.qm-header-inner{
+  max-width:1500px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+.qm-brand{flex:1}
+.qm-brand h1{margin:0 0 4px;font-size:27px}
+.qm-brand p{margin:0;opacity:.9}
+.qm-userbox{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.25);
+  padding:9px 12px;
+  border-radius:13px;
+}
+.qm-usertext{text-align:right}
+.qm-usertext strong{display:block}
+.qm-usertext span{font-size:12px;opacity:.9}
+.qm-back{
+  display:inline-block;
+  background:#fff;
+  color:#4f7818;
+  text-decoration:none;
+  font-weight:800;
+  border-radius:9px;
+  padding:8px 11px;
+}
+.qm-nav{
+  background:#fff;
+  border-bottom:1px solid var(--portal-line);
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.qm-nav-inner{
+  max-width:1500px;
+  margin:auto;
+  padding:10px 14px;
+  display:flex;
+  gap:8px;
+}
+.qm-nav a{
+  text-decoration:none;
+  color:var(--portal-text);
+  padding:9px 13px;
+  border-radius:10px;
+  font-weight:700;
+}
+.qm-nav a.active{background:#eef6e4;color:#4f7818}
+.qm-page{max-width:1500px;margin:auto;padding:24px 14px 60px}
+#portalAuthGate{
+  max-width:700px;
+  margin:60px auto;
+  background:#fff;
+  border:1px solid var(--portal-line);
+  border-radius:20px;
+  padding:28px;
+  box-shadow:0 7px 25px rgba(0,0,0,.07);
+}
+#portalAuthGate h2{margin-top:0;color:#4f7818}
+#portalAuthGate a{
+  display:inline-block;
+  margin-top:10px;
+  padding:11px 15px;
+  background:#76a82b;
+  color:#fff;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:800;
+}
+#portalIntegrationNote{
+  background:#eef6e4;
+  border:1px solid #cfe3ad;
+  border-radius:12px;
+  padding:10px 13px;
+  margin-bottom:14px;
+  font-size:14px;
+}
+#login{display:none!important}
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div id="portalShell" style="display:none">
+  <header class="qm-header">
+    <div class="qm-header-inner">
+      <div class="qm-brand">
+        <h1>QM-Portal · Dienstplan</h1>
+        <p>Intensivpflege-Halle-GmbH</p>
+      </div>
+      <div class="qm-userbox">
+        <div class="qm-usertext">
+          <strong id="qmLoggedUser">Benutzer</strong>
+          <span id="qmLoggedRole">Mitarbeiter</span>
+        </div>
+        <a class="qm-back" href="index.html">← QM-Portal</a>
+      </div>
+    </div>
+  </header>
+  <nav class="qm-nav">
+    <div class="qm-nav-inner">
+      <a href="index.html">🏠 Start</a>
+      <a href="dienstplan.html" class="active">📅 Dienstplan</a>
+    </div>
+  </nav>
+  <main class="qm-page">
+    <div id="portalIntegrationNote">
+      Du bist über das QM-Portal angemeldet. Der Dienstplan übernimmt diesen Login automatisch.
+    </div>
+
+<header><h1>QM Dienstplanung</h1><p>12-Stunden-Schichten: Tag 07:00–19:00 · Nacht 19:00–07:00 · mit Planungsvorschlägen</p></header>
+<main>
+
+<section id="login" class="card">
+<h2>Demo-Anmeldung</h2>
+<div class="login-grid">
+<div><h3>Mitarbeiter/in</h3><label>Person</label><select id="empLogin"><option value="anna">Anna Müller – Team A</option><option value="ben">Ben Schneider – Team A</option><option value="clara">Clara Weber – Team A</option><option value="david">David Fischer – Team B</option><option value="leadA">Teamleitung A – Team A</option><option value="leadB">Teamleitung B – Team B</option><option value="spring1">Springer 1 – Springer Team</option></select><div class="actions"><button class="primary" onclick="loginEmp()">Anmelden</button></div></div>
+<div><h3>Teamleitung</h3><label>Team</label><select id="leadLogin"><option value="Team Bernburg">Teamleiter – Team A</option><option value="Team Petersberg">Teamleiter – Team B</option><option value="Team Springer">Teamleitung – Springer Team</option></select><div class="actions"><button class="primary" onclick="loginLead()">Anmelden</button></div></div>
+<div><h3>Admin</h3><label>Bereich</label><select><option>Admin – alle Teams</option></select><div class="actions"><button class="primary" onclick="loginAdmin()">Anmelden</button></div></div>
+</div>
+</section>
+
+<section id="employee" class="hidden">
+<div class="card">
+<div class="toolbar"><div><h2 id="empTitle"></h2><div id="empMeta" class="small"></div></div><div><label>Monat</label><input id="empMonth" type="month" onchange="renderEmp()"></div><button class="secondary" onclick="logout()">Abmelden</button></div>
+<div id="empStatus" style="margin:12px 0"></div>
+<div class="card" style="margin-top:12px">
+  <h3>Meine Dienstwünsche</h3>
+  <div class="small" style="margin-bottom:8px">Hier trägst du für jeden Tag deinen Wunsch ein.</div>
+  <div class="table-wrap"><table id="employeeWishTable"></table></div>
+</div><div id="springerHint" class="notice hidden" style="background:#fff7ed;color:#9a3412"><b>Springer-Team:</b> Hier werden nur Wunschfrei, Urlaub und Flexibel eingetragen. Tag- und Nachtdienstwünsche sind nicht möglich.</div>
+<div class="notice" style="background:#f8fafc;color:#334155"><b>Regeln:</b> maximal <b>2 Wunschfrei-Tage unter der Woche pro Monat</b> plus zusätzlich <b>1 Wunschfrei-Wochenende pro Monat</b>. Wunschfrei und Urlaub dürfen sich innerhalb des Teams nicht überschneiden.</div>
+<div class="notice">Du kannst deinen Wunschplan normal ausfüllen und abgeben. Nachdem die Teamleitung den endgültigen Teamplan freigegeben hat, siehst du hier den angepassten Plan und kannst bestätigen, dass du damit einverstanden bist.</div><div id="finalApprovalBox"></div>
+<div class="legend">
+<span class="swatch" style="background:#86efac;border:1px solid #22c55e"></span><span class="small">TD = Tagdienst</span>
+<span class="swatch" style="background:#fdba74;border:1px solid #f97316"></span><span class="small">ND = Nachtdienst</span>
+<span class="swatch" style="background:#fde047;border:1px solid #eab308"></span><span class="small">WF = Wunschfrei</span>
+<span class="swatch" style="background:#86efac;border:1px solid #22c55e"></span><span class="small">U = Urlaub</span>
+<span class="swatch" style="background:#d8b4fe;border:1px solid #a855f7"></span><span class="small">F = Flexibel</span>
+</div>
+<div class="actions"><button class="primary" onclick="submitEmp()">Plan abgeben</button><button class="warning" onclick="reopenEmp()">Abgabe zurücknehmen</button><button id="employeeConfirmBtn" class="primary hidden" onclick="confirmFinalPlan()">Ich bin mit dem endgültigen Plan einverstanden</button><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div>
+</div>
+</section>
+
+<section id="leader" class="hidden">
+<div class="card">
+<div class="toolbar"><div><h2 id="leadTitle"></h2><div class="small">Teamleitung sieht nur das eigene Team.</div></div><div><label>Monat</label><input id="leadMonth" type="month" onchange="renderLead()"></div><button class="secondary" onclick="logout()">Abmelden</button></div>
+<div class="notice">Rot umrandet = Konflikt im Team. Das gilt für Überschneidungen bei Tagdienst, Nachtdienst, Wunschfrei und Urlaub sowie für die unzulässige Folge Nachtdienst → Tagdienst am nächsten Tag.</div>
+<div class="card" style="background:#f8fafc">
+  <h3>Planungsvorschläge</h3>
+  <div class="toolbar">
+    <div><label>Benötigte Tagdienste pro Tag</label><input id="leadNeedT" type="number" min="0" value="1" style="width:90px"></div>
+    <div><label>Benötigte Nachtdienste pro Tag</label><input id="leadNeedN" type="number" min="0" value="1" style="width:90px"></div>
+    <button class="primary" onclick="renderSuggestions('leader')">Vorschläge berechnen</button>
+  </div>
+  <div class="small">Tagdienst 07:00–19:00 · Nachtdienst 19:00–07:00. Flexibel wird bevorzugt vorgeschlagen; Wunschfrei und Urlaub werden nicht überschrieben.</div>
+  <div id="leadSuggestions" class="suggestions"></div>
+</div>
+<div class="legend">
+<span class="swatch" style="background:#86efac;border:1px solid #22c55e"></span><span class="small">TD = Tagdienst</span>
+<span class="swatch" style="background:#fdba74;border:1px solid #f97316"></span><span class="small">ND = Nachtdienst</span>
+<span class="swatch" style="background:#fde047;border:1px solid #eab308"></span><span class="small">WF = Wunschfrei</span>
+<span class="swatch" style="background:#86efac;border:1px solid #22c55e"></span><span class="small">U = Urlaub</span>
+<span class="swatch" style="background:#d8b4fe;border:1px solid #a855f7"></span><span class="small">F = Flexibel</span>
+</div><div class="legend"><span class="swatch" style="background:#fff;border:3px solid #ef4444"></span><span class="small">Überschneidung</span></div>
+<div id="leaderApprovalStatus" style="margin:12px 0"></div>
+<div id="leaderOwnWishCard" class="card" style="background:#f8fafc">
+  <h3>Mein eigener Wunschplan als Teamleitung</h3>
+  <div class="small">Die Teamleitung gehört zum Team. Der eigene Wunschplan wird wie bei allen anderen Mitarbeitenden abgegeben und bei Konflikten berücksichtigt.</div>
+  <div id="leaderOwnStatus" style="margin:10px 0"></div>
+  <div class="table-wrap"><table id="leaderOwnTable"></table></div>
+  <div class="actions"><button class="primary" onclick="submitLeaderOwn()">Eigenen Wunschplan abgeben</button><button class="warning" onclick="reopenLeaderOwn()">Eigene Abgabe zurücknehmen</button></div>
+</div><div class="table-wrap"><table id="leadTable"></table></div><div class="actions"><button class="primary" onclick="approveTeamPlan()">Teamplan endgültig freigeben</button><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div>
+</div>
+<div class="card"><h3>Änderungsprotokoll Teamleitung</h3><div class="table-wrap"><table class="log" id="leadLog"></table></div></div>
+</section>
+
+<section id="admin" class="hidden">
+<div class="card">
+<div class="toolbar"><div><h2>Admin-Gesamtübersicht</h2></div><div><label>Monat</label><input id="adminMonth" type="month" onchange="renderAdmin()"></div><div><label>Team</label><select id="adminTeam" onchange="renderAdmin()"><option value="ALL">Alle Teams</option><option value="Team Bernburg">Team A</option><option value="Team Petersberg">Team B</option><option value="Team Springer">Springer Team</option></select></div><button class="secondary" onclick="logout()">Abmelden</button></div>
+<div class="notice">Tagdienst = grün, Nachtdienst = orange. Rot umrandet = Überschneidung oder Nachtdienst → Tagdienst am Folgetag. Gelb umrandet = von Teamleitung geändert.</div>
+<div class="card" style="background:#f8fafc">
+  <h3>Planungsvorschläge</h3>
+  <div class="toolbar">
+    <div><label>Benötigte Tagdienste pro Tag</label><input id="adminNeedT" type="number" min="0" value="1" style="width:90px"></div>
+    <div><label>Benötigte Nachtdienste pro Tag</label><input id="adminNeedN" type="number" min="0" value="1" style="width:90px"></div>
+    <button class="primary" onclick="renderSuggestions('admin')">Vorschläge berechnen</button>
+  </div>
+  <div class="small">Die Vorschläge ändern den Plan nicht automatisch. Jeder Vorschlag kann einzeln übernommen werden.</div>
+  <div id="adminSuggestions" class="suggestions"></div>
+</div>
+<div class="legend">
+<span class="swatch" style="background:#86efac;border:1px solid #22c55e"></span><span class="small">TD = Tagdienst</span>
+<span class="swatch" style="background:#fdba74;border:1px solid #f97316"></span><span class="small">ND = Nachtdienst</span>
+<span class="swatch" style="background:#fde047;border:1px solid #eab308"></span><span class="small">WF = Wunschfrei</span>
+<span class="swatch" style="background:#86efac;border:1px solid #22c55e"></span><span class="small">U = Urlaub</span>
+<span class="swatch" style="background:#d8b4fe;border:1px solid #a855f7"></span><span class="small">F = Flexibel</span>
+</div><div class="legend"><span class="swatch" style="background:#fff;border:3px solid #ef4444"></span><span class="small">Überschneidung</span><span class="swatch" style="background:#fff;border:3px solid #eab308"></span><span class="small">Teamleiter-Änderung</span></div>
+<div id="adminApprovalStatus" style="margin:12px 0"></div><div class="actions"><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div><div class="table-wrap"><table id="adminTable"></table></div>
+</div>
+<div class="card"><h3>Änderungsprotokoll Admin</h3><div class="table-wrap"><table class="log" id="adminLog"></table></div></div>
+</section>
+
+<section id="vacation" class="hidden">
+<div class="card">
+<div class="toolbar">
+  <div><h2>Jahres-Urlaubswunschplanung</h2><div id="vacationRoleInfo" class="small"></div></div>
+  <div><label>Jahr</label><select id="vacationYear" onchange="renderVacation()"></select></div>
+  <button class="secondary" onclick="backFromVacation()">Zurück zum Dienstplan</button>
+</div>
+<div class="notice">Mitarbeitende können nur den eigenen Urlaubswunsch ändern. Das Jahres-Urlaubskontingent wird pro Mitarbeiter festgelegt; Standard sind 30 Tage. Der Admin kann das Kontingent erhöhen oder reduzieren. Gezählt werden nur Montag bis Freitag. Zu jedem Urlaubsblock kann genau ein freies Wochenende gewählt werden: entweder davor oder danach. Teamleitung und Mitarbeitende sehen die Urlaubswünsche ihres Teams, der Admin kann alle Teams sehen und ändern.</div>
+<div id="vacationSummary" style="margin-bottom:12px"></div>
+<div class="table-wrap"><table id="vacationTable"></table></div>
+<div style="margin-top:24px">
+  <h3>Urlaubskalender – wer ist wann im Urlaub?</h3>
+  <div class="small" style="margin-bottom:10px">Die Kalenderansicht zeigt die Urlaubswünsche des aktuell sichtbaren Teams bzw. beim Admin aller ausgewählten Mitarbeitenden.</div>
+  <div id="vacationCalendar"></div>
+</div>
+</div>
+</section>
+
+</main>
+
+<script>
+const USERS={anna:{name:"Anna Müller",team:"Team Bernburg"},ben:{name:"Ben Schneider",team:"Team Bernburg"},clara:{name:"Clara Weber",team:"Team Bernburg"},leadA:{name:"Teamleitung A",team:"Team Bernburg",isLeader:true},david:{name:"David Fischer",team:"Team Petersberg"},leadB:{name:"Teamleitung B",team:"Team Petersberg",isLeader:true},spring1:{name:"Springer 1",team:"Team Springer"}};
+const KEY="qm_roles_vacation30_v2";let session={role:null,user:null,team:null};
+
+function nowMonth(){const n=new Date(),l=new Date(n.getTime()-n.getTimezoneOffset()*60000);return l.toISOString().slice(0,7)}
+function state(){try{return JSON.parse(localStorage.getItem(KEY)||'{"plans":{},"logs":[],"vacations":{},"vacationAllowances":{}}')}catch{return {plans:{},logs:[]}}}
+function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
+function recKey(u,m){return u+"|"+m}
+function getRec(u,m){const s=state();return s.plans[recKey(u,m)]||{entries:{},submitted:false,submittedAt:null,leaderEditedDays:{}}}
+function days(m){const [y,mo]=m.split("-").map(Number);return new Date(y,mo,0).getDate()}
+function weekday(m,d){const [y,mo]=m.split("-").map(Number);return ["So","Mo","Di","Mi","Do","Fr","Sa"][new Date(y,mo-1,d).getDay()]}
+function weekend(m,d){const [y,mo]=m.split("-").map(Number),x=new Date(y,mo-1,d).getDay();return x===0||x===6}
+function options(v){return [["","–"],["T","Tagdienst"],["N","Nachtdienst"],["WF","Wunschfrei"],["Urlaub","Urlaub"],["Flex","Flexibel"]].map(([x,t])=>`<option value="${x}" ${x===v?"selected":""}>${t}</option>`).join("")}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+
+function dayAfterNightConflict(user,m,day){
+  if(day<=1)return false;
+  const r=getRec(user,m);
+  return (r.entries[day-1]||"")==="N" && (r.entries[day]||"")==="T";
+}
+function nightBeforeDayConflict(user,m,day){
+  const r=getRec(user,m);
+  return (r.entries[day]||"")==="N" && (r.entries[day+1]||"")==="T";
+}
+function hasRestConflict(user,m,day){
+  return dayAfterNightConflict(user,m,day) || nightBeforeDayConflict(user,m,day);
+}
+
+
+function getVacationAllowance(u,y){
+  const s=state();
+  if(!s.vacationAllowances)s.vacationAllowances={};
+  const k=u+"|"+y;
+  return Number.isFinite(Number(s.vacationAllowances[k])) ? Number(s.vacationAllowances[k]) : 30;
+}
+function setVacationAllowance(u,y,val){
+  if(session.role!=="admin")return;
+  const s=state();
+  if(!s.vacationAllowances)s.vacationAllowances={};
+  const n=Math.max(0,Math.round(Number(val)||0));
+  s.vacationAllowances[u+"|"+y]=n;
+  save(s);
+  renderVacation();
+}
+
+function vacationKey(u,y){return u+"|"+y}
+function getVacationBlocks(u,y){
+  const s=state();
+  if(!s.vacations)s.vacations={};
+  const raw=s.vacations[vacationKey(u,y)];
+  if(Array.isArray(raw))return raw;
+  return [];
+}
+function saveVacationBlocks(u,y,blocks){
+  const s=state();
+  if(!s.vacations)s.vacations={};
+  s.vacations[vacationKey(u,y)]=blocks;
+  save(s);
+}
+function dateRange(start,end){
+  const arr=[], a=new Date(start+"T12:00:00"), b=new Date(end+"T12:00:00");
+  for(let d=new Date(a);d<=b;d.setDate(d.getDate()+1))arr.push(new Date(d));
+  return arr;
+}
+function isWeekdayDate(dt){const d=dt.getDay();return d>=1&&d<=5}
+function weekdayCount(start,end){return dateRange(start,end).filter(isWeekdayDate).length}
+function totalVacationDays(u,y,extraBlock=null,ignoreIndex=null){
+  const blocks=getVacationBlocks(u,y).filter((_,i)=>i!==ignoreIndex);
+  if(extraBlock)blocks.push(extraBlock);
+  return blocks.reduce((sum,b)=>sum+weekdayCount(b.start,b.end),0);
+}
+function weekendDatesForBlock(block){
+  const a=new Date(block.start+"T12:00:00"), b=new Date(block.end+"T12:00:00");
+  if(block.weekend==="before"){
+    const d=new Date(a);
+    while(d.getDay()!==6)d.setDate(d.getDate()-1);
+    const sat=new Date(d), sun=new Date(d);sun.setDate(sun.getDate()+1);
+    return [sat.toISOString().slice(0,10),sun.toISOString().slice(0,10)];
+  }
+  if(block.weekend==="after"){
+    const d=new Date(b);
+    while(d.getDay()!==6)d.setDate(d.getDate()+1);
+    const sat=new Date(d), sun=new Date(d);sun.setDate(sun.getDate()+1);
+    return [sat.toISOString().slice(0,10),sun.toISOString().slice(0,10)];
+  }
+  return [];
+}
+function validateVacationBlock(u,y,block,ignoreIndex=null){
+  if(!block.start||!block.end)return {ok:false,msg:"Bitte Start- und Enddatum auswählen."};
+  if(block.start>block.end)return {ok:false,msg:"Das Enddatum muss nach dem Startdatum liegen."};
+  if(Number(block.start.slice(0,4))!==Number(y)||Number(block.end.slice(0,4))!==Number(y))
+    return {ok:false,msg:"Der Urlaubszeitraum muss vollständig im gewählten Jahr liegen."};
+  const days=weekdayCount(block.start,block.end);
+  if(days<1)return {ok:false,msg:"Der Zeitraum enthält keinen Urlaubstag von Montag bis Freitag."};
+  const total=totalVacationDays(u,y,block,ignoreIndex);
+  const allowance=getVacationAllowance(u,y);
+  if(total>allowance)return {ok:false,msg:`Damit würdest du ${total} Urlaubstage erreichen. Erlaubt sind für dich maximal ${allowance} pro Jahr.`};
+  return {ok:true,days,total};
+}
+function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString("de-DE")}
+function openVacation(){
+  const y=new Date().getFullYear(), sel=document.getElementById("vacationYear");
+  sel.innerHTML=[y-1,y,y+1,y+2].map(v=>`<option value="${v}" ${v===y?"selected":""}>${v}</option>`).join("");
+  show("vacation"); renderVacation();
+}
+function backFromVacation(){
+  if(session.role==="employee"){show("employee");renderEmp()}
+  else if(session.role==="leader"){show("leader");renderLead()}
+  else if(session.role==="admin"){show("admin");renderAdmin()}
+  else show("login");
+}
+function addVacationBlock(u,y){
+  const start=document.getElementById(`vac_start_${u}`).value;
+  const end=document.getElementById(`vac_end_${u}`).value;
+  const weekend=document.getElementById(`vac_weekend_${u}`).value;
+  const block={start,end,weekend};
+  const check=validateVacationBlock(u,y,block);
+  if(!check.ok){alert(check.msg);return;}
+  const blocks=getVacationBlocks(u,y);
+  blocks.push(block);
+  blocks.sort((a,b)=>a.start.localeCompare(b.start));
+  saveVacationBlocks(u,y,blocks);
+  renderVacation();
+}
+function deleteVacationBlock(u,y,index){
+  if(session.role!=="admin" && !(session.role==="employee"&&u===session.user))return;
+  const blocks=getVacationBlocks(u,y);
+  blocks.splice(index,1);
+  saveVacationBlocks(u,y,blocks);
+  renderVacation();
+}
+function teamUsers(team){return Object.entries(USERS).filter(([u,i])=>i.team===team)}
+function show(id){["login","employee","leader","admin","vacation"].forEach(x=>document.getElementById(x).classList.add("hidden"));document.getElementById(id).classList.remove("hidden")}
+function logout(){session={role:null,user:null,team:null};show("login")}
+function loginEmp(){
+  session={role:"employee",user:document.getElementById("empLogin").value};
+  document.getElementById("empMonth").value=nowMonth();
+  show("employee");
+  renderEmp();
+}
+function loginLead(){
+  const team=document.getElementById("leadLogin").value;
+  const user=team==="Team Bernburg"?"leadA":team==="Team Petersberg"?"leadB":null;
+  session={role:"leader",team,user};
+  document.getElementById("leadMonth").value=nowMonth();show("leader");renderLead()
+}
+function loginAdmin(){session={role:"admin"};document.getElementById("adminMonth").value=nowMonth();show("admin");renderAdmin()}
+
+function isShift(v){return ["T","N","WF","Urlaub"].includes(v)}
+function hasLeaderConflict(user,m,day){
+  const mine=getRec(user,m);
+  if(!mine.submitted)return false;
+  if(hasRestConflict(user,m,day))return true;
+  const v=mine.entries[day]||"";
+  if(!isShift(v))return false;
+  return teamUsers(USERS[user].team).some(([other])=>{
+    if(other===user)return false;
+    const r=getRec(other,m);
+    return r.submitted && (r.entries[day]||"")===v;
+  });
+}
+
+
+function approvalKey(team,m){return "approval|"+team+"|"+m}
+function getApproval(team,m){
+  const s=state();
+  if(!s.approvals)s.approvals={};
+  return s.approvals[approvalKey(team,m)]||{approved:false,approvedAt:null,employeeConfirmations:{}};
+}
+function setApproval(team,m,obj){
+  const s=state();
+  if(!s.approvals)s.approvals={};
+  s.approvals[approvalKey(team,m)]=obj;
+  save(s);
+}
+function invalidateTeamApproval(team,m){
+  const s=state();
+  if(!s.approvals)s.approvals={};
+  const k=approvalKey(team,m);
+  if(s.approvals[k] && s.approvals[k].approved){
+    s.approvals[k]={approved:false,approvedAt:null,employeeConfirmations:{}};
+    save(s);
+  }
+}
+function approveTeamPlan(){
+  const m=document.getElementById("leadMonth").value;
+  const members=teamUsers(session.team);
+  const allSubmitted=members.every(([u])=>getRec(u,m).submitted);
+  if(!allSubmitted){
+    alert("Der Teamplan kann erst endgültig freigegeben werden, wenn alle Mitarbeitenden ihren Wunschplan abgegeben haben.");
+    return;
+  }
+  const a={approved:true,approvedAt:new Date().toISOString(),employeeConfirmations:{}};
+  setApproval(session.team,m,a);
+  renderLead();
+}
+function confirmFinalPlan(){
+  const m=document.getElementById("empMonth").value;
+  const team=USERS[session.user].team;
+  const a=getApproval(team,m);
+  if(!a.approved)return;
+  a.employeeConfirmations[session.user]={confirmed:true,confirmedAt:new Date().toISOString()};
+  setApproval(team,m,a);
+  renderEmp();
+}
+
+
+function weekendIndex(m,day){
+  const [y,mo]=m.split("-").map(Number);
+  const dt=new Date(y,mo-1,day);
+  const dow=dt.getDay();
+  if(dow!==0 && dow!==6)return null;
+  // Samstag und Sonntag desselben Wochenendes erhalten denselben Schlüssel.
+  const offset = dow===6 ? 0 : -1;
+  const sat = new Date(y,mo-1,day+offset);
+  return sat.toISOString().slice(0,10);
+}
+function validateWishFree(u,m,day,newValue){
+  if(newValue!=="WF")return {ok:true};
+  const r=getRec(u,m), entries={...r.entries,[day]:"WF"};
+  const wfDays=Object.keys(entries).filter(d=>entries[d]==="WF").map(Number);
+
+  const weekdayWishes=wfDays.filter(d=>weekendIndex(m,d)===null);
+  if(weekdayWishes.length>2){
+    return {ok:false,msg:"Es sind maximal 2 Wunschfrei-Tage unter der Woche pro Monat erlaubt."};
+  }
+
+  const weekendWishes=wfDays.filter(d=>weekendIndex(m,d)!==null);
+  const weekends=new Set(weekendWishes.map(d=>weekendIndex(m,d)));
+  if(weekends.size>1){
+    return {ok:false,msg:"Zusätzlich ist nur 1 Wunschfrei-Wochenende pro Monat erlaubt."};
+  }
+
+  return {ok:true};
+}
+
+function change(u,m,day,value,actorRole,actorName){
+  if((USERS[u]?.team==="Team Springer"||USERS[u]?.team==="Team Springer") && actorRole==="employee" && (value==="T"||value==="N")){
+    alert("Im Springer-Team dürfen keine Tag- oder Nachtdienstwünsche eingetragen werden.");
+    renderEmp();
+    return;
+  }
+  if(actorRole==="employee"){
+    const check=validateWishFree(u,m,day,value);
+    if(!check.ok){
+      alert(check.msg);
+      renderEmp();
+      return;
+    }
+  }
+  const s=state(),k=recKey(u,m);if(!s.plans[k])s.plans[k]={entries:{},submitted:false,submittedAt:null,leaderEditedDays:{}};
+  if(!s.plans[k].leaderEditedDays)s.plans[k].leaderEditedDays={};
+  const old=s.plans[k].entries[day]||"";if(old===value)return;
+  s.plans[k].entries[day]=value;
+  if(actorRole==="leader"){
+    s.plans[k].leaderEditedDays[day]=true;
+    if(!s.approvals)s.approvals={};
+    const ak=approvalKey(USERS[u].team,m);
+    if(s.approvals[ak] && s.approvals[ak].approved){
+      s.approvals[ak]={approved:false,approvedAt:null,employeeConfirmations:{}};
+    }
+  }
+  if(actorRole==="admin"){
+    // Admin-Änderungen lassen die Teamleiter-Freigabe bestehen.
+    // Mitarbeiterbestätigungen werden ebenfalls nicht automatisch zurückgesetzt.
+  }
+  if(actorRole!=="employee")s.logs.push({time:new Date().toISOString(),month:m,user:u,employee:USERS[u].name,team:USERS[u].team,day,oldValue:old,newValue:value,actorRole,actorName});
+  save(s);
+}
+function submitEmp(){const m=document.getElementById("empMonth").value,s=state(),k=recKey(session.user,m);if(!s.plans[k])s.plans[k]={entries:{},submitted:false,submittedAt:null,leaderEditedDays:{}};s.plans[k].submitted=true;s.plans[k].submittedAt=new Date().toISOString();save(s);renderEmp()}
+function reopenEmp(){
+  const m=document.getElementById("empMonth").value,s=state(),k=recKey(session.user,m),r=getRec(session.user,m);
+  r.submitted=false;
+  r.submittedAt=null;
+  s.plans[k]=r;
+
+  // If the employee had already confirmed a final plan, remove only that confirmation
+  // so the reopened wish plan can be edited and submitted again.
+  const team=USERS[session.user].team;
+  const ak=approvalKey(team,m);
+  if(s.approvals && s.approvals[ak] && s.approvals[ak].employeeConfirmations){
+    delete s.approvals[ak].employeeConfirmations[session.user];
+  }
+
+  save(s);
+  renderEmp();
+}
+
+function allowedValuesForUser(u){
+  const team=(USERS[u]&&USERS[u].team)||"";
+  if(team==="Team Springer"){
+    return [
+      ["","–"],
+      ["WF","Wunschfrei"],
+      ["Urlaub","Urlaub"],
+      ["Flex","Flexibel"]
+    ];
+  }
+  return [
+    ["","–"],
+    ["T","Tagdienst"],
+    ["N","Nachtdienst"],
+    ["WF","Wunschfrei"],
+    ["Urlaub","Urlaub"],
+    ["Flex","Flexibel"]
+  ];
+}
+
+function optionsForUser(u,current){
+  const shortLabels={
+    "":"–",
+    "T":"TD",
+    "N":"ND",
+    "WF":"WF",
+    "Urlaub":"U",
+    "Flex":"F"
+  };
+  return allowedValuesForUser(u)
+    .map(([v,l])=>`<option value="${v}" ${current===v?"selected":""}>${shortLabels[v]||l}</option>`)
+    .join("");
+}
+
+function applySelectColor(sel){
+  const td=sel.closest("td");
+  if(!td)return;
+  ["dienst-tag","dienst-nacht","dienst-wf","dienst-urlaub","dienst-flex"].forEach(c=>td.classList.remove(c));
+  const cls=valueClass(sel.value);
+  if(cls)td.classList.add(cls);
+}
+
+function valueClass(v){
+  if(v==="T")return "dienst-tag";
+  if(v==="N")return "dienst-nacht";
+  if(v==="WF")return "dienst-wf";
+  if(v==="Urlaub")return "dienst-urlaub";
+  if(v==="Flex")return "dienst-flex";
+  return "";
+}
+
+function tableFor(users,m,mode){
+  const count=days(m);let h="<thead><tr><th>Mitarbeiter/in</th>";
+  for(let d=1;d<=count;d++)h+=`<th class="${weekend(m,d)?"weekend":""}"><div class="day">${d}</div><div class="weekday">${weekday(m,d)}</div></th>`;
+  h+="</tr></thead><tbody>";
+  users.forEach(([u,info])=>{
+    const r=getRec(u,m);if(mode!=="employee"&&mode!=="leaderSelf"&&!r.submitted)return;
+    h+=`<tr><th>${esc(info.name)}<div class="small">${esc(info.team)} ${r.submitted?"· abgegeben":"· offen"}</div></th>`;
+    for(let d=1;d<=count;d++){
+      const disabled=(mode==="employee"||mode==="leaderSelf")&&r.submitted;
+      const actor=mode==="leader"?`change('${u}','${m}',${d},this.value,'leader','Teamleitung ${esc(info.team)}');renderLead()`
+        :mode==="admin"?`change('${u}','${m}',${d},this.value,'admin','Admin');renderAdmin()`
+        :mode==="leaderSelf"?`change('${u}','${m}',${d},this.value,'employee','${esc(info.name)}');renderLead()`
+        :`change('${u}','${m}',${d},this.value,'employee','${esc(info.name)}')`;
+
+      const conflict=(mode==="leader"||mode==="admin")&&hasLeaderConflict(u,m,d);
+      const leaderChanged=mode==="admin"&&r.leaderEditedDays&&r.leaderEditedDays[d];
+      let classes=[weekend(m,d)?"weekend":"",valueClass(r.entries[d]||"")];
+      if(conflict) classes.push("conflict");
+      if(leaderChanged) classes.push("leader-edited");
+      classes=classes.filter(Boolean).join(" ");
+      h+=`<td class="${classes}"><select class="cell" ${disabled?"disabled":""} onchange="applySelectColor(this);${actor}">${optionsForUser(u,r.entries[d]||"")}</select></td>`;
+    }
+    h+="</tr>";
+  });
+  h+="</tbody>";return h;
+}
+
+function candidateScore(u,m,day,target){
+  if((USERS[u]?.team==="Team Springer"||USERS[u]?.team==="Team Springer") && (target==="T"||target==="N"))return -999;
+  const r=getRec(u,m), cur=r.entries[day]||"";
+  if(cur==="Urlaub"||cur==="WF")return -999;
+  if(target==="T" && day>1 && (r.entries[day-1]||"")==="N")return -999;
+  if(target==="N" && day<days(m) && (r.entries[day+1]||"")==="T")return -999;
+  let score=0;
+  if(cur==="Flex")score+=100;
+  else if(cur==="")score+=60;
+  else if(cur===target)score+=120;
+  else if(cur==="T"||cur==="N")score+=5;
+  // Prefer the person with fewer assigned T/N shifts in this month.
+  const assigned=Object.values(r.entries).filter(v=>v==="T"||v==="N").length;
+  score-=assigned;
+  return score;
+}
+function bestCandidate(team,m,day,target,exclude=[]){
+  return teamUsers(team)
+    .filter(([u])=>getRec(u,m).submitted && !exclude.includes(u))
+    .map(([u,info])=>({u,info,score:candidateScore(u,m,day,target),cur:getRec(u,m).entries[day]||""}))
+    .filter(x=>x.score>-900)
+    .sort((a,b)=>b.score-a.score)[0]||null;
+}
+function buildSuggestions(team,m,needT,needN){
+  const suggestions=[];
+  const members=teamUsers(team).filter(([u])=>getRec(u,m).submitted);
+  if(!members.length){
+    return [{type:"info",text:"Noch keine abgegebenen Pläne für dieses Team vorhanden."}];
+  }
+  for(let d=1;d<=days(m);d++){
+    const tUsers=members.filter(([u])=>(getRec(u,m).entries[d]||"")==="T");
+    const nUsers=members.filter(([u])=>(getRec(u,m).entries[d]||"")==="N");
+
+    // Rest-time conflicts first
+    members.forEach(([u,info])=>{
+      if(dayAfterNightConflict(u,m,d)){
+        suggestions.push({
+          type:"rest", day:d, user:u, employee:info.name, target:"",
+          text:`Tag ${d}: ${info.name} hat am Vortag Nachtdienst und direkt danach Tagdienst. Diese Folge sollte aufgelöst werden.`
+        });
+      }
+    });
+
+    // Missing day shifts
+    if(tUsers.length<needT){
+      let missing=needT-tUsers.length, excluded=tUsers.map(([u])=>u);
+      for(let i=0;i<missing;i++){
+        const c=bestCandidate(team,m,d,"T",excluded);
+        if(c){
+          suggestions.push({
+            type:"assign",day:d,user:c.u,employee:c.info.name,target:"T",
+            text:`Tag ${d}: Tagdienst 07:00–19:00 fehlt. Vorschlag: ${c.info.name} → Tagdienst${c.cur==="Flex"?" (war flexibel)":c.cur===""?" (noch frei)":` (aktuell ${c.cur})`}.`
+          });
+          excluded.push(c.u);
+        }else{
+          suggestions.push({type:"missing",day:d,text:`Tag ${d}: Es fehlen ${missing-i} Tagdienst(e) 07:00–19:00; aktuell gibt es keinen geeigneten freien/flexiblen Vorschlag.`});
+          break;
+        }
+      }
+    }
+
+    // Missing night shifts
+    if(nUsers.length<needN){
+      let missing=needN-nUsers.length, excluded=nUsers.map(([u])=>u);
+      for(let i=0;i<missing;i++){
+        const c=bestCandidate(team,m,d,"N",excluded);
+        if(c){
+          suggestions.push({
+            type:"assign",day:d,user:c.u,employee:c.info.name,target:"N",
+            text:`Tag ${d}: Nachtdienst 19:00–07:00 fehlt. Vorschlag: ${c.info.name} → Nachtdienst${c.cur==="Flex"?" (war flexibel)":c.cur===""?" (noch frei)":` (aktuell ${c.cur})`}.`
+          });
+          excluded.push(c.u);
+        }else{
+          suggestions.push({type:"missing",day:d,text:`Tag ${d}: Es fehlen ${missing-i} Nachtdienst(e) 19:00–07:00; aktuell gibt es keinen geeigneten freien/flexiblen Vorschlag.`});
+          break;
+        }
+      }
+    }
+
+    if(tUsers.length>needT){
+      const extra=tUsers.length-needT;
+      suggestions.push({type:"conflict",day:d,text:`Tag ${d}: ${extra} Tagdienst(e) mehr als benötigt. Prüfen: ${tUsers.map(([u,i])=>i.name).join(", ")}.`});
+    }
+    if(nUsers.length>needN){
+      const extra=nUsers.length-needN;
+      suggestions.push({type:"conflict",day:d,text:`Tag ${d}: ${extra} Nachtdienst(e) mehr als benötigt. Prüfen: ${nUsers.map(([u,i])=>i.name).join(", ")}.`});
+    }
+  }
+  return suggestions;
+}
+function applySuggestion(role,user,m,day,target){
+  const actorRole=role==="leader"?"leader":"admin";
+  const actorName=role==="leader"?"Teamleitung "+USERS[user].team:"Admin";
+  change(user,m,day,target,actorRole,actorName);
+  if(role==="leader"){renderLead();renderSuggestions("leader")}
+  else{renderAdmin();renderSuggestions("admin")}
+}
+function renderSuggestions(role){
+  const m=role==="leader"?document.getElementById("leadMonth").value:document.getElementById("adminMonth").value;
+  const needT=Math.max(0,Number(document.getElementById(role==="leader"?"leadNeedT":"adminNeedT").value)||0);
+  const needN=Math.max(0,Number(document.getElementById(role==="leader"?"leadNeedN":"adminNeedN").value)||0);
+  let teams=[];
+  if(role==="leader")teams=[session.team];
+  else{
+    const t=document.getElementById("adminTeam").value;
+    teams=t==="ALL"?["Team Bernburg","Team Petersberg","Team Springer"]:[t];
+  }
+  const box=document.getElementById(role==="leader"?"leadSuggestions":"adminSuggestions");
+  let html="";
+  teams.forEach(team=>{
+    const list=buildSuggestions(team,m,needT,needN);
+    html+=`<div><b>${esc(team)}</b></div>`;
+    if(!list.length){
+      html+=`<div class="suggestion good"><strong>Plan wirkt vollständig.</strong>Für die eingestellte Mindestbesetzung wurden keine fehlenden Dienste oder Nacht→Tag-Konflikte gefunden.</div>`;
+    }else{
+      list.forEach(s=>{
+        const cls=s.type==="missing"?"missing":(s.type==="rest"||s.type==="conflict"?"conflict-note":"");
+        const btn=s.type==="assign"
+          ? `<div class="actions"><button class="primary" onclick="applySuggestion('${role}','${s.user}','${m}',${s.day},'${s.target}')">Vorschlag übernehmen</button></div>`
+          : "";
+        html+=`<div class="suggestion ${cls}"><strong>${s.type==="assign"?"Besetzungsvorschlag":s.type==="rest"?"Ruhezeit-Konflikt":s.type==="missing"?"Dienst fehlt":s.type==="conflict"?"Mehrfachbesetzung":"Hinweis"}</strong>${esc(s.text)}${btn}</div>`;
+      });
+    }
+  });
+  box.innerHTML=html;
+}
+
+
+
+
+
+function renderEmployeeWishTable(u,m){
+  return tableFor([[u,USERS[u]]],m,"employee");
+}
+
+function renderEmp(){
+  const m=document.getElementById("empMonth").value || nowMonth();
+  document.getElementById("empMonth").value=m;
+
+  const r=getRec(session.user,m);
+  const info=USERS[session.user];
+
+  const title=document.getElementById("empTitle");
+  const meta=document.getElementById("empMeta");
+  if(title)title.textContent="Mein Wunschplan – "+info.name;
+  if(meta)meta.textContent=info.team;
+
+  const sh=document.getElementById("springerHint");
+  if(sh)sh.classList.toggle("hidden",!(info.team==="Team Springer"||info.team==="Team Springer"));
+
+  const status=document.getElementById("empStatus");
+  if(status){
+    status.innerHTML=r.submitted
+      ? '<span class="badge ok">Abgegeben – zum Ändern zuerst zurückziehen</span>'
+      : '<span class="badge wait">Noch nicht abgegeben – Einträge können geändert werden</span>';
+  }
+
+  const wishTable=document.getElementById("employeeWishTable");
+  if(wishTable){
+    wishTable.innerHTML=renderEmployeeWishTable(session.user,m);
+  }
+
+  const a=getApproval(info.team,m);
+  const btn=document.getElementById("employeeConfirmBtn");
+  if(btn){
+    if(a && a.approved){
+      btn.classList.remove("hidden");
+      if(a.employeeConfirmations && a.employeeConfirmations[session.user]){
+        btn.disabled=true;
+        btn.textContent="Endgültigen Plan bestätigt";
+      }else{
+        btn.disabled=false;
+        btn.textContent="Ich bin mit dem endgültigen Plan einverstanden";
+      }
+    }else{
+      btn.classList.add("hidden");
+      btn.disabled=false;
+      btn.textContent="Ich bin mit dem endgültigen Plan einverstanden";
+    }
+  }
+}
+
+function submitLeaderOwn(){
+  if(!session.user)return;
+  const m=document.getElementById("leadMonth").value,s=state(),k=recKey(session.user,m),r=getRec(session.user,m);
+  r.submitted=true;r.submittedAt=new Date().toISOString();
+  s.plans[k]=r;save(s);renderLead();
+}
+function reopenLeaderOwn(){
+  if(!session.user)return;
+  const m=document.getElementById("leadMonth").value,s=state(),k=recKey(session.user,m),r=getRec(session.user,m);
+  r.submitted=false;r.submittedAt=null;
+  s.plans[k]=r;save(s);renderLead();
+}
+
+function renderLead(){
+  const m=document.getElementById("leadMonth").value,users=teamUsers(session.team),a=getApproval(session.team,m);
+  const ownCard=document.getElementById("leaderOwnWishCard");
+  if(session.user&&USERS[session.user]){
+    ownCard.classList.remove("hidden");
+    const own=getRec(session.user,m);
+    document.getElementById("leaderOwnStatus").innerHTML=own.submitted?'<span class="badge ok">Eigener Wunschplan abgegeben</span>':'<span class="badge wait">Eigener Wunschplan noch offen</span>';
+    document.getElementById("leaderOwnTable").innerHTML=tableFor([[session.user,USERS[session.user]]],m,"leaderSelf");
+  }else{
+    ownCard.classList.add("hidden");
+  }
+  document.getElementById("leadTitle").textContent="Teamleitung – "+session.team; if(document.getElementById("leadSuggestions"))document.getElementById("leadSuggestions").innerHTML="";
+  document.getElementById("leadTable").innerHTML=tableFor(users,m,"leader");
+  const submitted=users.filter(([u])=>getRec(u,m).submitted).length;
+  document.getElementById("leaderApprovalStatus").innerHTML=a.approved
+    ? `<span class="badge ok">Teamplan endgültig freigegeben</span><span class="small">${a.approvedAt?new Date(a.approvedAt).toLocaleString("de-DE"):""}</span>`
+    : `<span class="badge wait">Noch nicht endgültig freigegeben</span><span class="small">${submitted}/${users.length} Mitarbeitende haben abgegeben</span>`;
+  renderLog("leadLog",m,session.team,true);
+}
+function renderAdmin(){
+  const m=document.getElementById("adminMonth").value,t=document.getElementById("adminTeam").value;
+  const users=Object.entries(USERS).filter(([u,i])=>t==="ALL"||i.team===t); if(document.getElementById("adminSuggestions"))document.getElementById("adminSuggestions").innerHTML="";
+  document.getElementById("adminTable").innerHTML=tableFor(users,m,"admin");
+  const teams=t==="ALL"?["Team Bernburg","Team Petersberg","Team Springer"]:[t];
+  document.getElementById("adminApprovalStatus").innerHTML=teams.map(team=>{
+    const a=getApproval(team,m),members=teamUsers(team);
+    const confirmed=members.filter(([u])=>a.employeeConfirmations&&a.employeeConfirmations[u]&&a.employeeConfirmations[u].confirmed).length;
+    const rows=members.map(([u,info])=>{
+      const c=a.employeeConfirmations&&a.employeeConfirmations[u];
+      return `<div class="small" style="margin-top:4px">${esc(info.name)}: ${c&&c.confirmed?'<b style="color:#166534">bestätigt</b>':'<span style="color:#92400e">noch offen</span>'}</div>`;
+    }).join("");
+    return `<div style="padding:10px 12px;border:1px solid #d8dee8;border-radius:9px;margin:8px 0"><b>${esc(team)}</b><div style="margin-top:5px">${a.approved?'<span class="badge ok">Von Teamleitung freigegeben</span>':'<span class="badge wait">Noch nicht freigegeben</span>'}</div><div class="small" style="margin-top:6px">${confirmed}/${members.length} Mitarbeitende haben den endgültigen Plan bestätigt.</div>${a.approved?rows:""}</div>`;
+  }).join("");
+  renderLog("adminLog",m,t,false);
+}
+
+
+function renderVacation(){
+  const y=Number(document.getElementById("vacationYear").value);
+  let users=[];
+  if(session.role==="employee"){
+    users=teamUsers(USERS[session.user].team);
+    document.getElementById("vacationRoleInfo").textContent="Teamansicht "+USERS[session.user].team+" – du kannst nur deinen eigenen Urlaubswunsch ändern.";
+  }else if(session.role==="leader"){
+    users=teamUsers(session.team);
+    document.getElementById("vacationRoleInfo").textContent="Teamansicht "+session.team+" – nur Ansicht.";
+  }else{
+    users=Object.entries(USERS);
+    document.getElementById("vacationRoleInfo").textContent="Admin – alle Teams, Änderungen möglich.";
+  }
+
+  let h="<thead><tr><th>Mitarbeiter/in</th><th style='min-width:180px'>Urlaubstage</th><th style='min-width:520px'>Urlaubsblöcke</th><th style='min-width:360px'>Neuen Urlaub eintragen</th></tr></thead><tbody>";
+
+  const occupancy={};
+  users.forEach(([u,info])=>{
+    const blocks=getVacationBlocks(u,y);
+    const used=blocks.reduce((sum,b)=>sum+weekdayCount(b.start,b.end),0);
+    blocks.forEach(b=>{
+      dateRange(b.start,b.end).filter(isWeekdayDate).forEach(dt=>{
+        const d=dt.toISOString().slice(0,10), key=info.team+"|"+d;
+        if(!occupancy[key])occupancy[key]=[];
+        occupancy[key].push(info.name);
+      });
+    });
+
+    const canEdit=(session.role==="employee"&&u===session.user)||session.role==="admin";
+    h+=`<tr><th>${esc(info.name)}<div class="small">${esc(info.team)}</div></th>`;
+    const allowance=getVacationAllowance(u,y);
+    h+=`<td style="padding:10px"><b>${used}/${allowance}</b><div class="small">${Math.max(0,allowance-used)} Tage verbleiben</div>${session.role==="admin"?`<div style="margin-top:6px"><label>Jahreskontingent</label><input type="number" min="0" value="${allowance}" style="width:90px" onchange="setVacationAllowance('${u}',${y},this.value)"></div>`:""}</td>`;
+
+    let blockHtml=blocks.length?"":"<span class='small'>Noch kein Urlaub eingetragen.</span>";
+    blocks.forEach((b,i)=>{
+      const days=weekdayCount(b.start,b.end);
+      const weekendLabel=b.weekend==="before"?"Wochenende davor frei":b.weekend==="after"?"Wochenende danach frei":"Kein Zusatz-Wochenende";
+      const weekendDates=weekendDatesForBlock(b);
+      blockHtml+=`<div style="padding:8px;border:1px solid #d8dee8;border-radius:8px;margin:4px 0;background:#f8fafc">
+        <b>${fmtDate(b.start)} – ${fmtDate(b.end)}</b> · ${days} Urlaubstag${days===1?"":"e"}
+        <div class="small">${weekendLabel}${weekendDates.length?": "+weekendDates.map(fmtDate).join(" & "):""}</div>
+        ${canEdit?`<button class="warning" style="padding:4px 7px;margin-top:5px" onclick="deleteVacationBlock('${u}',${y},${i})">Entfernen</button>`:""}
+      </div>`;
+    });
+    h+=`<td style="vertical-align:top;padding:8px;text-align:left">${blockHtml}</td>`;
+
+    if(canEdit){
+      h+=`<td style="padding:8px;text-align:left">
+        <label>Von</label><input id="vac_start_${u}" type="date" min="${y}-01-01" max="${y}-12-31">
+        <label>Bis</label><input id="vac_end_${u}" type="date" min="${y}-01-01" max="${y}-12-31">
+        <label>Freies Wochenende</label>
+        <select id="vac_weekend_${u}">
+          <option value="before">Wochenende davor</option>
+          <option value="after">Wochenende danach</option>
+        </select>
+        <div class="actions"><button class="primary" onclick="addVacationBlock('${u}',${y})">Urlaub eintragen</button></div>
+        <div class="small">Nur Montag bis Freitag zählen vom persönlichen Jahreskontingent. Es kann nur ein angrenzendes Wochenende gewählt werden.</div>
+      </td>`;
+    }else{
+      h+="<td><span class='small'>Nur eigene Urlaubswünsche können bearbeitet werden.</span></td>";
+    }
+    h+="</tr>";
+  });
+  h+="</tbody>";
+  document.getElementById("vacationTable").innerHTML=h;
+
+  const overlaps=Object.entries(occupancy).filter(([k,names])=>names.length>1);
+  document.getElementById("vacationSummary").innerHTML=overlaps.length
+    ? `<div class="notice" style="background:#fff1f2;color:#9f1239"><b>Urlaubsüberschneidungen:</b><br>${overlaps.slice(0,50).map(([k,n])=>{const [team,d]=k.split("|");return `${team} – ${fmtDate(d)}: ${n.map(esc).join(", ")}`}).join("<br>")}${overlaps.length>50?"<br>… weitere Überschneidungen":""}</div>`
+    : '<div class="notice" style="background:#ecfdf5;color:#166534">Keine Urlaubsüberschneidungen im angezeigten Bereich.</div>';
+
+  renderVacationCalendar(y,users);
+}
+
+function renderVacationCalendar(y,users){
+  const box=document.getElementById("vacationCalendar");
+  if(!box)return;
+  const monthNames=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+  const dayNames=["Mo","Di","Mi","Do","Fr","Sa","So"];
+
+  // date -> vacation days and the selected free weekend before/after
+  const byDate={};
+  users.forEach(([u,info])=>{
+    getVacationBlocks(u,y).forEach(b=>{
+      dateRange(b.start,b.end).filter(isWeekdayDate).forEach(dt=>{
+        const key=dt.toISOString().slice(0,10);
+        if(!byDate[key])byDate[key]=[];
+        byDate[key].push({name:info.name,team:info.team,type:"vacation",label:"Urlaub"});
+      });
+      const freeWeekend=weekendDatesForBlock(b);
+      freeWeekend.forEach(key=>{
+        if(key.slice(0,4)!==String(y))return;
+        if(!byDate[key])byDate[key]=[];
+        byDate[key].push({
+          name:info.name,
+          team:info.team,
+          type:"wishfree",
+          label:b.weekend==="before"?"Wunschfrei davor":"Wunschfrei danach"
+        });
+      });
+    });
+  });
+
+  let html='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">';
+  for(let mo=0;mo<12;mo++){
+    const first=new Date(y,mo,1);
+    const lastDay=new Date(y,mo+1,0).getDate();
+    const startOffset=(first.getDay()+6)%7; // Monday = 0
+    html+=`<div style="border:1px solid #d8dee8;border-radius:12px;padding:10px;background:white">
+      <div style="font-weight:700;font-size:17px;margin-bottom:8px">${monthNames[mo]} ${y}</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px">`;
+    dayNames.forEach(n=>html+=`<div style="font-size:11px;font-weight:700;text-align:center;padding:4px">${n}</div>`);
+    for(let i=0;i<startOffset;i++)html+='<div></div>';
+    for(let d=1;d<=lastDay;d++){
+      const dt=new Date(y,mo,d), dow=dt.getDay();
+      const key=`${y}-${String(mo+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+      const people=byDate[key]||[];
+      const weekend=dow===0||dow===6;
+      const vacationPeople=people.filter(p=>p.type==="vacation");
+      const wishPeople=people.filter(p=>p.type==="wishfree");
+      const overlap=vacationPeople.length>1 || wishPeople.length>1 || (vacationPeople.length&&wishPeople.length);
+      const bg=overlap?"#fee2e2":vacationPeople.length?"#93c5fd":wishPeople.length?"#fef3c7":weekend?"#f1f5f9":"#fff";
+      const border=overlap?"#fca5a5":wishPeople.length?"#fcd34d":"#e2e8f0";
+      const title=people.length?people.map(p=>p.name+" – "+p.label+" ("+p.team+")").join(", "):"";
+      html+=`<div title="${esc(title)}" style="min-height:68px;border:1px solid ${border};border-radius:6px;padding:4px;background:${bg};overflow:hidden">
+        <div style="font-size:11px;font-weight:700">${d}</div>
+        ${people.map(p=>`<div style="font-size:10px;line-height:1.15;margin-top:2px;overflow:hidden;text-overflow:ellipsis"><b>${p.type==="wishfree"?"WF":"U"}</b> ${esc(p.name)}${p.type==="wishfree"?`<br><span style="font-size:9px">${esc(p.label)}</span>`:""}</div>`).join("")}
+      </div>`;
+    }
+    html+='</div></div>';
+  }
+  html+='</div><div class="small" style="margin-top:10px"><b>Blau / U:</b> Urlaub · <b>Gelb / WF:</b> gewähltes Wunschfrei-Wochenende vor oder nach dem Urlaub · <b>Rot:</b> Überschneidung · graue Felder: Wochenende ohne Eintrag.</div>';
+  box.innerHTML=html;
+}
+
+function renderLog(id,m,team,leaderOnly){
+  let logs=state().logs.filter(x=>x.month===m&&(team==="ALL"||x.team===team));
+  if(leaderOnly)logs=logs.filter(x=>x.actorRole==="leader");
+  logs=logs.slice().reverse();
+  let h="<thead><tr><th>Zeit</th><th>Geändert von</th><th>Mitarbeiter</th><th>Team</th><th>Tag</th><th>Vorher</th><th>Nachher</th></tr></thead><tbody>";
+  if(!logs.length)h+='<tr><td colspan="7">Noch keine sichtbaren Änderungen protokolliert.</td></tr>';
+  logs.forEach(x=>h+=`<tr><td>${new Date(x.time).toLocaleString("de-DE")}</td><td>${esc(x.actorName)}</td><td>${esc(x.employee)}</td><td>${esc(x.team)}</td><td>${x.day}</td><td>${esc(x.oldValue||"–")}</td><td><b>${esc(x.newValue||"–")}</b></td></tr>`);
+  h+="</tbody>";document.getElementById(id).innerHTML=h;
+}
+</script>
+
+  </main>
+</div>
+
+<div id="portalAuthGate">
+  <h2>📅 Dienstplan</h2>
+  <p id="portalAuthMessage">QM-Anmeldung wird geprüft …</p>
+  <a href="index.html">Zum QM-Portal</a>
+</div>
+
+
+<script>
+/* =========================================================
+   AUTOMATISCHE QM-PORTAL-ANMELDUNG
+   Nutzt dieselbe Supabase-Session wie index.html.
+========================================================= */
+const QM_SUPABASE_URL = "https://syvcomshcexhnxhplqhx.supabase.co";
+const QM_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_SQKuCSBTQK0uE6d2nfM5hg_UEeo8x2z";
+let qmSupabase = null;
+
+function qmNormalizeName(v){
+  return String(v||"").trim().toLocaleLowerCase("de-DE");
+}
+
+function qmFindLocalUserByName(name){
+  const n=qmNormalizeName(name);
+  return Object.keys(USERS).find(k=>qmNormalizeName(USERS[k].name)===n) || null;
+}
+
+function qmShowGate(message){
+  document.getElementById("portalShell").style.display="none";
+  const gate=document.getElementById("portalAuthGate");
+  gate.style.display="block";
+  document.getElementById("portalAuthMessage").textContent=message;
+}
+
+function qmShowPortal(profile){
+  document.getElementById("portalAuthGate").style.display="none";
+  document.getElementById("portalShell").style.display="block";
+  document.getElementById("qmLoggedUser").textContent=profile.name || "Benutzer";
+  const roleLabel=profile.role==="admin" ? "Administrator" :
+                  profile.role==="teamleitung" ? "Teamleitung" : "Mitarbeiter";
+  document.getElementById("qmLoggedRole").textContent=roleLabel;
+}
+
+async function qmOpenDutyPlanner(){
+  try{
+    if(!window.supabase || typeof window.supabase.createClient!=="function"){
+      qmShowGate("Die QM-Anmeldung konnte nicht geladen werden. Bitte zuerst das QM-Portal öffnen.");
+      return;
+    }
+
+    qmSupabase=window.supabase.createClient(
+      QM_SUPABASE_URL,
+      QM_SUPABASE_PUBLISHABLE_KEY,
+      {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
+    );
+
+    const userResult=await qmSupabase.auth.getUser();
+    const authUser=userResult && userResult.data && userResult.data.user;
+    if(!authUser){
+      qmShowGate("Du bist noch nicht im QM-Portal angemeldet. Bitte melde dich dort zuerst an.");
+      return;
+    }
+
+    const profileResult=await qmSupabase
+      .from("profiles")
+      .select("id,name,role,team,active")
+      .eq("id",authUser.id)
+      .maybeSingle();
+
+    if(profileResult.error) throw profileResult.error;
+    const profile=profileResult.data;
+
+    if(!profile || profile.active!==true){
+      qmShowGate("Dieses Benutzerkonto ist noch nicht freigeschaltet.");
+      return;
+    }
+
+    qmShowPortal(profile);
+
+    if(profile.role==="admin"){
+      session={role:"admin"};
+      document.getElementById("adminMonth").value=nowMonth();
+      show("admin");
+      renderAdmin();
+      return;
+    }
+
+    let localUser=qmFindLocalUserByName(profile.name);
+    if(!localUser){
+      localUser="qm_"+String(profile.id).replace(/[^a-zA-Z0-9]/g,"").slice(0,24);
+      USERS[localUser]={
+        name:profile.name || authUser.email || "Mitarbeiter",
+        team:profile.team || "Noch nicht zugeordnet"
+      };
+    }
+
+    if(localUser && USERS[localUser] && profile.team){
+      USERS[localUser].team=profile.team;
+    }
+
+    if(profile.role==="teamleitung"){
+      const team=profile.team || (USERS[localUser] && USERS[localUser].team) || "Noch nicht zugeordnet";
+      session={role:"leader",user:localUser,team:team};
+      document.getElementById("leadMonth").value=nowMonth();
+      show("leader");
+      renderLead();
+      return;
+    }
+
+    session={role:"employee",user:localUser};
+    document.getElementById("empMonth").value=nowMonth();
+    show("employee");
+    renderEmp();
+  }
+  catch(error){
+    console.error("Dienstplan-QM-Integration:",error);
+    qmShowGate("Der Dienstplan konnte den QM-Benutzer nicht laden: "+(error.message||"Unbekannter Fehler"));
+  }
+}
+
+window.addEventListener("DOMContentLoaded",qmOpenDutyPlanner);
+</script>
+
+</body>
+</html>
