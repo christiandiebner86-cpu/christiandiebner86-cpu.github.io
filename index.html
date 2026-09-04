@@ -843,6 +843,24 @@ main {
   color: #304c9b;
 }
 
+
+.role-select {
+  border: 1px solid #cbd7df;
+  border-radius: 9px;
+  padding: 8px 10px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  min-width: 150px;
+}
+.role-select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(118,168,43,.14);
+  outline: none;
+}
+
 .btn-name {
   background: #fff1d9;
   color: #8a5700;
@@ -2731,10 +2749,11 @@ function updateUserHeader() {
 
 
   const role =
-    currentProfile &&
-    currentProfile.role === "admin"
+    currentProfile && currentProfile.role === "admin"
       ? "🛡️ Administrator"
-      : "👤 Mitarbeiter";
+      : currentProfile && currentProfile.role === "teamleitung"
+        ? "👩‍⚕️ Teamleitung"
+        : "👤 Mitarbeiter";
 
 
   getElement("currentUserName")
@@ -3172,15 +3191,23 @@ async function loadAdminProfiles() {
                 `
             }
 
-            <button
-              class="btn-role"
-              type="button"
+            <select
+              class="role-select"
               data-action="role"
               data-user-id="${escapeHTML(profile.id)}"
               data-current-role="${escapeHTML(profile.role || "mitarbeiter")}"
+              aria-label="Rolle auswählen"
             >
-              👑 Rolle
-            </button>
+              <option value="mitarbeiter" ${profile.role === "mitarbeiter" ? "selected" : ""}>
+                👤 Mitarbeiter
+              </option>
+              <option value="teamleitung" ${profile.role === "teamleitung" ? "selected" : ""}>
+                👩‍⚕️ Teamleitung
+              </option>
+              <option value="admin" ${profile.role === "admin" ? "selected" : ""}>
+                🛡️ Administrator
+              </option>
+            </select>
 
             <button
               class="btn-name"
@@ -3211,7 +3238,9 @@ async function loadAdminProfiles() {
               ${
                 profile.role === "admin"
                   ? "🛡️ Admin"
-                  : "👤 Mitarbeiter"
+                  : profile.role === "teamleitung"
+                    ? "👩‍⚕️ Teamleitung"
+                    : "👤 Mitarbeiter"
               }
             </span>
           </td>
@@ -3286,6 +3315,7 @@ async function loadAdminProfiles() {
 
                 changeUserRole(
                   userId,
+                  button.value,
                   button.dataset.currentRole
                 );
 
@@ -3438,6 +3468,7 @@ async function changeUserStatus(
 
 async function changeUserRole(
   userId,
+  newRole,
   currentRole
 ) {
 
@@ -3449,7 +3480,6 @@ async function changeUserRole(
     return;
   }
 
-
   if (
     !userId ||
     !currentUser ||
@@ -3458,23 +3488,41 @@ async function changeUserRole(
     return;
   }
 
+  const allowedRoles = [
+    "mitarbeiter",
+    "teamleitung",
+    "admin"
+  ];
 
-  const newRole =
-    currentRole === "admin"
-      ? "mitarbeiter"
-      : "admin";
-
-
-  const question =
-    currentRole === "admin"
-      ? "Soll dieser Benutzer wirklich zum Mitarbeiter zurückgestuft werden?"
-      : "Soll dieser Benutzer wirklich Administrator werden?";
-
-
-  if (!confirm(question)) {
+  if (!allowedRoles.includes(newRole)) {
+    showAdminMessage(
+      "Ungültige Rolle.",
+      "error"
+    );
+    await loadAdminProfiles();
     return;
   }
 
+  if (newRole === currentRole) {
+    return;
+  }
+
+  const roleNames = {
+    mitarbeiter: "Mitarbeiter",
+    teamleitung: "Teamleitung",
+    admin: "Administrator"
+  };
+
+  if (
+    !confirm(
+      "Rolle wirklich auf „" +
+      roleNames[newRole] +
+      "“ ändern?"
+    )
+  ) {
+    await loadAdminProfiles();
+    return;
+  }
 
   try {
 
@@ -3491,17 +3539,16 @@ async function changeUserRole(
         "Die Rollenänderung hat zu lange gedauert."
       );
 
-
     if (result.error) {
       throw result.error;
     }
 
-
     showAdminMessage(
-      "Rolle wurde erfolgreich geändert.",
+      "Rolle wurde auf „" +
+      roleNames[newRole] +
+      "“ geändert.",
       "success"
     );
-
 
     await loadAdminProfiles();
 
@@ -3513,7 +3560,6 @@ async function changeUserRole(
       error
     );
 
-
     showAdminMessage(
       "Rollenänderung fehlgeschlagen: " +
       (
@@ -3522,6 +3568,8 @@ async function changeUserRole(
       ),
       "error"
     );
+
+    await loadAdminProfiles();
 
   }
 
