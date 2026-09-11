@@ -1,0 +1,31 @@
+name: Dienstplan CSS bereinigen
+on:
+  push:
+    paths:
+      - '.github/workflows/cleanup-dienstplan-css.yml'
+permissions:
+  contents: write
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Überflüssige CSS-Klammer entfernen
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('dienstplan.html')
+          t=p.read_text(encoding='utf-8')
+          old='''#employeeWishTable th:first-child,\n  #employeeWishTable td:first-child{width:70px !important;min-width:70px !important}\n  #employeeWishTable select{font-size:8px;height:25px}\n}\n\n\n/* Einheitliche Monatskalender'''
+          new='''#employeeWishTable th:first-child,\n  #employeeWishTable td:first-child{width:70px !important;min-width:70px !important}\n  #employeeWishTable select{font-size:8px;height:25px}\n\n\n/* Einheitliche Monatskalender'''
+          if old not in t:
+              raise SystemExit('Erwartete CSS-Stelle nicht gefunden')
+          p.write_text(t.replace(old,new,1),encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dienstplan.html
+          git diff --cached --quiet || git commit -m "Überflüssige CSS-Klammer im Dienstplan entfernen"
+          git push
