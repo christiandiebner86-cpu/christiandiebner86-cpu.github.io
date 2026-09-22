@@ -1,0 +1,17 @@
+{
+  "name": "QM-Portal Intensivpflege Halle",
+  "short_name": "QM Halle",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f7f8",
+  "theme_color": "#4f7818",
+  "icons": [
+    {
+      "src": "halle-logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
