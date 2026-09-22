@@ -83,7 +83,8 @@ body {
 ========================================================= */
 
 body.auth-locked #portal,
-body.auth-locked #admin {
+body.auth-locked #admin,
+body.auth-locked #accidentAdminBox {
   display: none !important;
   visibility: hidden !important;
 }
@@ -2110,9 +2111,9 @@ body.document-viewer-open {
       </table>
     </div>
   </div>
-</section>
     </div>
   </details>
+</section>
 
 
 
@@ -3570,6 +3571,11 @@ function showAuthScreen() {
   if (admin) {
     admin.style.display = "none";
     admin.hidden = true;
+  }
+
+  const accidentAdmin = getElement("accidentAdminBox");
+  if (accidentAdmin) {
+    accidentAdmin.style.display = "none";
   }
 
   getElement("authScreen").style.display =
@@ -6316,6 +6322,11 @@ function startAuthListener() {
 
         /* Loginfelder bei Abmeldung sofort leeren. */
         clearLoginFields();
+
+        const accidentAdmin = getElement("accidentAdminBox");
+        if (accidentAdmin) {
+          accidentAdmin.style.display = "none";
+        }
 
         showAuthScreen();
 
