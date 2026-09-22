@@ -79,6 +79,20 @@ body {
 }
 
 /* =========================================================
+   SICHERHEITSSPERRE FUER ABGEMELDETE BENUTZER
+========================================================= */
+
+body.auth-locked #portal,
+body.auth-locked #admin {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+body.portal-authenticated #authScreen {
+  display: none !important;
+}
+
+/* =========================================================
    AUTH
 ========================================================= */
 
@@ -1417,7 +1431,7 @@ body.document-viewer-open {
 </style>
 </head>
 
-<body>
+<body class="auth-locked">
 
 <!-- =========================================================
      LOGIN
@@ -3525,19 +3539,37 @@ async function initializeAccidentReports(){
 
 function showPortal() {
 
+  document.body.classList.remove("auth-locked");
+  document.body.classList.add("portal-authenticated");
+
   getElement("authScreen").style.display =
     "none";
 
-  getElement("portal").style.display =
-    "block";
+  const portal = getElement("portal");
+  if (portal) {
+    portal.removeAttribute("aria-hidden");
+    portal.style.display = "block";
+  }
 
 }
 
 
 function showAuthScreen() {
 
-  getElement("portal").style.display =
-    "none";
+  document.body.classList.remove("portal-authenticated");
+  document.body.classList.add("auth-locked");
+
+  const portal = getElement("portal");
+  if (portal) {
+    portal.style.display = "none";
+    portal.setAttribute("aria-hidden", "true");
+  }
+
+  const admin = getElement("admin");
+  if (admin) {
+    admin.style.display = "none";
+    admin.hidden = true;
+  }
 
   getElement("authScreen").style.display =
     "flex";
