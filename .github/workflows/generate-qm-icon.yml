@@ -100,19 +100,20 @@ jobs:
           master.save("qm-icon.png", optimize=True)
           master.resize((512, 512), Image.Resampling.LANCZOS).save("qm-icon-512.png", optimize=True)
           master.resize((192, 192), Image.Resampling.LANCZOS).save("qm-icon-192.png", optimize=True)
+          master.resize((180, 180), Image.Resampling.LANCZOS).save("apple-touch-icon.png", optimize=True)
 
           # iPad / Browser auf die neuen Icons umstellen.
           index_path = Path("index.html")
           html = index_path.read_text(encoding="utf-8")
           html = re.sub(
               r'<link rel="apple-touch-icon" href="[^"]+">',
-              '<link rel="apple-touch-icon" sizes="180x180" href="qm-icon.png?v=4">',
+              '<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">',
               html,
               count=1,
           )
           html = re.sub(
               r'<link rel="icon" href="[^"]+">',
-              '<link rel="icon" type="image/png" sizes="192x192" href="qm-icon-192.png?v=4">',
+              '<link rel="icon" type="image/png" sizes="192x192" href="qm-icon-192.png">',
               html,
               count=1,
           )
@@ -120,18 +121,19 @@ jobs:
 
           manifest_path = Path("site.webmanifest")
           manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          manifest["id"] = "./"
           manifest["icons"] = [
               {
                   "src": "qm-icon-192.png",
                   "sizes": "192x192",
                   "type": "image/png",
-                  "purpose": "any maskable"
+                  "purpose": "any"
               },
               {
                   "src": "qm-icon-512.png",
                   "sizes": "512x512",
                   "type": "image/png",
-                  "purpose": "any maskable"
+                  "purpose": "any"
               }
           ]
           manifest_path.write_text(
@@ -144,7 +146,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add qm-icon.png qm-icon-192.png qm-icon-512.png index.html site.webmanifest
+          git add qm-icon.png qm-icon-192.png qm-icon-512.png apple-touch-icon.png index.html site.webmanifest
           if git diff --cached --quiet; then
             echo "Keine Änderungen."
             exit 0
