@@ -1,0 +1,153 @@
+name: QM App-Icon erzeugen
+
+on:
+  push:
+    paths:
+      - 'halle-logo.png'
+      - '.github/workflows/generate-qm-icon.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository laden
+        uses: actions/checkout@v4
+
+      - name: Python vorbereiten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Pillow installieren
+        run: python -m pip install --quiet pillow
+
+      - name: App-Icons erzeugen und Verweise aktualisieren
+        env:
+          LOGO_FILE: 'halle-logo.png'
+          BRAND_COLOR: '#4f7818'
+        run: |
+          python - <<'PY'
+          from PIL import Image, ImageDraw, ImageFilter, ImageChops
+          from pathlib import Path
+          import json, os, re
+
+          logo_file = os.environ["LOGO_FILE"]
+          brand = os.environ["BRAND_COLOR"]
+          size = 1024
+
+          logo = Image.open(logo_file).convert("RGBA")
+
+          # Äußere, einfarbige Ränder möglichst entfernen, ohne das Logo selbst anzutasten.
+          if logo.width > 10 and logo.height > 10:
+              corners = [
+                  logo.getpixel((1, 1)),
+                  logo.getpixel((logo.width - 2, 1)),
+                  logo.getpixel((1, logo.height - 2)),
+                  logo.getpixel((logo.width - 2, logo.height - 2)),
+              ]
+              bg = tuple(sum(px[i] for px in corners) // len(corners) for i in range(4))
+              bg_img = Image.new("RGBA", logo.size, bg)
+              diff = ImageChops.difference(logo, bg_img).convert("L")
+              mask = diff.point(lambda p: 255 if p > 12 else 0)
+              bbox = mask.getbbox()
+              if bbox:
+                  pad_x = max(4, int((bbox[2] - bbox[0]) * 0.04))
+                  pad_y = max(4, int((bbox[3] - bbox[1]) * 0.08))
+                  bbox = (
+                      max(0, bbox[0] - pad_x),
+                      max(0, bbox[1] - pad_y),
+                      min(logo.width, bbox[2] + pad_x),
+                      min(logo.height, bbox[3] + pad_y),
+                  )
+                  logo = logo.crop(bbox)
+
+          # Master-Icon: Markenfarbe außen, Logo unverändert auf einer weißen Karte.
+          canvas = Image.new("RGBA", (size, size), brand)
+          panel_box = (92, 188, 932, 836)
+          radius = 92
+
+          shadow = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+          sd = ImageDraw.Draw(shadow)
+          sd.rounded_rectangle(
+              (panel_box[0] + 8, panel_box[1] + 16, panel_box[2] + 8, panel_box[3] + 16),
+              radius=radius,
+              fill=(0, 0, 0, 72),
+          )
+          shadow = shadow.filter(ImageFilter.GaussianBlur(24))
+          canvas = Image.alpha_composite(canvas, shadow)
+
+          draw = ImageDraw.Draw(canvas)
+          draw.rounded_rectangle(panel_box, radius=radius, fill=(255, 255, 255, 255))
+
+          max_w, max_h = 720, 470
+          scale = min(max_w / logo.width, max_h / logo.height, 1.0 if max(logo.size) > 800 else 10.0)
+          new_w = max(1, round(logo.width * scale))
+          new_h = max(1, round(logo.height * scale))
+          logo = logo.resize((new_w, new_h), Image.Resampling.LANCZOS)
+
+          x = (size - new_w) // 2
+          y = (size - new_h) // 2
+          canvas.alpha_composite(logo, (x, y))
+
+          # Keine Transparenz am Rand: bessere Darstellung als iOS/Chrome-App-Icon.
+          master = Image.new("RGB", (size, size), brand)
+          master.paste(canvas.convert("RGB"), (0, 0))
+          master.save("qm-icon.png", optimize=True)
+          master.resize((512, 512), Image.Resampling.LANCZOS).save("qm-icon-512.png", optimize=True)
+          master.resize((192, 192), Image.Resampling.LANCZOS).save("qm-icon-192.png", optimize=True)
+
+          # iPad / Browser auf die neuen Icons umstellen.
+          index_path = Path("index.html")
+          html = index_path.read_text(encoding="utf-8")
+          html = re.sub(
+              r'<link rel="apple-touch-icon" href="[^"]+">',
+              '<link rel="apple-touch-icon" sizes="180x180" href="qm-icon.png?v=4">',
+              html,
+              count=1,
+          )
+          html = re.sub(
+              r'<link rel="icon" href="[^"]+">',
+              '<link rel="icon" type="image/png" sizes="192x192" href="qm-icon-192.png?v=4">',
+              html,
+              count=1,
+          )
+          index_path.write_text(html, encoding="utf-8")
+
+          manifest_path = Path("site.webmanifest")
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          manifest["icons"] = [
+              {
+                  "src": "qm-icon-192.png",
+                  "sizes": "192x192",
+                  "type": "image/png",
+                  "purpose": "any maskable"
+              },
+              {
+                  "src": "qm-icon-512.png",
+                  "sizes": "512x512",
+                  "type": "image/png",
+                  "purpose": "any maskable"
+              }
+          ]
+          manifest_path.write_text(
+              json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+              encoding="utf-8"
+          )
+          PY
+
+      - name: Änderungen speichern
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qm-icon.png qm-icon-192.png qm-icon-512.png index.html site.webmanifest
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen."
+            exit 0
+          fi
+          git commit -m "QM App-Icons für iPad und Browser optimieren"
+          git push
