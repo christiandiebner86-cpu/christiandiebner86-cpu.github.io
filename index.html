@@ -1562,7 +1562,7 @@ body.document-viewer-open {
      PORTAL
 ========================================================= -->
 
-<div id="portal">
+<div id="portal" style="display:none">
 
 <header>
 
@@ -2108,6 +2108,7 @@ body.document-viewer-open {
   id="admin"
   class="section"
   style="display:none"
+  hidden
 >
 
   <div class="section-title">
@@ -3608,6 +3609,8 @@ function updateAdminVisibility() {
 
 
   if (section) {
+
+    section.hidden = !isAdmin;
 
     section.style.display =
       isAdmin
@@ -6309,55 +6312,45 @@ async function startApplication() {
   startAuthListener();
 
 
+  /*
+   * GEMEINSAM GENUTZTE iPADS:
+   * Jeder echte Seiten-/App-Start beginnt abgemeldet.
+   * So kann kein vorheriger Mitarbeiter – auch kein Admin –
+   * versehentlich angemeldet bleiben.
+   */
   try {
 
-    const result =
-      await withTimeout(
-        supabaseClient.auth.getSession(),
-        10000,
-        "Supabase antwortet beim Start nicht."
-      );
+    clearLoginFields();
 
+    await withTimeout(
+      supabaseClient.auth.signOut(),
+      10000,
+      "Die alte Anmeldung konnte nicht beendet werden."
+    );
 
-    if (result.error) {
-      throw result.error;
-    }
+    currentUser = null;
+    currentProfile = null;
+    portalInitialized = false;
+    initializationRunning = false;
 
-
-    if (
-      result.data &&
-      result.data.session
-    ) {
-
-      await initializePortal();
-
-    }
-    else {
-
-      showAuthScreen();
-
-    }
+    showAuthScreen();
+    showLogin();
 
   }
   catch (error) {
 
     console.error(
-      "Start:",
+      "Sicherer Start:",
       error
     );
 
+    currentUser = null;
+    currentProfile = null;
+    portalInitialized = false;
+    initializationRunning = false;
 
     showAuthScreen();
-
-
-    showAuthMessage(
-      "Das Portal konnte nicht vollständig geladen werden: " +
-      (
-        error.message ||
-        "Unbekannter Fehler."
-      ),
-      "error"
-    );
+    showLogin();
 
   }
 
