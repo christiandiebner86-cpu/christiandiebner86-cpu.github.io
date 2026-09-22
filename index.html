@@ -2420,6 +2420,7 @@ let currentProfile = null;
 let portalInitialized = false;
 let initializationRunning = false;
 let authListenerStarted = false;
+let authStateVersion = 0;
 let qmDocumentNotifications = [];
 let qmDocumentSyncRunning = false;
 
@@ -3660,6 +3661,8 @@ function updateAdminVisibility() {
 
 async function initializePortal() {
 
+  const initializationVersion = authStateVersion;
+
   if (initializationRunning) {
     return;
   }
@@ -3761,6 +3764,19 @@ async function initializePortal() {
     }
 
 
+    if (initializationVersion !== authStateVersion) {
+      return;
+    }
+
+    if (
+      !currentUser ||
+      !currentProfile ||
+      currentProfile.active !== true
+    ) {
+      showAuthScreen();
+      return;
+    }
+
     showPortal();
 
     updateUserHeader();
@@ -3798,8 +3814,17 @@ async function initializePortal() {
 
     portalInitialized = false;
 
-    showPortal();
+    if (
+      initializationVersion !== authStateVersion ||
+      !currentUser ||
+      !currentProfile ||
+      currentProfile.active !== true
+    ) {
+      showAuthScreen();
+      return;
+    }
 
+    showPortal();
 
     showPortalStatus(
       "Das Portal konnte nicht vollständig geladen werden: " +
@@ -3866,6 +3891,29 @@ function showPortalStatus(
 
 async function logout() {
 
+  /*
+   * Laufende Admin-/Portal-Ladevorgänge sofort ungültig machen.
+   * Das ist wichtig, weil ein noch laufender Admin-Aufruf sonst
+   * nach dem Logout die Portalansicht erneut öffnen könnte.
+   */
+  authStateVersion += 1;
+
+  currentUser = null;
+  currentProfile = null;
+  repositoryTree = [];
+  portalInitialized = false;
+  initializationRunning = false;
+
+  clearLoginFields();
+  showAuthScreen();
+  showLogin();
+
+  try {
+    window.scrollTo(0, 0);
+  }
+  catch (scrollError) {
+  }
+
   try {
 
     if (supabaseClient) {
@@ -3883,19 +3931,6 @@ async function logout() {
     );
 
   }
-
-
-  currentUser = null;
-  currentProfile = null;
-  repositoryTree = [];
-  portalInitialized = false;
-  initializationRunning = false;
-
-  /* Keine Zugangsdaten des vorherigen Mitarbeiters stehen lassen. */
-  clearLoginFields();
-
-  showAuthScreen();
-  showLogin();
 
 }
 
@@ -6271,6 +6306,8 @@ function startAuthListener() {
       if (
         event === "SIGNED_OUT"
       ) {
+
+        authStateVersion += 1;
 
         currentUser = null;
         currentProfile = null;
