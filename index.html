@@ -1463,6 +1463,7 @@ body.document-viewer-open {
     <form
       id="loginForm"
       class="auth-form"
+      autocomplete="off"
     >
 
       <label for="loginEmail">
@@ -1472,7 +1473,7 @@ body.document-viewer-open {
       <input
         id="loginEmail"
         type="email"
-        autocomplete="email"
+        autocomplete="off"
         required
       >
 
@@ -1483,7 +1484,7 @@ body.document-viewer-open {
       <input
         id="loginPassword"
         type="password"
-        autocomplete="current-password"
+        autocomplete="off"
         required
       >
 
@@ -2352,7 +2353,7 @@ try {
       SUPABASE_PUBLISHABLE_KEY,
       {
         auth: {
-          persistSession: true,
+          persistSession: false,
           autoRefreshToken: true,
           detectSessionInUrl: true
         }
@@ -2722,6 +2723,29 @@ function showAdminMessage(
 
 
 /* =========================================================
+   LOGIN-FELDER AUF GEMEINSAMEN GERÄTEN LEEREN
+========================================================= */
+
+function clearLoginFields() {
+
+  const email =
+    getElement("loginEmail");
+
+  const password =
+    getElement("loginPassword");
+
+  if (email) {
+    email.value = "";
+  }
+
+  if (password) {
+    password.value = "";
+  }
+
+}
+
+
+/* =========================================================
    AUTH TABS
 ========================================================= */
 
@@ -2846,6 +2870,9 @@ function setupLoginForm() {
         if (result.error) {
           throw result.error;
         }
+
+        /* Zugangsdaten aus den sichtbaren Login-Feldern entfernen. */
+        clearLoginFields();
 
 
         /*
@@ -3828,6 +3855,9 @@ async function logout() {
   repositoryTree = [];
   portalInitialized = false;
   initializationRunning = false;
+
+  /* Keine Zugangsdaten des vorherigen Mitarbeiters stehen lassen. */
+  clearLoginFields();
 
   showAuthScreen();
   showLogin();
@@ -6211,6 +6241,9 @@ function startAuthListener() {
         currentProfile = null;
         portalInitialized = false;
         initializationRunning = false;
+
+        /* Loginfelder bei Abmeldung sofort leeren. */
+        clearLoginFields();
 
         showAuthScreen();
 
