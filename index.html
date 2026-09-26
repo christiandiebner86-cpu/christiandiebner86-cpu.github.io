@@ -1663,7 +1663,7 @@ body.document-viewer-open {
     <a href="#arbeitsunfall">🩹 Arbeitsunfall</a>
 
 
-    <a href="dienstplan.html">
+    <a id="dutyPlannerLink" href="dienstplan.html">
       📅 Dienstwunschplan
     </a>
 
@@ -2369,6 +2369,8 @@ try {
       {
         auth: {
           persistSession: true,
+          storage: window.localStorage,
+          storageKey: "qm-halle-auth-v1",
           autoRefreshToken: true,
           detectSessionInUrl: true
         }
@@ -6392,47 +6394,104 @@ async function startApplication() {
 
 
   /*
-   * GEMEINSAM GENUTZTE iPADS:
-   * Jeder echte Seiten-/App-Start beginnt abgemeldet.
-   * So kann kein vorheriger Mitarbeiter – auch kein Admin –
-   * versehentlich angemeldet bleiben.
-   *
-   * Nach einer neuen Anmeldung wird die Supabase-Session gespeichert,
-   * damit der Dienstwunschplan sie beim Seitenwechsel übernehmen kann.
+   * LOGIN-ÜBERGABE ZUM DIENSTWUNSCHPLAN:
+   * Android/PWA kann beim Seitenwechsel kurz erneut die Startseite öffnen.
+   * In diesem Fall darf die gerade aufgebaute Supabase-Session nicht
+   * durch den Sicherheits-Logout gelöscht werden.
    */
+  const dutyPlannerLink = getElement("dutyPlannerLink");
+
+  if (dutyPlannerLink) {
+    dutyPlannerLink.addEventListener("click", function() {
+      try {
+        window.localStorage.setItem(
+          "qm-halle-duty-handoff",
+          String(Date.now())
+        );
+      }
+      catch (error) {
+        console.warn("Dienstplan-Übergabe konnte nicht markiert werden:", error);
+      }
+    });
+  }
+
+  let recentDutyHandoff = false;
+
   try {
-
-    clearLoginFields();
-
-    await withTimeout(
-      supabaseClient.auth.signOut(),
-      10000,
-      "Die alte Anmeldung konnte nicht beendet werden."
+    const handoffAt = Number(
+      window.localStorage.getItem("qm-halle-duty-handoff") || "0"
     );
 
-    currentUser = null;
-    currentProfile = null;
-    portalInitialized = false;
-    initializationRunning = false;
-
-    showAuthScreen();
-    showLogin();
-
+    recentDutyHandoff =
+      handoffAt > 0 &&
+      (Date.now() - handoffAt) >= 0 &&
+      (Date.now() - handoffAt) < 60000;
   }
   catch (error) {
+    console.warn("Dienstplan-Übergabe konnte nicht gelesen werden:", error);
+  }
 
-    console.error(
-      "Sicherer Start:",
-      error
-    );
 
-    currentUser = null;
-    currentProfile = null;
-    portalInitialized = false;
-    initializationRunning = false;
+  /*
+   * GEMEINSAM GENUTZTE iPADS:
+   * Bei einem normalen neuen Portal-Start wird weiterhin abgemeldet.
+   * Nur während einer unmittelbar vorher markierten Dienstplan-Übergabe
+   * wird die bestehende Anmeldung übernommen.
+   */
+  if (recentDutyHandoff) {
 
-    showAuthScreen();
-    showLogin();
+    try {
+      await initializePortal();
+
+      if (!currentUser) {
+        showAuthScreen();
+        showLogin();
+      }
+    }
+    catch (error) {
+      console.error("Session-Übernahme:", error);
+      showAuthScreen();
+      showLogin();
+    }
+
+  }
+  else {
+
+    try {
+
+      clearLoginFields();
+
+      await withTimeout(
+        supabaseClient.auth.signOut(),
+        10000,
+        "Die alte Anmeldung konnte nicht beendet werden."
+      );
+
+      currentUser = null;
+      currentProfile = null;
+      portalInitialized = false;
+      initializationRunning = false;
+
+      showAuthScreen();
+      showLogin();
+
+    }
+    catch (error) {
+
+      console.error(
+        "Sicherer Start:",
+        error
+      );
+
+      currentUser = null;
+      currentProfile = null;
+      portalInitialized = false;
+      initializationRunning = false;
+
+      showAuthScreen();
+      showLogin();
+
+    }
 
   }
 
