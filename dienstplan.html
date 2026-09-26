@@ -989,6 +989,8 @@ button.danger{
   <div class="actions">
     <button class="primary" onclick="submitAdminOwn()">Eigenen Wunschplan abgeben</button>
     <button class="warning" onclick="reopenAdminOwn()">Eigene Abgabe zurücknehmen</button>
+    <button class="secondary" onclick="openTimesheet()">🕒 Mein Stundenzettel</button>
+    <button class="secondary" onclick="openVacation()">🏖️ Mein Jahresurlaub</button>
   </div>
 </div>
 <div id="adminApprovalStatus" style="margin:12px 0"></div><div class="actions"><button class="secondary" onclick="openTimesheetAdmin()">🕒 Stundenzettel – Admin</button><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div><div class="table-wrap"><table id="adminTable"></table></div>
@@ -1047,10 +1049,18 @@ button.danger{
 <div class="card">
 <div class="toolbar">
   <div><h2>Jahres-Urlaubswunschplanung</h2><div id="vacationRoleInfo" class="small"></div></div>
-  <div><label>Jahr</label><select id="vacationYear" onchange="renderVacation()"></select></div>
+  <div><label>Jahr</label><select id="vacationYear" onchange="refreshVacation()"></select></div>
   <button class="secondary" onclick="backFromVacation()">Zurück zum Dienstwunschplan</button>
 </div>
 <div class="notice">Mitarbeitende können nur den eigenen Urlaubswunsch ändern. Das Jahres-Urlaubskontingent wird pro Mitarbeiter festgelegt; Standard sind 30 Tage. Der Admin kann das Kontingent erhöhen oder reduzieren. Gezählt werden nur Montag bis Freitag. Zu jedem Urlaubsblock kann genau ein freies Wochenende gewählt werden: entweder davor oder danach. Teamleitung und Mitarbeitende sehen die Urlaubswünsche ihres Teams und können den eigenen Wunsch bearbeiten; der Admin kann alle Teams sehen und ändern.</div>
+<div id="vacationOwnWorkflow" class="card" style="background:#f8fafc;margin:12px 0">
+  <h3>Mein Jahresurlaub</h3>
+  <div id="vacationOwnStatus" style="margin:8px 0"></div>
+  <div class="actions">
+    <button type="button" class="primary" id="vacationSubmitBtn" onclick="submitVacationWishes()">📨 Jahresurlaub abgeben</button>
+    <button type="button" class="warning" id="vacationReopenBtn" onclick="reopenVacationWishes()">Abgabe zurücknehmen</button>
+  </div>
+</div>
 <div id="vacationSummary" style="margin-bottom:12px"></div>
 <div class="table-wrap"><table id="vacationTable"></table></div>
 <div style="margin-top:24px">
@@ -1067,6 +1077,7 @@ button.danger{
 const TEAMS=[]; const TEAM_META={};
 function isSpringerTeam(team){return !!(TEAM_META[String(team||"")]&&TEAM_META[String(team||"")].is_springer);}
 const USERS={};
+const qmVacationRows={};
 const KEY="qm_roles_vacation30_v2";let session={role:null,user:null,team:null};
 /* Kompatibilitäts-Fallback für ältere Hilfsfunktionen, die noch auf `team` zugreifen. */
 var team="";
@@ -1109,35 +1120,111 @@ function hasRestConflict(user,m,day){
 }
 
 
+function vacationKey(u,y){return u+"|"+y}
+
+function vacationRow(u,y){
+  return qmVacationRows[vacationKey(u,y)] || null;
+}
+
+async function qmLoadVacationYear(y){
+  const result=await qmSupabase.rpc("get_vacation_wishes",{p_year:Number(y)});
+  if(result.error)throw result.error;
+
+  Object.keys(qmVacationRows)
+    .filter(k=>k.endsWith("|"+String(y)))
+    .forEach(k=>delete qmVacationRows[k]);
+
+  (result.data||[]).forEach(row=>{
+    const u=qmUserKey(row.user_id);
+    qmVacationRows[vacationKey(u,y)]={
+      user_id:row.user_id,
+      blocks:Array.isArray(row.blocks)?row.blocks:[],
+      allowance:Number.isFinite(Number(row.allowance))?Number(row.allowance):30,
+      submitted:row.submitted===true,
+      submitted_at:row.submitted_at||null
+    };
+  });
+}
+
 function getVacationAllowance(u,y){
+  const central=vacationRow(u,y);
+  if(central && Number.isFinite(Number(central.allowance)))return Number(central.allowance);
+
   const s=state();
   if(!s.vacationAllowances)s.vacationAllowances={};
   const k=u+"|"+y;
   return Number.isFinite(Number(s.vacationAllowances[k])) ? Number(s.vacationAllowances[k]) : 30;
 }
-function setVacationAllowance(u,y,val){
+
+async function setVacationAllowance(u,y,val){
   if(session.role!=="admin")return;
+  const n=Math.max(0,Math.round(Number(val)||0));
+  const info=USERS[u];
+  if(!info || !info.id)return;
+
   const s=state();
   if(!s.vacationAllowances)s.vacationAllowances={};
-  const n=Math.max(0,Math.round(Number(val)||0));
   s.vacationAllowances[u+"|"+y]=n;
   save(s);
+
+  const result=await qmSupabase.rpc("set_vacation_allowance",{
+    p_user_id:info.id,
+    p_year:Number(y),
+    p_allowance:n
+  });
+  if(result.error){
+    alert("Urlaubskontingent konnte nicht gespeichert werden: "+result.error.message);
+    return;
+  }
+
+  await qmLoadVacationYear(y);
   renderVacation();
 }
 
-function vacationKey(u,y){return u+"|"+y}
 function getVacationBlocks(u,y){
+  const central=vacationRow(u,y);
+  if(central && Array.isArray(central.blocks) && central.blocks.length){
+    return central.blocks.map(b=>({...b}));
+  }
+
   const s=state();
   if(!s.vacations)s.vacations={};
   const raw=s.vacations[vacationKey(u,y)];
-  if(Array.isArray(raw))return raw;
-  return [];
+  if(Array.isArray(raw) && raw.length)return raw.map(b=>({...b}));
+
+  return central && Array.isArray(central.blocks)
+    ? central.blocks.map(b=>({...b}))
+    : [];
 }
-function saveVacationBlocks(u,y,blocks){
+
+function vacationIsSubmitted(u,y){
+  const row=vacationRow(u,y);
+  return !!(row && row.submitted===true);
+}
+
+function vacationSubmittedAt(u,y){
+  const row=vacationRow(u,y);
+  return row ? row.submitted_at : null;
+}
+
+async function saveVacationBlocks(u,y,blocks){
   const s=state();
   if(!s.vacations)s.vacations={};
   s.vacations[vacationKey(u,y)]=blocks;
   save(s);
+
+  const info=USERS[u];
+  if(!info || !info.id)return;
+
+  const result=await qmSupabase.rpc("save_vacation_wishes",{
+    p_user_id:info.id,
+    p_year:Number(y),
+    p_blocks:blocks,
+    p_submitted:vacationIsSubmitted(u,y)
+  });
+  if(result.error)throw result.error;
+
+  await qmLoadVacationYear(y);
 }
 function dateRange(start,end){
   const arr=[], a=new Date(start+"T12:00:00"), b=new Date(end+"T12:00:00");
@@ -1180,10 +1267,66 @@ function validateVacationBlock(u,y,block,ignoreIndex=null){
   return {ok:true,days,total};
 }
 function fmtDate(d){return new Date(d+"T12:00:00").toLocaleDateString("de-DE")}
-function openVacation(){
+async function openVacation(){
   const y=new Date().getFullYear(), sel=document.getElementById("vacationYear");
   sel.innerHTML=[y-1,y,y+1,y+2].map(v=>`<option value="${v}" ${v===y?"selected":""}>${v}</option>`).join("");
-  show("vacation"); renderVacation();
+  show("vacation");
+  await refreshVacation();
+}
+
+async function refreshVacation(){
+  const y=Number(document.getElementById("vacationYear").value || new Date().getFullYear());
+  try{
+    await qmLoadVacationYear(y);
+  }catch(error){
+    console.error("Jahresurlaub laden:",error);
+    alert("Jahresurlaub konnte nicht zentral geladen werden: "+(error.message||"Unbekannter Fehler"));
+  }
+  renderVacation();
+}
+
+async function submitVacationWishes(){
+  if(!session.user || !USERS[session.user])return;
+  const y=Number(document.getElementById("vacationYear").value);
+  if(vacationIsSubmitted(session.user,y))return;
+
+  if(!confirm("Jahresurlaub für "+y+" abgeben? Danach ist die eigene Eingabe zunächst gesperrt."))return;
+
+  const result=await qmSupabase.rpc("save_vacation_wishes",{
+    p_user_id:USERS[session.user].id,
+    p_year:y,
+    p_blocks:getVacationBlocks(session.user,y),
+    p_submitted:true
+  });
+  if(result.error){
+    alert("Jahresurlaub konnte nicht abgegeben werden: "+result.error.message);
+    return;
+  }
+
+  await qmLoadVacationYear(y);
+  renderVacation();
+}
+
+async function reopenVacationWishes(){
+  if(!session.user || !USERS[session.user])return;
+  const y=Number(document.getElementById("vacationYear").value);
+  if(!vacationIsSubmitted(session.user,y))return;
+
+  if(!confirm("Abgabe für "+y+" zurücknehmen und den Jahresurlaub wieder bearbeiten?"))return;
+
+  const result=await qmSupabase.rpc("save_vacation_wishes",{
+    p_user_id:USERS[session.user].id,
+    p_year:y,
+    p_blocks:getVacationBlocks(session.user,y),
+    p_submitted:false
+  });
+  if(result.error){
+    alert("Abgabe konnte nicht zurückgenommen werden: "+result.error.message);
+    return;
+  }
+
+  await qmLoadVacationYear(y);
+  renderVacation();
 }
 function backFromVacation(){
   if(session.role==="employee"){show("employee");renderEmp()}
@@ -1191,12 +1334,17 @@ function backFromVacation(){
   else if(session.role==="admin"){show("admin");renderAdmin()}
   else show("login");
 }
-function canEditVacationUser(u){
-  return session.role==="admin" ||
-    ((session.role==="employee" || session.role==="leader") && u===session.user);
+function canEditVacationUser(u,y){
+  if(session.role==="admin"){
+    if(u===session.user && vacationIsSubmitted(u,y))return false;
+    return true;
+  }
+  return (session.role==="employee" || session.role==="leader") &&
+    u===session.user &&
+    !vacationIsSubmitted(u,y);
 }
-function addVacationBlock(u,y){
-  if(!canEditVacationUser(u)){
+async function addVacationBlock(u,y){
+  if(!canEditVacationUser(u,y)){
     alert("Du kannst nur deinen eigenen Urlaubswunsch bearbeiten.");
     return;
   }
@@ -1216,15 +1364,23 @@ function addVacationBlock(u,y){
   const blocks=getVacationBlocks(u,y);
   blocks.push(block);
   blocks.sort((a,b)=>a.start.localeCompare(b.start));
-  saveVacationBlocks(u,y,blocks);
-  renderVacation();
+  try{
+    await saveVacationBlocks(u,y,blocks);
+    renderVacation();
+  }catch(error){
+    alert("Urlaubswunsch konnte nicht gespeichert werden: "+(error.message||"Unbekannter Fehler"));
+  }
 }
-function deleteVacationBlock(u,y,index){
-  if(!canEditVacationUser(u))return;
+async function deleteVacationBlock(u,y,index){
+  if(!canEditVacationUser(u,y))return;
   const blocks=getVacationBlocks(u,y);
   blocks.splice(index,1);
-  saveVacationBlocks(u,y,blocks);
-  renderVacation();
+  try{
+    await saveVacationBlocks(u,y,blocks);
+    renderVacation();
+  }catch(error){
+    alert("Urlaubswunsch konnte nicht gelöscht werden: "+(error.message||"Unbekannter Fehler"));
+  }
 }
 function teamUsers(team){return Object.entries(USERS).filter(([u,i])=>i.team===team)}
 function show(id){
@@ -3358,6 +3514,25 @@ function renderAdmin(){
 }
 function renderVacation(){
   const y=Number(document.getElementById("vacationYear").value);
+
+  const ownWorkflow=document.getElementById("vacationOwnWorkflow");
+  const ownStatus=document.getElementById("vacationOwnStatus");
+  const submitBtn=document.getElementById("vacationSubmitBtn");
+  const reopenBtn=document.getElementById("vacationReopenBtn");
+
+  if(session.user && USERS[session.user]){
+    ownWorkflow.classList.remove("hidden");
+    const submitted=vacationIsSubmitted(session.user,y);
+    const submittedAt=vacationSubmittedAt(session.user,y);
+    ownStatus.innerHTML=submitted
+      ? `<span class="badge ok">✅ Jahresurlaub abgegeben ${submittedAt?"· "+new Date(submittedAt).toLocaleString("de-DE"):""}</span>`
+      : '<span class="badge wait">Jahresurlaub noch in Bearbeitung</span>';
+    submitBtn.disabled=submitted;
+    reopenBtn.disabled=!submitted;
+  }else{
+    ownWorkflow.classList.add("hidden");
+  }
+
   let users=[];
   if(session.role==="employee"){
     users=teamUsers(USERS[session.user].team);
@@ -3384,7 +3559,7 @@ function renderVacation(){
       });
     });
 
-    const canEdit=canEditVacationUser(u);
+    const canEdit=canEditVacationUser(u,y);
     h+=`<tr><th>${esc(info.name)}<div class="small">${esc(info.team)}</div></th>`;
     const allowance=getVacationAllowance(u,y);
     h+=`<td style="padding:10px"><b>${used}/${allowance}</b><div class="small">${Math.max(0,allowance-used)} Tage verbleiben</div>${session.role==="admin"?`<div style="margin-top:6px"><label>Jahreskontingent</label><input type="number" min="0" value="${allowance}" style="width:90px" onchange="setVacationAllowance('${u}',${y},this.value)"></div>`:""}</td>`;
