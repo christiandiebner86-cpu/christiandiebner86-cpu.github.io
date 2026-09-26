@@ -3175,7 +3175,7 @@ async function loadCurrentProfile() {
       supabaseClient
         .from("profiles")
         .select(
-          "id,name,role,team,active,last_login,created_at"
+          "id,name,role,team,active,last_login,created_at,is_teamleitung"
         )
         .eq("id", currentUser.id)
         .maybeSingle(),
@@ -3987,7 +3987,7 @@ async function loadAdminProfiles() {
         supabaseClient
           .from("profiles")
           .select(
-            "id,name,role,team,active,last_login,created_at"
+            "id,name,role,team,active,last_login,created_at,is_teamleitung"
           )
           .order(
             "name",
@@ -4128,7 +4128,7 @@ async function loadAdminProfiles() {
 
           <td>
             ${isSelf
-              ? `<span class="role-badge">🛡️ Admin</span>`
+              ? `<span class="role-badge">${profile.is_teamleitung ? "🛡️ Admin + 👩‍⚕️ Teamleitung" : "🛡️ Admin"}</span>`
               : `<select class="admin-inline-select" onchange="setQmProfileRole('${escapeHTML(profile.id)}',this.value)">
                    <option value="mitarbeiter" ${profile.role==="mitarbeiter"?"selected":""}>👤 Mitarbeiter</option>
                    <option value="teamleitung" ${profile.role==="teamleitung"?"selected":""}>👩‍⚕️ Teamleitung</option>
