@@ -2368,7 +2368,8 @@ try {
       SUPABASE_PUBLISHABLE_KEY,
       {
         auth: {
-          persistSession: false,
+          persistSession: true,
+          storage: window.sessionStorage,
           autoRefreshToken: true,
           detectSessionInUrl: true
         }
@@ -6392,45 +6393,17 @@ async function startApplication() {
 
 
   /*
-   * GEMEINSAM GENUTZTE iPADS:
-   * Jeder echte Seiten-/App-Start beginnt abgemeldet.
-   * So kann kein vorheriger Mitarbeiter – auch kein Admin –
-   * versehentlich angemeldet bleiben.
+   * GEMEINSAM GENUTZTE GERÄTE:
+   * Die Anmeldung wird nur in sessionStorage gespeichert.
+   * Dadurch bleibt sie beim Wechsel zum Dienstwunschplan erhalten,
+   * wird aber nicht dauerhaft in localStorage abgelegt.
    */
-  try {
+  clearLoginFields();
 
-    clearLoginFields();
+  await initializePortal();
 
-    await withTimeout(
-      supabaseClient.auth.signOut(),
-      10000,
-      "Die alte Anmeldung konnte nicht beendet werden."
-    );
-
-    currentUser = null;
-    currentProfile = null;
-    portalInitialized = false;
-    initializationRunning = false;
-
-    showAuthScreen();
+  if (!currentUser) {
     showLogin();
-
-  }
-  catch (error) {
-
-    console.error(
-      "Sicherer Start:",
-      error
-    );
-
-    currentUser = null;
-    currentProfile = null;
-    portalInitialized = false;
-    initializationRunning = false;
-
-    showAuthScreen();
-    showLogin();
-
   }
 
 }
