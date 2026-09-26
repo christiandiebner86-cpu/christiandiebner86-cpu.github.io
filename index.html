@@ -4137,7 +4137,7 @@ async function loadAdminProfiles() {
           </td>
 
           <td>
-            ${`<select class="admin-inline-select" onchange="setQmProfileTeam('${escapeHTML(profile.id)}',this.value)">${selectInner}</select>`}
+            ${`<select class="admin-inline-select" onchange="setQmProfileTeam('${escapeHTML(profile.id)}',this.value)">${qmTeamOptions(profile.team||"")}</select>`}
           </td>
 
           <td>
