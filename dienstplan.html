@@ -978,6 +978,19 @@ button.danger{
 <span class="swatch" style="background:#bfdbfe;border:1px solid #3b82f6"></span><span class="small">B = Büro 07:00–15:30</span>
 <span class="swatch" style="background:#a7f3d0;border:1px solid #10b981"></span><span class="small">HO = Home-Office</span>
 </div><div class="legend"><span class="swatch" style="background:#fff;border:3px solid #ef4444"></span><span class="small">Überschneidung</span><span class="swatch" style="background:#fff;border:3px solid #eab308"></span><span class="small">Teamleiter-Änderung</span></div>
+<div id="adminOwnWishCard" class="card hidden" style="background:#f8fafc;margin-top:12px">
+  <h3>Mein eigener Dienstwunschplan als Admin</h3>
+  <div class="small">Auch Admins können einen eigenen Dienstwunschplan führen. Dafür muss dem Admin im QM-Portal ein Team zugeordnet sein.</div>
+  <div id="adminOwnStatus" style="margin:10px 0"></div>
+  <div id="adminOwnNoTeam" class="notice hidden" style="background:#fff7ed;color:#9a3412">
+    Bitte dem Admin zuerst im QM-Portal ein Team zuweisen.
+  </div>
+  <div class="table-wrap"><table id="adminOwnTable"></table></div>
+  <div class="actions">
+    <button class="primary" onclick="submitAdminOwn()">Eigenen Wunschplan abgeben</button>
+    <button class="warning" onclick="reopenAdminOwn()">Eigene Abgabe zurücknehmen</button>
+  </div>
+</div>
 <div id="adminApprovalStatus" style="margin:12px 0"></div><div class="actions"><button class="secondary" onclick="openTimesheetAdmin()">🕒 Stundenzettel – Admin</button><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div><div class="table-wrap"><table id="adminTable"></table></div>
 </div>
 <div class="card"><h3>Änderungsprotokoll Admin</h3><div class="table-wrap"><table class="log" id="adminLog"></table></div></div>
@@ -2555,16 +2568,17 @@ function validateWishFree(u,m,day,newValue){
 }
 
 async function change(u,m,day,value,actorRole,actorName){
-  if(isSpringerTeam(USERS[u]?.team) && actorRole==="employee" && (value==="T"||value==="N")){
+  const ownEntry = actorRole==="employee" || actorRole==="adminSelf";
+  if(isSpringerTeam(USERS[u]?.team) && ownEntry && (value==="T"||value==="N")){
     alert("Im Springer-Team dürfen keine Tag- oder Nachtdienstwünsche eingetragen werden.");
-    renderEmp();
+    if(actorRole==="adminSelf")renderAdmin(); else renderEmp();
     return;
   }
-  if(actorRole==="employee"){
+  if(ownEntry){
     const check=validateWishFree(u,m,day,value);
     if(!check.ok){
       alert(check.msg);
-      renderEmp();
+      if(actorRole==="adminSelf")renderAdmin(); else renderEmp();
       return;
     }
   }
@@ -2584,7 +2598,7 @@ async function change(u,m,day,value,actorRole,actorName){
     // Admin-Änderungen lassen die Teamleiter-Freigabe bestehen.
     // Mitarbeiterbestätigungen werden ebenfalls nicht automatisch zurückgesetzt.
   }
-  if(actorRole!=="employee")s.logs.push({time:new Date().toISOString(),month:m,user:u,employee:USERS[u].name,team:USERS[u].team,day,oldValue:old,newValue:value,actorRole,actorName});
+  if(actorRole!=="employee" && actorRole!=="adminSelf")s.logs.push({time:new Date().toISOString(),month:m,user:u,employee:USERS[u].name,team:USERS[u].team,day,oldValue:old,newValue:value,actorRole,actorName});
   save(s);
 
   try{
@@ -2679,6 +2693,8 @@ function optionsForUser(u,current){
     "":"–",
     "T":"TD",
     "N":"ND",
+    "B":"B",
+    "HO":"HO",
     "WF":"WF",
     "Urlaub":"U",
     "Flex":"F"
@@ -2712,12 +2728,13 @@ function tableFor(users,m,mode){
   for(let d=1;d<=count;d++)h+=`<th class="${weekend(m,d)?"weekend":""}"><div class="day">${d}</div><div class="weekday">${weekday(m,d)}</div></th>`;
   h+="</tr></thead><tbody>";
   users.forEach(([u,info])=>{
-    const r=getRec(u,m);if(mode!=="employee"&&mode!=="leaderSelf"&&!r.submitted)return;
+    const r=getRec(u,m);if(mode!=="employee"&&mode!=="leaderSelf"&&mode!=="adminSelf"&&!r.submitted)return;
     h+=`<tr><th>${esc(info.name)}<div class="small">${esc(info.team)} ${r.submitted?"· abgegeben":"· offen"}</div></th>`;
     for(let d=1;d<=count;d++){
-      const disabled=(mode==="employee"||mode==="leaderSelf")&&r.submitted;
+      const disabled=(mode==="employee"||mode==="leaderSelf"||mode==="adminSelf")&&r.submitted;
       const actor=mode==="leader"?`change('${u}','${m}',${d},this.value,'leader','Teamleitung ${esc(info.team)}').then(()=>renderLead())`
         :mode==="admin"?`change('${u}','${m}',${d},this.value,'admin','Admin').then(()=>renderAdmin())`
+        :mode==="adminSelf"?`change('${u}','${m}',${d},this.value,'adminSelf','${esc(info.name)}').then(()=>renderAdmin())`
         :mode==="leaderSelf"?`change('${u}','${m}',${d},this.value,'employee','${esc(info.name)}').then(()=>renderLead())`
         :`change('${u}','${m}',${d},this.value,'employee','${esc(info.name)}')`;
 
@@ -3030,10 +3047,101 @@ function renderLead(){
   document.getElementById("leaderApprovalStatus").innerHTML=status;
   renderLog("leadLog",m,session.team,true);
 }
+async function submitAdminOwn(){
+  if(!session.user || !USERS[session.user])return;
+  const info=USERS[session.user];
+  if(!info.team || info.team==="Nicht zugeordnet"){
+    alert("Bitte dem Admin zuerst im QM-Portal ein Team zuweisen.");
+    return;
+  }
+
+  const m=document.getElementById("adminMonth").value;
+  const s=state(),k=recKey(session.user,m),r=getRec(session.user,m);
+  r.submitted=true;
+  r.submittedAt=new Date().toISOString();
+  s.plans[k]=r;
+  save(s);
+
+  try{
+    await qmSavePlanForUser(session.user,m);
+  }catch(error){
+    console.error("Admin-Eigenplan abgeben:",error);
+    alert("Die eigene Abgabe konnte nicht zentral gespeichert werden: "+(error.message||"Unbekannter Fehler"));
+    return;
+  }
+  renderAdmin();
+}
+
+async function reopenAdminOwn(){
+  if(!session.user || !USERS[session.user])return;
+  const info=USERS[session.user];
+  if(!info.team || info.team==="Nicht zugeordnet"){
+    alert("Bitte dem Admin zuerst im QM-Portal ein Team zuweisen.");
+    return;
+  }
+
+  const m=document.getElementById("adminMonth").value;
+  const s=state(),k=recKey(session.user,m),r=getRec(session.user,m);
+  const a=getApproval(info.team,m);
+
+  if(a.adminApproved){
+    if(!confirm(
+      "Dieser Dienstplan wurde bereits final bestätigt.\n\n"+
+      "Wenn du deine eigene Abgabe zurücknimmst, wird die Admin-Bestätigung für das Team aufgehoben.\n\nFortfahren?"
+    ))return;
+    try{
+      await qmInvalidateAdminApprovalAfterOwnReopen(info.team,m);
+      await qmLoadTeamApprovals(m);
+    }catch(error){
+      alert("Die Admin-Freigabe konnte nicht zurückgesetzt werden: "+(error.message||"Unbekannter Fehler"));
+      return;
+    }
+  }
+
+  r.submitted=false;
+  r.submittedAt=null;
+  s.plans[k]=r;
+  save(s);
+
+  try{
+    await qmSavePlanForUser(session.user,m);
+  }catch(error){
+    console.error("Admin-Eigenplan zurücknehmen:",error);
+    alert("Die Rücknahme konnte nicht zentral gespeichert werden: "+(error.message||"Unbekannter Fehler"));
+    return;
+  }
+  renderAdmin();
+}
+
 function renderAdmin(){
   const m=document.getElementById("adminMonth").value;
   const t=document.getElementById("adminTeam").value;
   const users=Object.entries(USERS).filter(([u,i])=>t==="ALL"||i.team===t);
+
+  const ownCard=document.getElementById("adminOwnWishCard");
+  const ownNoTeam=document.getElementById("adminOwnNoTeam");
+  const ownStatus=document.getElementById("adminOwnStatus");
+  const ownTable=document.getElementById("adminOwnTable");
+
+  if(session.user && USERS[session.user]){
+    ownCard.classList.remove("hidden");
+    const info=USERS[session.user];
+    const hasTeam=!!info.team && info.team!=="Nicht zugeordnet";
+    ownNoTeam.classList.toggle("hidden",hasTeam);
+
+    if(hasTeam){
+      const own=getRec(session.user,m);
+      ownStatus.innerHTML=own.submitted
+        ? `<span class="badge ok">Eigener Dienstwunschplan abgegeben · ${esc(info.team)}</span>`
+        : `<span class="badge wait">Eigener Dienstwunschplan noch offen · ${esc(info.team)}</span>`;
+      ownTable.innerHTML=tableFor([[session.user,info]],m,"adminSelf");
+    }else{
+      ownStatus.innerHTML='<span class="badge wait">Noch keinem Team zugeordnet</span>';
+      ownTable.innerHTML="";
+    }
+  }else{
+    ownCard.classList.add("hidden");
+  }
 
   if(document.getElementById("adminSuggestions"))document.getElementById("adminSuggestions").innerHTML="";
   document.getElementById("adminTable").innerHTML=tableFor(users,m,"admin");
@@ -3044,7 +3152,8 @@ function renderAdmin(){
     const a=getApproval(team,m);
     const members=teamUsers(team);
     const submitted=members.filter(([u])=>getRec(u,m).submitted).length;
-    const confirmed=members.filter(([u])=>
+    const confirmableMembers=members.filter(([u,i])=>!i.isAdmin);
+    const confirmed=confirmableMembers.filter(([u])=>
       a.employeeConfirmations &&
       a.employeeConfirmations[u] &&
       a.employeeConfirmations[u].confirmed
@@ -3056,7 +3165,7 @@ function renderAdmin(){
       statusHtml=`
         <div class="workflow-approved">
           <b>✅ Dienstplan bestätigt</b>
-          <div class="small">${confirmed}/${members.length} Mitarbeitende haben den finalen Dienstplan bestätigt.</div>
+          <div class="small">${confirmed}/${confirmableMembers.length} Mitarbeitende haben den finalen Dienstplan bestätigt.</div>
           <div class="workflow-admin-buttons" style="margin-top:10px">
             <button class="warning workflow-main-button" onclick="adminRevokeTeamApproval('${team}','${m}')">
               ↩️ Admin-Bestätigung zurücknehmen
@@ -3282,14 +3391,15 @@ function qmReplaceUsers(rows){
 
   (rows || []).forEach(p=>{
     if(!p || !p.id || !p.active) return;
-    if(p.role!=="mitarbeiter" && p.role!=="teamleitung") return;
+    if(p.role!=="mitarbeiter" && p.role!=="teamleitung" && p.role!=="admin") return;
 
     const key=qmUserKey(p.id);
     USERS[key]={
       id:p.id,
       name:p.name || "Ohne Namen",
       team:p.team || "Nicht zugeordnet",
-      isLeader:p.role==="teamleitung"
+      isLeader:p.role==="teamleitung",
+      isAdmin:p.role==="admin"
     };
   });
 }
@@ -3329,20 +3439,21 @@ async function qmLoadDutyUsers(currentProfile){
 
   qmReplaceUsers(rpcResult.data || []);
 
-  // Sicherstellen, dass der aktuell angemeldete Mitarbeiter/Teamleiter
-  // auch dann vorhanden ist, wenn noch kein Team gesetzt wurde.
+  // Sicherstellen, dass der aktuell angemeldete Benutzer – auch ein Admin –
+  // für den eigenen Dienstwunschplan vorhanden ist.
   if(
     currentProfile &&
     currentProfile.id &&
-    (currentProfile.role==="mitarbeiter" || currentProfile.role==="teamleitung")
+    (currentProfile.role==="mitarbeiter" || currentProfile.role==="teamleitung" || currentProfile.role==="admin")
   ){
     const key=qmUserKey(currentProfile.id);
     if(!USERS[key]){
       USERS[key]={
         id:currentProfile.id,
-        name:currentProfile.name || "Mitarbeiter",
+        name:currentProfile.name || (currentProfile.role==="admin" ? "Administrator" : "Mitarbeiter"),
         team:currentProfile.team || "Nicht zugeordnet",
-        isLeader:currentProfile.role==="teamleitung"
+        isLeader:currentProfile.role==="teamleitung",
+        isAdmin:currentProfile.role==="admin"
       };
     }
   }
@@ -3537,7 +3648,7 @@ async function qmOpenDutyPlanner(){
     qmShowPortal(profile);
 
     if(profile.role==="admin"){
-      session={role:"admin"};
+      session={role:"admin",user:qmUserKey(profile.id),team:profile.team || null};
       document.getElementById("adminMonth").value=nowMonth();
       await qmLoadPlansForMonth(nowMonth());
       await qmLoadTeamApprovals(nowMonth());
