@@ -2529,12 +2529,6 @@ async function adminSubmitAsTeamLeader(team,m){
 }
 
 async function adminApproveTeam(team,m){
-  const directOwner=directAdminTeamOwner(team);
-  if(directOwner && directOwner===session.user){
-    alert("Deinen eigenen Dienstwunschplan muss ein anderer Admin bestätigen.");
-    return;
-  }
-
   const a=getApproval(team,m);
   if(!a.leaderApproved){
     alert("Die Teamleitung hat diesen Dienstwunschplan noch nicht an den Admin gesendet.");
@@ -3231,11 +3225,22 @@ function renderAdmin(){
 
       if(own.submitted && info.isLeader!==true){
         if(ownApproval.adminApproved){
-          ownStatus.innerHTML=`<span class="badge ok">Von einem anderen Admin bestätigt · ${esc(info.team)}</span>`;
+          ownStatus.innerHTML=`
+            <span class="badge ok">Eigener Dienstplan bestätigt · ${esc(info.team)}</span>
+          `;
         }else if(ownApproval.adminRejected){
-          ownStatus.innerHTML=`<span class="badge wait">Vom Admin abgelehnt – bitte überarbeiten · ${esc(info.team)}</span>`;
+          ownStatus.innerHTML=`
+            <span class="badge wait">Dienstwunschplan abgelehnt – bitte überarbeiten · ${esc(info.team)}</span>
+          `;
         }else if(ownApproval.leaderApproved){
-          ownStatus.innerHTML=`<span class="badge wait">An einen anderen Admin zur Bestätigung gesendet · ${esc(info.team)}</span>`;
+          ownStatus.innerHTML=`
+            <span class="badge wait">Bereit zur Admin-Bestätigung · ${esc(info.team)}</span>
+            <div class="workflow-admin-buttons" style="margin-top:10px">
+              <button type="button" class="primary workflow-main-button" onclick="adminApproveTeam('${info.team}','${m}')">
+                ✅ Eigenen Dienstplan bestätigen
+              </button>
+            </div>
+          `;
         }else{
           ownStatus.innerHTML=`<span class="badge wait">Eigener Dienstwunschplan abgegeben · ${esc(info.team)}</span>`;
         }
@@ -3280,14 +3285,12 @@ function renderAdmin(){
         ? `
           <div class="workflow-approved">
             <b>✅ Persönlicher Dienstplan bestätigt</b>
-            <div class="small">Der Dienstwunschplan wurde von einem anderen Admin final bestätigt.</div>
-            ${isOwnDirectPlan
-              ? ""
-              : `<div class="workflow-admin-buttons" style="margin-top:10px">
-                   <button class="warning workflow-main-button" onclick="adminRevokeTeamApproval('${team}','${m}')">
-                     ↩️ Admin-Bestätigung zurücknehmen
-                   </button>
-                 </div>`}
+            <div class="small">Der Dienstwunschplan ist final bestätigt.</div>
+            <div class="workflow-admin-buttons" style="margin-top:10px">
+              <button class="warning workflow-main-button" onclick="adminRevokeTeamApproval('${team}','${m}')">
+                ↩️ Bestätigung zurücknehmen
+              </button>
+            </div>
           </div>`
         : `
           <div class="workflow-approved">
@@ -3315,19 +3318,19 @@ function renderAdmin(){
             <b>⏳ Direkte Admin-Bestätigung erforderlich</b>
             <div class="small" style="margin:5px 0 10px">
               ${isOwnDirectPlan
-                ? "Dein eigener Dienstwunschplan wartet auf die Bestätigung durch einen anderen Admin."
+                ? "Du kannst deinen eigenen Dienstwunschplan jetzt selbst bestätigen."
                 : "Dieser persönliche Dienstwunschplan wurde ohne Teamleitungsstufe direkt zur Admin-Bestätigung eingereicht."}
             </div>
-            ${isOwnDirectPlan
-              ? ""
-              : `<div class="workflow-admin-buttons">
-                   <button class="primary workflow-main-button" onclick="adminApproveTeam('${team}','${m}')">
-                     ✅ Bestätigen – wird Dienstplan
-                   </button>
-                   <button class="danger workflow-main-button" onclick="adminRejectTeam('${team}','${m}')">
+            <div class="workflow-admin-buttons">
+              <button class="primary workflow-main-button" onclick="adminApproveTeam('${team}','${m}')">
+                ✅ ${isOwnDirectPlan ? "Eigenen Dienstplan bestätigen" : "Bestätigen – wird Dienstplan"}
+              </button>
+              ${isOwnDirectPlan
+                ? ""
+                : `<button class="danger workflow-main-button" onclick="adminRejectTeam('${team}','${m}')">
                      ❌ Ablehnen
-                   </button>
-                 </div>`}
+                   </button>`}
+            </div>
           </div>`
         : `
           <div class="workflow-wait">
