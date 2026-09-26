@@ -3353,7 +3353,7 @@ async function qmOpenDutyPlanner(){
     qmSupabase=window.supabase.createClient(
       QM_SUPABASE_URL,
       QM_SUPABASE_PUBLISHABLE_KEY,
-      {auth:{persistSession:true,storage:window.sessionStorage,autoRefreshToken:true,detectSessionInUrl:true}}
+      {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
     );
 
     const userResult=await qmSupabase.auth.getUser();
