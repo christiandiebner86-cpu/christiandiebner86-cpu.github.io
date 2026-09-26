@@ -2456,6 +2456,41 @@ async function approveTeamPlan(){
   }
 }
 
+function directAdminTeamOwner(team){
+  const members=teamUsers(team);
+  if(members.length!==1)return null;
+  const [u,info]=members[0];
+  return info && info.isAdmin===true && info.isLeader!==true ? u : null;
+}
+
+async function qmMarkAdminOwnForApproval(team,m){
+  const result=await qmSupabase.rpc(
+    "save_dutyplan_team_status",
+    {
+      p_team:team,
+      p_month:m,
+      p_leader_approved:true,
+      p_admin_approved:false,
+      p_employee_confirmations:{}
+    }
+  );
+  if(result.error)throw result.error;
+}
+
+async function qmResetAdminOwnApproval(team,m){
+  const result=await qmSupabase.rpc(
+    "save_dutyplan_team_status",
+    {
+      p_team:team,
+      p_month:m,
+      p_leader_approved:false,
+      p_admin_approved:false,
+      p_employee_confirmations:{}
+    }
+  );
+  if(result.error)throw result.error;
+}
+
 async function adminSubmitAsTeamLeader(team,m){
   if(
     session.role!=="admin" ||
@@ -2494,6 +2529,12 @@ async function adminSubmitAsTeamLeader(team,m){
 }
 
 async function adminApproveTeam(team,m){
+  const directOwner=directAdminTeamOwner(team);
+  if(directOwner && directOwner===session.user){
+    alert("Deinen eigenen Dienstwunschplan muss ein anderer Admin bestätigen.");
+    return;
+  }
+
   const a=getApproval(team,m);
   if(!a.leaderApproved){
     alert("Die Teamleitung hat diesen Dienstwunschplan noch nicht an den Admin gesendet.");
@@ -2526,6 +2567,12 @@ async function adminApproveTeam(team,m){
 }
 
 async function adminRejectTeam(team,m){
+  const directOwner=directAdminTeamOwner(team);
+  if(directOwner && directOwner===session.user){
+    alert("Deinen eigenen Dienstwunschplan muss ein anderer Admin bearbeiten.");
+    return;
+  }
+
   const a=getApproval(team,m);
   if(!a.leaderApproved){
     alert("Die Teamleitung hat diesen Dienstwunschplan noch nicht an den Admin gesendet.");
@@ -3101,9 +3148,16 @@ async function submitAdminOwn(){
 
   try{
     await qmSavePlanForUser(session.user,m);
+
+    // PDL / Verwaltung haben keine Teamleitungsstufe:
+    // Nach der eigenen Abgabe geht der Plan direkt in die Admin-Bestätigung.
+    if(info.isLeader!==true){
+      await qmMarkAdminOwnForApproval(info.team,m);
+      await qmLoadTeamApprovals(m);
+    }
   }catch(error){
     console.error("Admin-Eigenplan abgeben:",error);
-    alert("Die eigene Abgabe konnte nicht zentral gespeichert werden: "+(error.message||"Unbekannter Fehler"));
+    alert("Die eigene Abgabe konnte nicht vollständig gespeichert/weitergeleitet werden: "+(error.message||"Unbekannter Fehler"));
     return;
   }
   renderAdmin();
@@ -3142,9 +3196,14 @@ async function reopenAdminOwn(){
 
   try{
     await qmSavePlanForUser(session.user,m);
+
+    if(info.isLeader!==true){
+      await qmResetAdminOwnApproval(info.team,m);
+      await qmLoadTeamApprovals(m);
+    }
   }catch(error){
     console.error("Admin-Eigenplan zurücknehmen:",error);
-    alert("Die Rücknahme konnte nicht zentral gespeichert werden: "+(error.message||"Unbekannter Fehler"));
+    alert("Die Rücknahme konnte nicht vollständig gespeichert werden: "+(error.message||"Unbekannter Fehler"));
     return;
   }
   renderAdmin();
@@ -3168,9 +3227,24 @@ function renderAdmin(){
 
     if(hasTeam){
       const own=getRec(session.user,m);
-      ownStatus.innerHTML=own.submitted
-        ? `<span class="badge ok">Eigener Dienstwunschplan abgegeben · ${esc(info.team)}</span>`
-        : `<span class="badge wait">Eigener Dienstwunschplan noch offen · ${esc(info.team)}</span>`;
+      const ownApproval=getApproval(info.team,m);
+
+      if(own.submitted && info.isLeader!==true){
+        if(ownApproval.adminApproved){
+          ownStatus.innerHTML=`<span class="badge ok">Von einem anderen Admin bestätigt · ${esc(info.team)}</span>`;
+        }else if(ownApproval.adminRejected){
+          ownStatus.innerHTML=`<span class="badge wait">Vom Admin abgelehnt – bitte überarbeiten · ${esc(info.team)}</span>`;
+        }else if(ownApproval.leaderApproved){
+          ownStatus.innerHTML=`<span class="badge wait">An einen anderen Admin zur Bestätigung gesendet · ${esc(info.team)}</span>`;
+        }else{
+          ownStatus.innerHTML=`<span class="badge wait">Eigener Dienstwunschplan abgegeben · ${esc(info.team)}</span>`;
+        }
+      }else{
+        ownStatus.innerHTML=own.submitted
+          ? `<span class="badge ok">Eigener Dienstwunschplan abgegeben · ${esc(info.team)}</span>`
+          : `<span class="badge wait">Eigener Dienstwunschplan noch offen · ${esc(info.team)}</span>`;
+      }
+
       ownTable.innerHTML=tableFor([[session.user,info]],m,"adminSelf");
     }else{
       ownStatus.innerHTML='<span class="badge wait">Noch keinem Team zugeordnet</span>';
@@ -3188,6 +3262,9 @@ function renderAdmin(){
   document.getElementById("adminApprovalStatus").innerHTML=teams.map(team=>{
     const a=getApproval(team,m);
     const members=teamUsers(team);
+    const directOwner=directAdminTeamOwner(team);
+    const isDirectAdminTeam=!!directOwner;
+    const isOwnDirectPlan=isDirectAdminTeam && directOwner===session.user;
     const submitted=members.filter(([u])=>getRec(u,m).submitted).length;
     const confirmableMembers=members.filter(([u,i])=>!i.isAdmin);
     const confirmed=confirmableMembers.filter(([u])=>
@@ -3199,37 +3276,72 @@ function renderAdmin(){
     let statusHtml="";
 
     if(a.adminApproved){
-      statusHtml=`
-        <div class="workflow-approved">
-          <b>✅ Dienstplan bestätigt</b>
-          <div class="small">${confirmed}/${confirmableMembers.length} Mitarbeitende haben den finalen Dienstplan bestätigt.</div>
-          <div class="workflow-admin-buttons" style="margin-top:10px">
-            <button class="warning workflow-main-button" onclick="adminRevokeTeamApproval('${team}','${m}')">
-              ↩️ Admin-Bestätigung zurücknehmen
-            </button>
-          </div>
-        </div>`;
+      statusHtml=isDirectAdminTeam
+        ? `
+          <div class="workflow-approved">
+            <b>✅ Persönlicher Dienstplan bestätigt</b>
+            <div class="small">Der Dienstwunschplan wurde von einem anderen Admin final bestätigt.</div>
+            ${isOwnDirectPlan
+              ? ""
+              : `<div class="workflow-admin-buttons" style="margin-top:10px">
+                   <button class="warning workflow-main-button" onclick="adminRevokeTeamApproval('${team}','${m}')">
+                     ↩️ Admin-Bestätigung zurücknehmen
+                   </button>
+                 </div>`}
+          </div>`
+        : `
+          <div class="workflow-approved">
+            <b>✅ Dienstplan bestätigt</b>
+            <div class="small">${confirmed}/${confirmableMembers.length} Mitarbeitende haben den finalen Dienstplan bestätigt.</div>
+            <div class="workflow-admin-buttons" style="margin-top:10px">
+              <button class="warning workflow-main-button" onclick="adminRevokeTeamApproval('${team}','${m}')">
+                ↩️ Admin-Bestätigung zurücknehmen
+              </button>
+            </div>
+          </div>`;
     }else if(a.adminRejected){
       statusHtml=`
         <div class="workflow-rejected">
           <b>❌ Vom Admin abgelehnt</b>
           ${a.adminRejectionNote?`<div class="small"><b>Hinweis:</b> ${esc(a.adminRejectionNote)}</div>`:""}
-          <div class="small">Wartet auf erneute Bearbeitung/Einreichung durch die Teamleitung.</div>
+          <div class="small">${isDirectAdminTeam
+            ? "Wartet auf Überarbeitung und erneute Abgabe."
+            : "Wartet auf erneute Bearbeitung/Einreichung durch die Teamleitung."}</div>
         </div>`;
     }else if(a.leaderApproved){
-      statusHtml=`
-        <div class="workflow-wait">
-          <b>⏳ Teamleitung hat geprüft – Entscheidung erforderlich</b>
-          <div class="small" style="margin:5px 0 10px">Der Dienstwunschplan wurde an den Admin gesendet.</div>
-          <div class="workflow-admin-buttons">
-            <button class="primary workflow-main-button" onclick="adminApproveTeam('${team}','${m}')">
-              ✅ Bestätigen – wird Dienstplan
-            </button>
-            <button class="danger workflow-main-button" onclick="adminRejectTeam('${team}','${m}')">
-              ❌ Ablehnen
-            </button>
-          </div>
-        </div>`;
+      statusHtml=isDirectAdminTeam
+        ? `
+          <div class="workflow-wait">
+            <b>⏳ Direkte Admin-Bestätigung erforderlich</b>
+            <div class="small" style="margin:5px 0 10px">
+              ${isOwnDirectPlan
+                ? "Dein eigener Dienstwunschplan wartet auf die Bestätigung durch einen anderen Admin."
+                : "Dieser persönliche Dienstwunschplan wurde ohne Teamleitungsstufe direkt zur Admin-Bestätigung eingereicht."}
+            </div>
+            ${isOwnDirectPlan
+              ? ""
+              : `<div class="workflow-admin-buttons">
+                   <button class="primary workflow-main-button" onclick="adminApproveTeam('${team}','${m}')">
+                     ✅ Bestätigen – wird Dienstplan
+                   </button>
+                   <button class="danger workflow-main-button" onclick="adminRejectTeam('${team}','${m}')">
+                     ❌ Ablehnen
+                   </button>
+                 </div>`}
+          </div>`
+        : `
+          <div class="workflow-wait">
+            <b>⏳ Teamleitung hat geprüft – Entscheidung erforderlich</b>
+            <div class="small" style="margin:5px 0 10px">Der Dienstwunschplan wurde an den Admin gesendet.</div>
+            <div class="workflow-admin-buttons">
+              <button class="primary workflow-main-button" onclick="adminApproveTeam('${team}','${m}')">
+                ✅ Bestätigen – wird Dienstplan
+              </button>
+              <button class="danger workflow-main-button" onclick="adminRejectTeam('${team}','${m}')">
+                ❌ Ablehnen
+              </button>
+            </div>
+          </div>`;
     }else{
       const canSubmitAsLeader=
         session.role==="admin" &&
@@ -3239,7 +3351,7 @@ function renderAdmin(){
 
       statusHtml=`
         <div>
-          <b>Noch nicht von Teamleitung eingereicht</b>
+          <b>${isDirectAdminTeam ? "Noch nicht zur Admin-Bestätigung eingereicht" : "Noch nicht von Teamleitung eingereicht"}</b>
           <div class="small">${submitted}/${members.length} Dienstwunschpläne wurden abgegeben.</div>
           ${canSubmitAsLeader
             ? `<div class="small" style="margin-top:7px"><b>Du bist für dieses Team zusätzlich als Teamleitung hinterlegt.</b></div>
