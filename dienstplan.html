@@ -642,6 +642,43 @@ button.danger{
   min-width:1850px !important;
   width:max-content !important;
 }
+.ts-scroll-controls{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin:6px 0 8px;
+}
+.ts-scroll-controls button{
+  flex:1;
+  min-height:44px;
+  border:1px solid #cbd5e1;
+  border-radius:10px;
+  background:#f8fafc;
+  font-weight:800;
+  font-size:15px;
+  cursor:pointer;
+}
+.ts-scroll-controls .ts-scroll-hint{
+  flex:1.2;
+  text-align:center;
+  font-size:12px;
+  color:#64748b;
+}
+.timesheet-grid .ts-bottom-scroll,
+.timesheet-grid .ts-top-scroll{
+  touch-action:pan-x !important;
+}
+@media(max-width:700px){
+  .ts-scroll-controls{
+    position:sticky;
+    left:0;
+    z-index:6;
+  }
+  .ts-scroll-controls .ts-scroll-hint{
+    display:none;
+  }
+}
 
 
 /* V34 – geänderte Stundenzettel-Zeilen */
@@ -1466,7 +1503,7 @@ function applyTimesheetServiceDefaults(row,service,month,day){
   if(code==="TD"){
     Object.assign(row,{start:"07:00",end:"19:00",breakMin:1,standbyBreak:1});
   }else if(code==="B" || code==="BÜRO" || code==="BUERO"){
-    Object.assign(row,{start:"07:00",end:"15:30",breakMin:0,standbyBreak:0});
+    Object.assign(row,{start:"07:00",end:"15:30",breakMin:0.5,standbyBreak:0});
   }else if(code==="HO" || code==="HOME-OFFICE" || code==="HOMEOFFICE"){
     Object.assign(row,{start:"",end:"",breakMin:0,standbyBreak:0});
   }else if(code==="ND"){
@@ -1571,7 +1608,7 @@ function timesheetRowsFromApprovedPlan(month,entries){
       row.service="B";
       row.start="07:00";
       row.end="15:30";
-      row.breakMin=0;
+      row.breakMin=0.5;
       row.standbyBreak=0;
     }else if(["HO","HOME-OFFICE","HOMEOFFICE"].includes(shift)){
       row.service="HO";
@@ -1606,7 +1643,7 @@ async function loadMyTimesheet(month){
     return;
   }
 
-  let rows=row.rows||{};
+  let rows=normalizeOfficeTimesheetRows(row.rows||{});
   let importedFromPlan=false;
 
   // Nur bei einem noch nicht angelegten Stundenzettel vorausfüllen.
@@ -1692,9 +1729,27 @@ function surchargeCellsReadOnly(s){
 }
 
 
+function normalizeOfficeTimesheetRows(rows){
+  const source=rows||{};
+  Object.values(source).forEach(row=>{
+    if(!row || typeof row!=="object")return;
+    const code=String(row.service||"").trim().toUpperCase();
+    if(
+      ["B","BÜRO","BUERO"].includes(code) &&
+      String(row.start||"")==="07:00" &&
+      String(row.end||"")==="15:30" &&
+      Number(row.breakMin||0)===0
+    ){
+      row.breakMin=0.5;
+    }
+  });
+  return source;
+}
+
 function expectedTimesheetHours(service,month,day){
   const code=String(service||"").trim().toUpperCase();
   if(code==="ND" && month && Number(day)===daysInMonth(month))return 5;
+  if(["B","BÜRO","BUERO"].includes(code))return 8;
   return (code==="TD"||code==="ND") ? 11 : null;
 }
 function timesheetNeedsReason(row,month,day){
@@ -1820,7 +1875,10 @@ async function refreshTimesheetAdmin(){
   try{
     const result=await qmSupabase.rpc("get_admin_timesheets_v5",{p_month:m});
     if(result.error)throw result.error;
-    window.qmAdminTimesheets=result.data||[];
+    window.qmAdminTimesheets=(result.data||[]).map(row=>({
+      ...row,
+      rows:normalizeOfficeTimesheetRows(row.rows||{})
+    }));
     renderTimesheetAdmin();
   }catch(error){
     alert("Stundenzettel konnten nicht geladen werden: "+(error.message||"Unbekannter Fehler"));
@@ -2146,6 +2204,37 @@ function setupTimesheetDualScroll(root=document){
     inner.className="ts-top-scroll-inner";
     top.appendChild(inner);
     grid.insertBefore(top,bottom);
+
+    const controls=document.createElement("div");
+    controls.className="ts-scroll-controls";
+
+    const leftBtn=document.createElement("button");
+    leftBtn.type="button";
+    leftBtn.textContent="← Nach links";
+
+    const hint=document.createElement("div");
+    hint.className="ts-scroll-hint";
+    hint.textContent="Tabelle seitlich verschieben";
+
+    const rightBtn=document.createElement("button");
+    rightBtn.type="button";
+    rightBtn.textContent="Nach rechts →";
+
+    controls.append(leftBtn,hint,rightBtn);
+    grid.insertBefore(controls,top);
+
+    const scrollByPage=(direction)=>{
+      const amount=Math.max(260,Math.round(bottom.clientWidth*0.8))*direction;
+      if(typeof bottom.scrollBy==="function"){
+        bottom.scrollBy({left:amount,behavior:"smooth"});
+      }else{
+        bottom.scrollLeft+=amount;
+      }
+      setTimeout(()=>{ top.scrollLeft=bottom.scrollLeft; },180);
+    };
+
+    leftBtn.addEventListener("click",()=>scrollByPage(-1));
+    rightBtn.addEventListener("click",()=>scrollByPage(1));
 
     const updateWidth=()=>{
       inner.style.width=table.scrollWidth+"px";
