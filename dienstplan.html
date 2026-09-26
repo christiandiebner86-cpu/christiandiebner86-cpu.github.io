@@ -20,7 +20,7 @@ table{border-collapse:separate;border-spacing:0;min-width:2100px;width:100%;back
 thead th{position:sticky;top:0;background:#eef2f7;z-index:3;height:58px;min-width:62px}thead th:first-child{left:0;z-index:5;min-width:200px}
 tbody th{position:sticky;left:0;background:#fff;z-index:2;min-width:200px;padding:8px;text-align:left}.day{font-weight:800}.weekday{font-size:11px;color:var(--muted)}
 .cell{width:100%;height:55px;border:0;background:transparent;text-align:center;outline:none}.cell:focus{box-shadow:inset 0 0 0 2px var(--accent);background:#eff6ff}.weekend{background:#f8fafc}
-.leader-edited{box-shadow:inset 0 0 0 3px #eab308!important}.conflict{box-shadow:inset 0 0 0 3px #ef4444!important}.dienst-tag{background:#86efac!important}.dienst-nacht{background:#fdba74!important}.dienst-wf{background:#fde047!important}.dienst-urlaub{background:#93c5fd!important}.dienst-flex{background:#d8b4fe!important}
+.leader-edited{box-shadow:inset 0 0 0 3px #eab308!important}.conflict{box-shadow:inset 0 0 0 3px #ef4444!important}.dienst-tag{background:#86efac!important}.dienst-nacht{background:#fdba74!important}.dienst-wf{background:#fde047!important}.dienst-urlaub{background:#93c5fd!important}.dienst-flex{background:#d8b4fe!important}.dienst-buero{background:#bfdbfe!important}.dienst-homeoffice{background:#a7f3d0!important}
 .log{width:100%;border-collapse:collapse;min-width:850px}.log th,.log td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}.log th{background:#f8fafc}
 .legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}.swatch{width:24px;height:18px;border-radius:4px;display:inline-block}
 @media(max-width:900px){.login-grid{grid-template-columns:1fr}main{padding:10px}.card{padding:12px}}
@@ -872,7 +872,7 @@ button.danger{
       Du bist über das QM-Portal angemeldet. Der Dienstwunschplan übernimmt diesen Login automatisch.
     </div>
 
-<header><h1>QM Dienstwunschplanung</h1><p>12-Stunden-Schichten: Tag 07:00–19:00 · Nacht 19:00–07:00 · mit Planungsvorschlägen</p></header>
+<header><h1>QM Dienstwunschplanung</h1><p>Tag 07:00–19:00 · Nacht 19:00–07:00 · Büro 07:00–15:30 · Home-Office · mit Planungsvorschlägen</p></header>
 <main>
 
 <section id="login" class="card">
@@ -905,6 +905,8 @@ button.danger{
 <span class="swatch" style="background:#fde047;border:1px solid #eab308"></span><span class="small">WF = Wunschfrei</span>
 <span class="swatch" style="background:#86efac;border:1px solid #22c55e"></span><span class="small">U = Urlaub</span>
 <span class="swatch" style="background:#d8b4fe;border:1px solid #a855f7"></span><span class="small">F = Flexibel</span>
+<span class="swatch" style="background:#bfdbfe;border:1px solid #3b82f6"></span><span class="small">B = Büro 07:00–15:30</span>
+<span class="swatch" style="background:#a7f3d0;border:1px solid #10b981"></span><span class="small">HO = Home-Office</span>
 </div>
 <div class="actions"><button class="primary" onclick="submitEmp()">Plan abgeben</button><button class="warning" onclick="reopenEmp()">Abgabe zurücknehmen</button><button id="employeeConfirmBtn" class="primary hidden" onclick="confirmFinalPlan()">Ich bin mit dem endgültigen Plan einverstanden</button><button class="secondary" onclick="openTimesheet()">🕒 Stundenzettel</button><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div>
 </div>
@@ -917,7 +919,7 @@ button.danger{
       <input id="leadMonth" type="month" onchange="refreshLead()">
       <button type="button" class="secondary" title="Nächster Monat" onclick="shiftPlanMonth('leadMonth',1,'refreshLead')">→</button>
     </div></div><button class="secondary" onclick="logout()">Abmelden</button></div>
-<div class="notice">Rot umrandet = Konflikt im Team. Das gilt für Überschneidungen bei Tagdienst, Nachtdienst, Wunschfrei und Urlaub sowie für die unzulässige Folge Nachtdienst → Tagdienst am nächsten Tag.</div>
+<div class="notice">Rot umrandet = Konflikt im Team. Das gilt für Überschneidungen bei Tagdienst, Nachtdienst, Wunschfrei und Urlaub sowie für die unzulässige Folge Nachtdienst → Tag-/Bürodienst am nächsten Tag.</div>
 <div class="card" style="background:#f8fafc">
   <h3>Planungsvorschläge</h3>
   <div class="toolbar">
@@ -934,6 +936,8 @@ button.danger{
 <span class="swatch" style="background:#fde047;border:1px solid #eab308"></span><span class="small">WF = Wunschfrei</span>
 <span class="swatch" style="background:#86efac;border:1px solid #22c55e"></span><span class="small">U = Urlaub</span>
 <span class="swatch" style="background:#d8b4fe;border:1px solid #a855f7"></span><span class="small">F = Flexibel</span>
+<span class="swatch" style="background:#bfdbfe;border:1px solid #3b82f6"></span><span class="small">B = Büro 07:00–15:30</span>
+<span class="swatch" style="background:#a7f3d0;border:1px solid #10b981"></span><span class="small">HO = Home-Office</span>
 </div><div class="legend"><span class="swatch" style="background:#fff;border:3px solid #ef4444"></span><span class="small">Überschneidung</span></div>
 <div id="leaderApprovalStatus" style="margin:12px 0"></div>
 <div id="leaderOwnWishCard" class="card" style="background:#f8fafc">
@@ -954,7 +958,7 @@ button.danger{
       <input id="adminMonth" type="month" onchange="refreshAdmin()">
       <button type="button" class="secondary" title="Nächster Monat" onclick="shiftPlanMonth('adminMonth',1,'refreshAdmin')">→</button>
     </div></div><div><label>Team</label><select id="adminTeam" onchange="renderAdmin()"><option value="ALL">Alle Teams</option></select></div><button class="secondary" onclick="logout()">Abmelden</button></div>
-<div class="notice">Tagdienst = grün, Nachtdienst = orange. Rot umrandet = Überschneidung oder Nachtdienst → Tagdienst am Folgetag. Gelb umrandet = von Teamleitung geändert.</div>
+<div class="notice">Tagdienst = grün, Nachtdienst = orange. Rot umrandet = Überschneidung oder Nachtdienst → Tag-/Bürodienst am Folgetag. Gelb umrandet = von Teamleitung geändert.</div>
 <div class="card" style="background:#f8fafc">
   <h3>Planungsvorschläge</h3>
   <div class="toolbar">
@@ -971,6 +975,8 @@ button.danger{
 <span class="swatch" style="background:#fde047;border:1px solid #eab308"></span><span class="small">WF = Wunschfrei</span>
 <span class="swatch" style="background:#86efac;border:1px solid #22c55e"></span><span class="small">U = Urlaub</span>
 <span class="swatch" style="background:#d8b4fe;border:1px solid #a855f7"></span><span class="small">F = Flexibel</span>
+<span class="swatch" style="background:#bfdbfe;border:1px solid #3b82f6"></span><span class="small">B = Büro 07:00–15:30</span>
+<span class="swatch" style="background:#a7f3d0;border:1px solid #10b981"></span><span class="small">HO = Home-Office</span>
 </div><div class="legend"><span class="swatch" style="background:#fff;border:3px solid #ef4444"></span><span class="small">Überschneidung</span><span class="swatch" style="background:#fff;border:3px solid #eab308"></span><span class="small">Teamleiter-Änderung</span></div>
 <div id="adminApprovalStatus" style="margin:12px 0"></div><div class="actions"><button class="secondary" onclick="openTimesheetAdmin()">🕒 Stundenzettel – Admin</button><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div><div class="table-wrap"><table id="adminTable"></table></div>
 </div>
@@ -1073,17 +1079,17 @@ function getRec(u,m){const s=state();return s.plans[recKey(u,m)]||{entries:{},su
 function days(m){const [y,mo]=m.split("-").map(Number);return new Date(y,mo,0).getDate()}
 function weekday(m,d){const [y,mo]=m.split("-").map(Number);return ["So","Mo","Di","Mi","Do","Fr","Sa"][new Date(y,mo-1,d).getDay()]}
 function weekend(m,d){const [y,mo]=m.split("-").map(Number),x=new Date(y,mo-1,d).getDay();return x===0||x===6}
-function options(v){return [["","–"],["T","Tagdienst"],["N","Nachtdienst"],["WF","Wunschfrei"],["Urlaub","Urlaub"],["Flex","Flexibel"]].map(([x,t])=>`<option value="${x}" ${x===v?"selected":""}>${t}</option>`).join("")}
+function options(v){return [["","–"],["T","Tagdienst"],["N","Nachtdienst"],["B","Büro 07:00–15:30"],["HO","Home-Office"],["WF","Wunschfrei"],["Urlaub","Urlaub"],["Flex","Flexibel"]].map(([x,t])=>`<option value="${x}" ${x===v?"selected":""}>${t}</option>`).join("")}
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 
 function dayAfterNightConflict(user,m,day){
   if(day<=1)return false;
   const r=getRec(user,m);
-  return (r.entries[day-1]||"")==="N" && (r.entries[day]||"")==="T";
+  return (r.entries[day-1]||"")==="N" && ["T","B"].includes(r.entries[day]||"");
 }
 function nightBeforeDayConflict(user,m,day){
   const r=getRec(user,m);
-  return (r.entries[day]||"")==="N" && (r.entries[day+1]||"")==="T";
+  return (r.entries[day]||"")==="N" && ["T","B"].includes(r.entries[day+1]||"");
 }
 function hasRestConflict(user,m,day){
   return dayAfterNightConflict(user,m,day) || nightBeforeDayConflict(user,m,day);
@@ -1290,6 +1296,10 @@ function applyTimesheetServiceDefaults(row,service,month,day){
   const lastDay=daysInMonth(month);
   if(code==="TD"){
     Object.assign(row,{start:"07:00",end:"19:00",breakMin:1,standbyBreak:1});
+  }else if(code==="B" || code==="BÜRO" || code==="BUERO"){
+    Object.assign(row,{start:"07:00",end:"15:30",breakMin:0,standbyBreak:0});
+  }else if(code==="HO" || code==="HOME-OFFICE" || code==="HOMEOFFICE"){
+    Object.assign(row,{start:"",end:"",breakMin:0,standbyBreak:0});
   }else if(code==="ND"){
     if(Number(day)===lastDay){
       Object.assign(row,{start:"19:00",end:"00:00",breakMin:0,standbyBreak:0});
@@ -1388,6 +1398,15 @@ function timesheetRowsFromApprovedPlan(month,entries){
       row.end="19:00";
       row.breakMin=1;
       row.standbyBreak=1;
+    }else if(["B","BÜRO","BUERO"].includes(shift)){
+      row.service="B";
+      row.start="07:00";
+      row.end="15:30";
+      row.breakMin=0;
+      row.standbyBreak=0;
+    }else if(["HO","HOME-OFFICE","HOMEOFFICE"].includes(shift)){
+      row.service="HO";
+      row.location="Home-Office";
     }else if(["N","ND","NACHTDIENST"].includes(shift)){
       row.service="ND";
       applyTimesheetServiceDefaults(row,"ND",month,d);
@@ -1816,6 +1835,8 @@ function serviceSelect(value,onchange,disabled=false){
     ["","– auswählen –"],
     ["TD","TD – Tagdienst"],
     ["ND","ND – Nachtdienst"],
+    ["B","B – Büro 07:00–15:30"],
+    ["HO","HO – Home-Office"],
     ["U","U – Urlaub"],
     ["WF","WF – Wunschfrei"],
     ["F","F – Flexibel"],
@@ -2645,6 +2666,8 @@ function allowedValuesForUser(u){
     ["","–"],
     ["T","Tagdienst"],
     ["N","Nachtdienst"],
+    ["B","Büro 07:00–15:30"],
+    ["HO","Home-Office"],
     ["WF","Wunschfrei"],
     ["Urlaub","Urlaub"],
     ["Flex","Flexibel"]
@@ -2668,7 +2691,7 @@ function optionsForUser(u,current){
 function applySelectColor(sel){
   const td=sel.closest("td");
   if(!td)return;
-  ["dienst-tag","dienst-nacht","dienst-wf","dienst-urlaub","dienst-flex"].forEach(c=>td.classList.remove(c));
+  ["dienst-tag","dienst-nacht","dienst-wf","dienst-urlaub","dienst-flex","dienst-buero","dienst-homeoffice"].forEach(c=>td.classList.remove(c));
   const cls=valueClass(sel.value);
   if(cls)td.classList.add(cls);
 }
@@ -2679,6 +2702,8 @@ function valueClass(v){
   if(v==="WF")return "dienst-wf";
   if(v==="Urlaub")return "dienst-urlaub";
   if(v==="Flex")return "dienst-flex";
+  if(v==="B")return "dienst-buero";
+  if(v==="HO")return "dienst-homeoffice";
   return "";
 }
 
@@ -2712,7 +2737,7 @@ function tableFor(users,m,mode){
 function candidateScore(u,m,day,target){
   if(isSpringerTeam(USERS[u]?.team) && (target==="T"||target==="N"))return -999;
   const r=getRec(u,m), cur=r.entries[day]||"";
-  if(cur==="Urlaub"||cur==="WF")return -999;
+  if(cur==="Urlaub"||cur==="WF"||cur==="B"||cur==="HO")return -999;
   if(target==="T" && day>1 && (r.entries[day-1]||"")==="N")return -999;
   if(target==="N" && day<days(m) && (r.entries[day+1]||"")==="T")return -999;
   let score=0;
@@ -2747,7 +2772,7 @@ function buildSuggestions(team,m,needT,needN){
       if(dayAfterNightConflict(u,m,d)){
         suggestions.push({
           type:"rest", day:d, user:u, employee:info.name, target:"",
-          text:`Tag ${d}: ${info.name} hat am Vortag Nachtdienst und direkt danach Tagdienst. Diese Folge sollte aufgelöst werden.`
+          text:`Tag ${d}: ${info.name} hat am Vortag Nachtdienst und direkt danach Tag- oder Bürodienst ab 07:00. Diese Folge sollte aufgelöst werden.`
         });
       }
     });
