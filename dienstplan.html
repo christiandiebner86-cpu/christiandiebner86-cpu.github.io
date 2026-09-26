@@ -2456,6 +2456,43 @@ async function approveTeamPlan(){
   }
 }
 
+async function adminSubmitAsTeamLeader(team,m){
+  if(
+    session.role!=="admin" ||
+    session.isTeamLeader!==true ||
+    !session.team ||
+    session.team!==team
+  ){
+    alert("Für dieses Team bist du nicht als Teamleitung hinterlegt.");
+    return;
+  }
+
+  const members=teamUsers(team);
+  const notSubmitted=members.filter(([u])=>!getRec(u,m).submitted);
+
+  if(notSubmitted.length){
+    alert(
+      "Noch nicht möglich.\n\nEs fehlen noch "+notSubmitted.length+
+      " Abgabe(n):\n"+
+      notSubmitted.map(([u,info])=>"• "+info.name).join("\n")
+    );
+    return;
+  }
+
+  if(!confirm(
+    "Dienstwunschplan für "+team+" als Teamleitung prüfen und an den Admin-Schritt weitergeben?"
+  ))return;
+
+  try{
+    await qmSaveWorkflowStatus(team,m,"leader_submit",{},"");
+    await qmLoadTeamApprovals(m);
+    alert("Als Teamleitung geprüft und weitergegeben.");
+    renderAdmin();
+  }catch(error){
+    alert("Teamleitungs-Freigabe fehlgeschlagen: "+(error.message||"Unbekannter Fehler"));
+  }
+}
+
 async function adminApproveTeam(team,m){
   const a=getApproval(team,m);
   if(!a.leaderApproved){
@@ -3194,10 +3231,24 @@ function renderAdmin(){
           </div>
         </div>`;
     }else{
+      const canSubmitAsLeader=
+        session.role==="admin" &&
+        session.isTeamLeader===true &&
+        session.team===team;
+      const allSubmitted=members.length>0 && submitted===members.length;
+
       statusHtml=`
         <div>
           <b>Noch nicht von Teamleitung eingereicht</b>
           <div class="small">${submitted}/${members.length} Dienstwunschpläne wurden abgegeben.</div>
+          ${canSubmitAsLeader
+            ? `<div class="small" style="margin-top:7px"><b>Du bist für dieses Team zusätzlich als Teamleitung hinterlegt.</b></div>
+               <div class="workflow-admin-buttons" style="margin-top:10px">
+                 <button class="primary workflow-main-button" ${allSubmitted?"":"disabled"} onclick="adminSubmitAsTeamLeader('${team}','${m}')">
+                   👩‍⚕️ Als Teamleitung prüfen und weitergeben
+                 </button>
+               </div>`
+            : ""}
         </div>`;
     }
 
@@ -3391,15 +3442,20 @@ function qmReplaceUsers(rows){
 
   (rows || []).forEach(p=>{
     if(!p || !p.id || !p.active) return;
-    if(p.role!=="mitarbeiter" && p.role!=="teamleitung" && p.role!=="admin") return;
+    if(
+      p.role!=="mitarbeiter" &&
+      p.role!=="teamleitung" &&
+      p.role!=="admin" &&
+      p.role!=="admin_teamleitung"
+    ) return;
 
     const key=qmUserKey(p.id);
     USERS[key]={
       id:p.id,
       name:p.name || "Ohne Namen",
       team:p.team || "Nicht zugeordnet",
-      isLeader:p.role==="teamleitung",
-      isAdmin:p.role==="admin"
+      isLeader:p.role==="teamleitung" || p.role==="admin_teamleitung",
+      isAdmin:p.role==="admin" || p.role==="admin_teamleitung"
     };
   });
 }
@@ -3452,7 +3508,7 @@ async function qmLoadDutyUsers(currentProfile){
         id:currentProfile.id,
         name:currentProfile.name || (currentProfile.role==="admin" ? "Administrator" : "Mitarbeiter"),
         team:currentProfile.team || "Nicht zugeordnet",
-        isLeader:currentProfile.role==="teamleitung",
+        isLeader:currentProfile.role==="teamleitung" || currentProfile.is_teamleitung===true,
         isAdmin:currentProfile.role==="admin"
       };
     }
@@ -3567,8 +3623,9 @@ function qmShowPortal(profile){
   document.getElementById("portalAuthGate").style.display="none";
   document.getElementById("portalShell").style.display="block";
   document.getElementById("qmLoggedUser").textContent=profile.name || "Benutzer";
-  const roleLabel=profile.role==="admin" ? "Administrator" :
-                  profile.role==="teamleitung" ? "Teamleitung" : "Mitarbeiter";
+  const roleLabel=profile.role==="admin"
+                  ? (profile.is_teamleitung===true ? "Administrator + Teamleitung" : "Administrator")
+                  : profile.role==="teamleitung" ? "Teamleitung" : "Mitarbeiter";
   document.getElementById("qmLoggedRole").textContent=roleLabel;
 }
 
@@ -3629,7 +3686,7 @@ async function qmOpenDutyPlanner(){
 
     const profileResult=await qmSupabase
       .from("profiles")
-      .select("id,name,role,team,active")
+      .select("id,name,role,team,active,is_teamleitung")
       .eq("id",authUser.id)
       .maybeSingle();
 
@@ -3648,7 +3705,12 @@ async function qmOpenDutyPlanner(){
     qmShowPortal(profile);
 
     if(profile.role==="admin"){
-      session={role:"admin",user:qmUserKey(profile.id),team:profile.team || null};
+      session={
+        role:"admin",
+        user:qmUserKey(profile.id),
+        team:profile.team || null,
+        isTeamLeader:profile.is_teamleitung===true
+      };
       document.getElementById("adminMonth").value=nowMonth();
       await qmLoadPlansForMonth(nowMonth());
       await qmLoadTeamApprovals(nowMonth());
