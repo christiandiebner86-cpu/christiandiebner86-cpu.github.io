@@ -755,6 +755,84 @@ button.danger{
 #employeeWishTable th:first-child,#employeeWishTable td:first-child,#leaderOwnTable th:first-child,#leaderOwnTable td:first-child,#leadTable th:first-child,#leadTable td:first-child,#adminTable th:first-child,#adminTable td:first-child{min-width:92px!important;max-width:104px}
 #employeeWishTable select,#leaderOwnTable select,#leadTable select,#adminTable select{min-width:46px!important;width:46px!important;font-size:14px!important}}
 
+
+/* VACATION-MOBILE-FIX-2026-09-26 */
+#vacationTable{
+  min-width:1050px;
+}
+#vacationTable input[type="date"],
+#vacationTable select{
+  max-width:100%;
+}
+@media (max-width:700px){
+  #vacation .table-wrap{
+    overflow:visible;
+    border:0;
+  }
+  #vacationTable{
+    display:block;
+    width:100% !important;
+    min-width:0 !important;
+    border-collapse:separate;
+  }
+  #vacationTable thead{
+    display:none;
+  }
+  #vacationTable tbody,
+  #vacationTable tr,
+  #vacationTable th,
+  #vacationTable td{
+    display:block;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    position:static !important;
+    left:auto !important;
+  }
+  #vacationTable tr{
+    margin:0 0 14px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow:hidden;
+    background:#fff;
+    box-shadow:0 2px 8px rgba(0,0,0,.04);
+  }
+  #vacationTable th,
+  #vacationTable td{
+    padding:10px !important;
+    text-align:left !important;
+    border-right:0;
+  }
+  #vacationTable th{
+    background:#f8fafc !important;
+    border-bottom:1px solid var(--line);
+  }
+  #vacationTable td{
+    border-bottom:1px solid var(--line);
+  }
+  #vacationTable td:last-child{
+    border-bottom:0;
+  }
+  #vacationTable label{
+    margin-top:8px;
+  }
+  #vacationTable .vacation-date-input,
+  #vacationTable select,
+  #vacationTable input[type="number"]{
+    display:block;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:46px;
+    font-size:16px;
+  }
+  #vacationTable .actions{
+    width:100%;
+  }
+  #vacationTable .actions button{
+    width:100%;
+    min-height:46px;
+  }
+}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -953,7 +1031,7 @@ button.danger{
   <div><label>Jahr</label><select id="vacationYear" onchange="renderVacation()"></select></div>
   <button class="secondary" onclick="backFromVacation()">Zurück zum Dienstwunschplan</button>
 </div>
-<div class="notice">Mitarbeitende können nur den eigenen Urlaubswunsch ändern. Das Jahres-Urlaubskontingent wird pro Mitarbeiter festgelegt; Standard sind 30 Tage. Der Admin kann das Kontingent erhöhen oder reduzieren. Gezählt werden nur Montag bis Freitag. Zu jedem Urlaubsblock kann genau ein freies Wochenende gewählt werden: entweder davor oder danach. Teamleitung und Mitarbeitende sehen die Urlaubswünsche ihres Teams, der Admin kann alle Teams sehen und ändern.</div>
+<div class="notice">Mitarbeitende können nur den eigenen Urlaubswunsch ändern. Das Jahres-Urlaubskontingent wird pro Mitarbeiter festgelegt; Standard sind 30 Tage. Der Admin kann das Kontingent erhöhen oder reduzieren. Gezählt werden nur Montag bis Freitag. Zu jedem Urlaubsblock kann genau ein freies Wochenende gewählt werden: entweder davor oder danach. Teamleitung und Mitarbeitende sehen die Urlaubswünsche ihres Teams und können den eigenen Wunsch bearbeiten; der Admin kann alle Teams sehen und ändern.</div>
 <div id="vacationSummary" style="margin-bottom:12px"></div>
 <div class="table-wrap"><table id="vacationTable"></table></div>
 <div style="margin-top:24px">
@@ -1094,10 +1172,25 @@ function backFromVacation(){
   else if(session.role==="admin"){show("admin");renderAdmin()}
   else show("login");
 }
+function canEditVacationUser(u){
+  return session.role==="admin" ||
+    ((session.role==="employee" || session.role==="leader") && u===session.user);
+}
 function addVacationBlock(u,y){
-  const start=document.getElementById(`vac_start_${u}`).value;
-  const end=document.getElementById(`vac_end_${u}`).value;
-  const weekend=document.getElementById(`vac_weekend_${u}`).value;
+  if(!canEditVacationUser(u)){
+    alert("Du kannst nur deinen eigenen Urlaubswunsch bearbeiten.");
+    return;
+  }
+  const startInput=document.getElementById(`vac_start_${u}`);
+  const endInput=document.getElementById(`vac_end_${u}`);
+  const weekendInput=document.getElementById(`vac_weekend_${u}`);
+  if(!startInput || !endInput || !weekendInput){
+    alert("Die Urlaubseingabe konnte nicht geladen werden. Bitte die Seite einmal neu öffnen.");
+    return;
+  }
+  const start=startInput.value;
+  const end=endInput.value;
+  const weekend=weekendInput.value;
   const block={start,end,weekend};
   const check=validateVacationBlock(u,y,block);
   if(!check.ok){alert(check.msg);return;}
@@ -1108,7 +1201,7 @@ function addVacationBlock(u,y){
   renderVacation();
 }
 function deleteVacationBlock(u,y,index){
-  if(session.role!=="admin" && !(session.role==="employee"&&u===session.user))return;
+  if(!canEditVacationUser(u))return;
   const blocks=getVacationBlocks(u,y);
   blocks.splice(index,1);
   saveVacationBlocks(u,y,blocks);
@@ -2991,7 +3084,7 @@ function renderVacation(){
     document.getElementById("vacationRoleInfo").textContent="Teamansicht "+USERS[session.user].team+" – du kannst nur deinen eigenen Urlaubswunsch ändern.";
   }else if(session.role==="leader"){
     users=teamUsers(session.team);
-    document.getElementById("vacationRoleInfo").textContent="Teamansicht "+session.team+" – nur Ansicht.";
+    document.getElementById("vacationRoleInfo").textContent="Teamansicht "+session.team+" – du kannst deinen eigenen Urlaubswunsch ändern.";
   }else{
     users=Object.entries(USERS);
     document.getElementById("vacationRoleInfo").textContent="Admin – alle Teams, Änderungen möglich.";
@@ -3011,7 +3104,7 @@ function renderVacation(){
       });
     });
 
-    const canEdit=(session.role==="employee"&&u===session.user)||session.role==="admin";
+    const canEdit=canEditVacationUser(u);
     h+=`<tr><th>${esc(info.name)}<div class="small">${esc(info.team)}</div></th>`;
     const allowance=getVacationAllowance(u,y);
     h+=`<td style="padding:10px"><b>${used}/${allowance}</b><div class="small">${Math.max(0,allowance-used)} Tage verbleiben</div>${session.role==="admin"?`<div style="margin-top:6px"><label>Jahreskontingent</label><input type="number" min="0" value="${allowance}" style="width:90px" onchange="setVacationAllowance('${u}',${y},this.value)"></div>`:""}</td>`;
@@ -3024,21 +3117,21 @@ function renderVacation(){
       blockHtml+=`<div style="padding:8px;border:1px solid #d8dee8;border-radius:8px;margin:4px 0;background:#f8fafc">
         <b>${fmtDate(b.start)} – ${fmtDate(b.end)}</b> · ${days} Urlaubstag${days===1?"":"e"}
         <div class="small">${weekendLabel}${weekendDates.length?": "+weekendDates.map(fmtDate).join(" & "):""}</div>
-        ${canEdit?`<button class="warning" style="padding:4px 7px;margin-top:5px" onclick="deleteVacationBlock('${u}',${y},${i})">Entfernen</button>`:""}
+        ${canEdit?`<button type="button" class="warning" style="padding:4px 7px;margin-top:5px" onclick="deleteVacationBlock('${u}',${y},${i})">Entfernen</button>`:""}
       </div>`;
     });
     h+=`<td style="vertical-align:top;padding:8px;text-align:left">${blockHtml}</td>`;
 
     if(canEdit){
       h+=`<td style="padding:8px;text-align:left">
-        <label>Von</label><input id="vac_start_${u}" type="date" min="${y}-01-01" max="${y}-12-31">
-        <label>Bis</label><input id="vac_end_${u}" type="date" min="${y}-01-01" max="${y}-12-31">
+        <label>Von</label><input class="vacation-date-input" id="vac_start_${u}" type="date" min="${y}-01-01" max="${y}-12-31">
+        <label>Bis</label><input class="vacation-date-input" id="vac_end_${u}" type="date" min="${y}-01-01" max="${y}-12-31">
         <label>Freies Wochenende</label>
         <select id="vac_weekend_${u}">
           <option value="before">Wochenende davor</option>
           <option value="after">Wochenende danach</option>
         </select>
-        <div class="actions"><button class="primary" onclick="addVacationBlock('${u}',${y})">Urlaub eintragen</button></div>
+        <div class="actions"><button type="button" class="primary" onclick="addVacationBlock('${u}',${y})">Urlaub eintragen</button></div>
         <div class="small">Nur Montag bis Freitag zählen vom persönlichen Jahreskontingent. Es kann nur ein angrenzendes Wochenende gewählt werden.</div>
       </td>`;
     }else{
