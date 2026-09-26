@@ -2369,7 +2369,6 @@ try {
       {
         auth: {
           persistSession: true,
-          storage: window.sessionStorage,
           autoRefreshToken: true,
           detectSessionInUrl: true
         }
@@ -6393,17 +6392,48 @@ async function startApplication() {
 
 
   /*
-   * GEMEINSAM GENUTZTE GERÄTE:
-   * Die Anmeldung wird nur in sessionStorage gespeichert.
-   * Dadurch bleibt sie beim Wechsel zum Dienstwunschplan erhalten,
-   * wird aber nicht dauerhaft in localStorage abgelegt.
+   * GEMEINSAM GENUTZTE iPADS:
+   * Jeder echte Seiten-/App-Start beginnt abgemeldet.
+   * So kann kein vorheriger Mitarbeiter – auch kein Admin –
+   * versehentlich angemeldet bleiben.
+   *
+   * Nach einer neuen Anmeldung wird die Supabase-Session gespeichert,
+   * damit der Dienstwunschplan sie beim Seitenwechsel übernehmen kann.
    */
-  clearLoginFields();
+  try {
 
-  await initializePortal();
+    clearLoginFields();
 
-  if (!currentUser) {
+    await withTimeout(
+      supabaseClient.auth.signOut(),
+      10000,
+      "Die alte Anmeldung konnte nicht beendet werden."
+    );
+
+    currentUser = null;
+    currentProfile = null;
+    portalInitialized = false;
+    initializationRunning = false;
+
+    showAuthScreen();
     showLogin();
+
+  }
+  catch (error) {
+
+    console.error(
+      "Sicherer Start:",
+      error
+    );
+
+    currentUser = null;
+    currentProfile = null;
+    portalInitialized = false;
+    initializationRunning = false;
+
+    showAuthScreen();
+    showLogin();
+
   }
 
 }
