@@ -3353,15 +3353,49 @@ async function qmOpenDutyPlanner(){
     qmSupabase=window.supabase.createClient(
       QM_SUPABASE_URL,
       QM_SUPABASE_PUBLISHABLE_KEY,
-      {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
+      {auth:{persistSession:true,storage:window.localStorage,storageKey:"qm-halle-auth-v1",autoRefreshToken:true,detectSessionInUrl:true}}
     );
 
-    const userResult=await qmSupabase.auth.getUser();
-    const authUser=userResult && userResult.data && userResult.data.user;
+    /*
+     * Zuerst die lokal gespeicherte Session einlesen. Das ist auf Android/PWA
+     * robuster als direkt getUser() aufzurufen, während der Client seine
+     * gespeicherte Session noch initialisiert.
+     */
+    let sessionResult=await qmSupabase.auth.getSession();
+    let authUser=sessionResult &&
+                 sessionResult.data &&
+                 sessionResult.data.session &&
+                 sessionResult.data.session.user;
+
+    if(!authUser){
+      await new Promise(resolve=>setTimeout(resolve,300));
+      sessionResult=await qmSupabase.auth.getSession();
+      authUser=sessionResult &&
+               sessionResult.data &&
+               sessionResult.data.session &&
+               sessionResult.data.session.user;
+    }
+
     qmAuthUser=authUser || null;
+
     if(!authUser){
       qmShowGate("Du bist noch nicht im QM-Portal angemeldet. Bitte melde dich dort zuerst an.");
       return;
+    }
+
+    /*
+     * Die Session zusätzlich gegen Supabase prüfen. Falls die Netzprüfung
+     * vorübergehend fehlschlägt, entscheidet spätestens die geschützte
+     * Profilabfrage darunter, ob die Session gültig ist.
+     */
+    try{
+      const userResult=await qmSupabase.auth.getUser();
+      if(userResult && userResult.data && userResult.data.user){
+        authUser=userResult.data.user;
+        qmAuthUser=authUser;
+      }
+    }catch(error){
+      console.warn("Supabase-Benutzerprüfung:",error);
     }
 
     const profileResult=await qmSupabase
