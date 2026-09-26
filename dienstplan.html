@@ -2464,31 +2464,11 @@ function directAdminTeamOwner(team){
 }
 
 async function qmMarkAdminOwnForApproval(team,m){
-  const result=await qmSupabase.rpc(
-    "save_dutyplan_team_status",
-    {
-      p_team:team,
-      p_month:m,
-      p_leader_approved:true,
-      p_admin_approved:false,
-      p_employee_confirmations:{}
-    }
-  );
-  if(result.error)throw result.error;
+  await qmSaveWorkflowStatus(team,m,"direct_admin_submit",{},"");
 }
 
 async function qmResetAdminOwnApproval(team,m){
-  const result=await qmSupabase.rpc(
-    "save_dutyplan_team_status",
-    {
-      p_team:team,
-      p_month:m,
-      p_leader_approved:false,
-      p_admin_approved:false,
-      p_employee_confirmations:{}
-    }
-  );
-  if(result.error)throw result.error;
+  await qmSaveWorkflowStatus(team,m,"reset",{},"");
 }
 
 async function adminSubmitAsTeamLeader(team,m){
