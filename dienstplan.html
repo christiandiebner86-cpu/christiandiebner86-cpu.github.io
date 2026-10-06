@@ -2699,7 +2699,7 @@ async function approveTeamPlan(){
 
   try{
     await qmSaveWorkflowStatus(session.team,m,"leader_submit",{},"");
-    try{ await qmNotifyDutyplanSubmission(session.team,m); }catch(emailError){ console.error("Dienstplan-E-Mail:",emailError); }
+    try{ await qmNotifyDutyplanSubmission(session.team,m); }catch(emailError){ console.error("Dienstplan-E-Mail:",emailError); alert("Der Dienstplan wurde an den Admin-Schritt übergeben, aber die E-Mail-Benachrichtigung konnte nicht versendet werden."); }
     await qmLoadTeamApprovals(m);
     alert("An den Admin gesendet.");
     renderLead();
@@ -2752,7 +2752,7 @@ async function adminSubmitAsTeamLeader(team,m){
 
   try{
     await qmSaveWorkflowStatus(team,m,"leader_submit",{},"");
-    try{ await qmNotifyDutyplanSubmission(team,m); }catch(emailError){ console.error("Dienstplan-E-Mail:",emailError); }
+    try{ await qmNotifyDutyplanSubmission(team,m); }catch(emailError){ console.error("Dienstplan-E-Mail:",emailError); alert("Der Dienstplan wurde an den Admin-Schritt übergeben, aber die E-Mail-Benachrichtigung konnte nicht versendet werden."); }
     await qmLoadTeamApprovals(m);
     alert("Als Teamleitung geprüft und weitergegeben.");
     renderAdmin();
