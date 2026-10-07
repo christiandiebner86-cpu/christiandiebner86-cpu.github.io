@@ -2257,6 +2257,21 @@ function setupTimesheetDualScroll(root=document){
       syncing=false;
     });
 
+    // Desktop: normales Mausrad auch für die breite Stundenzettel-Tabelle nutzen.
+    // So kann man mit dem Mausrad (bzw. Shift+Mausrad) zuverlässig horizontal
+    // nach rechts/links scrollen, ohne die kleine Scrollleiste treffen zu müssen.
+    const enableHorizontalWheel=el=>{
+      el.addEventListener("wheel",event=>{
+        if(Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
+        if(el.scrollWidth <= el.clientWidth) return;
+        const before=el.scrollLeft;
+        el.scrollLeft += event.deltaY;
+        if(el.scrollLeft !== before) event.preventDefault();
+      },{passive:false});
+    };
+    enableHorizontalWheel(bottom);
+    enableHorizontalWheel(top);
+
     if(window.ResizeObserver){
       const ro=new ResizeObserver(updateWidth);
       ro.observe(table);
