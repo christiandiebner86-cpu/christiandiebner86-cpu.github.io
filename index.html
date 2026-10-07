@@ -3082,6 +3082,60 @@ function setupRegisterForm() {
 
 
         /*
+         * Administrator per E-Mail über die neue Registrierung informieren.
+         * Das passiert noch vor dem Logout, solange die neue Session gültig ist.
+         */
+        const registrationSession =
+          result.data &&
+          result.data.session;
+
+        if (registrationSession) {
+
+          try {
+
+            const notification =
+              await withTimeout(
+                supabaseClient.functions.invoke(
+                  "notify-registration",
+                  {
+                    body: {
+                      name: name,
+                      email: email
+                    }
+                  }
+                ),
+                15000,
+                "Die Registrierungs-Benachrichtigung hat zu lange gedauert."
+              );
+
+            if (notification.error) {
+              console.warn(
+                "Registrierungs-Benachrichtigung konnte nicht gesendet werden:",
+                notification.error
+              );
+            }
+
+          }
+          catch (notificationError) {
+
+            console.warn(
+              "Registrierungs-Benachrichtigung:",
+              notificationError
+            );
+
+          }
+
+        }
+        else {
+
+          console.warn(
+            "Keine aktive Registrierungssession vorhanden; E-Mail-Benachrichtigung wurde nicht ausgelöst."
+          );
+
+        }
+
+
+        /*
          * WICHTIG:
          *
          * Auch wenn Supabase sofort eine Session
