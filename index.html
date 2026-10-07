@@ -947,13 +947,13 @@ main {
 @media(max-width:700px){.qm-form-grid,.qm-sign-grid{grid-template-columns:1fr}.qm-check-table{display:block;overflow-x:auto}.qm-check-table .qm-status{min-width:155px}}
 @media print{
   @page{size:A4 portrait;margin:10mm}
-  body{background:#fff!important}
-  body *{visibility:hidden!important}
+  html,body{margin:0!important;padding:0!important;background:#fff!important;width:100%!important}
+  body.qm-printing > *:not(#qmPrintArea){display:none!important}
+  #qmPrintArea{display:block!important;position:static!important;width:auto!important;min-height:0!important;margin:0!important;padding:12mm 15mm!important;background:#fff!important;color:#222!important}
   #qmPrintArea,#qmPrintArea *{visibility:visible!important}
-  #qmPrintArea{display:block!important;position:absolute;inset:0;width:100%;padding:18mm 15mm;background:#fff;color:#222}
   .qm-print-title{font-size:22px;font-weight:800;color:#17313a;margin-bottom:4px}
   .qm-print-meta{font-size:12px;color:#5f6c72;margin-bottom:16px}
-  .qm-print-section{margin-top:16px;break-inside:avoid}
+  .qm-print-section{margin-top:16px;break-inside:avoid;page-break-inside:avoid}
   .qm-print-section h4{font-size:14px;margin:0 0 7px;color:#4f7818}
   .qm-print-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .qm-print-box{border:1px solid #ccd6d9;border-radius:7px;padding:8px;min-height:28px}
@@ -962,7 +962,7 @@ main {
   .qm-print-table th,.qm-print-table td{border:1px solid #ccd6d9;padding:6px;vertical-align:top}
   .qm-print-table th{background:#f1f5ef!important;font-weight:800}
   .qm-print-status{font-weight:800;white-space:nowrap}
-  .qm-print-signatures{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:30px}
+  .qm-print-signatures{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:30px;break-inside:avoid;page-break-inside:avoid}
   .qm-print-sign{border-top:1px solid #777;padding-top:5px;font-size:10px}
 }
 
