@@ -946,6 +946,7 @@ main {
 .qm-form-hint{color:var(--muted);font-size:12px;margin-top:7px}
 @media(max-width:700px){.qm-form-grid,.qm-sign-grid{grid-template-columns:1fr}.qm-check-table{display:block;overflow-x:auto}.qm-check-table .qm-status{min-width:155px}}
 @media print{
+  @page{size:A4 portrait;margin:10mm}
   body{background:#fff!important}
   body *{visibility:hidden!important}
   #qmPrintArea,#qmPrintArea *{visibility:visible!important}
@@ -2354,6 +2355,19 @@ body.document-viewer-open {
           <div class="qm-field full"><label for="qmvisiteur">Durchführende Person</label><input id="qmvisiteur" type="text"></div>
         </div>
 
+        <h4 class="qm-section-label">Pflegebereiche / individuelle Versorgung</h4>
+        <table class="qm-check-table">
+          <thead><tr><th>Pflegebereich</th><th class="qm-status">Bewertung</th><th>Bemerkung / Feststellung</th></tr></thead>
+          <tbody>
+            <tr><td>Körperpflege / Grundpflege</td><td><select data-qm-status="versorgung_koerper"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="versorgung_koerper"></textarea></td></tr>
+            <tr><td>Mobilität / Transfer / Lagerung</td><td><select data-qm-status="versorgung_mobilitaet"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="versorgung_mobilitaet"></textarea></td></tr>
+            <tr><td>Behandlungspflege</td><td><select data-qm-status="versorgung_behandlung"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="versorgung_behandlung"></textarea></td></tr>
+            <tr><td>Ernährung / Flüssigkeitsaufnahme</td><td><select data-qm-status="versorgung_ernaehrung"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="versorgung_ernaehrung"></textarea></td></tr>
+            <tr><td>Ausscheidung / Kontinenz</td><td><select data-qm-status="versorgung_ausscheidung"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="versorgung_ausscheidung"></textarea></td></tr>
+            <tr><td>Alltagsgestaltung / soziale Kontakte</td><td><select data-qm-status="versorgung_alltag"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="versorgung_alltag"></textarea></td></tr>
+          </tbody>
+        </table>
+
         <h4 class="qm-section-label">QPR-Bereiche</h4>
         <table class="qm-check-table">
           <thead><tr><th>Bereich</th><th class="qm-status">Bewertung</th><th>Bemerkung / Feststellung</th></tr></thead>
@@ -2365,6 +2379,12 @@ body.document-viewer-open {
             <tr><td>2.2 Unterstützung bei beeinträchtigter Kognition</td><td><select data-qm-status="qpr22"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr22"></textarea></td></tr>
             <tr><td>2.3 Unterstützung im Bereich der Kommunikation</td><td><select data-qm-status="qpr23"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr23"></textarea></td></tr>
             <tr><td>2.4 Unterstützung bei Verhaltensauffälligkeiten und psychischen Problemlagen</td><td><select data-qm-status="qpr24"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr24"></textarea></td></tr>
+            <tr><td>2.5 Unterstützung bei der Körperpflege</td><td><select data-qm-status="qpr25"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr25"></textarea></td></tr>
+            <tr><td>2.6 Unterstützung bei der Nahrungs- und Flüssigkeitsaufnahme</td><td><select data-qm-status="qpr26"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr26"></textarea></td></tr>
+            <tr><td>2.7 Unterstützung bei der Ausscheidung</td><td><select data-qm-status="qpr27"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr27"></textarea></td></tr>
+            <tr><td>2.8 Unterstützung bei der Gestaltung des Alltagslebens sowie bei der Aufrechterhaltung und Förderung sozialer Kontakte</td><td><select data-qm-status="qpr28"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr28"></textarea></td></tr>
+            <tr><td>2.9 Anleitung und Beratung pflegender An- und Zugehöriger zur Verbesserung der Pflegekompetenz</td><td><select data-qm-status="qpr29"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr29"></textarea></td></tr>
+            <tr><td>2.10 Anleitung und Beratung der versorgten Person zur Verbesserung der Selbstpflegekompetenz</td><td><select data-qm-status="qpr210"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr210"></textarea></td></tr>
             <tr><td>3.1 Atmung / Beatmung</td><td><select data-qm-status="qpr31"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr31"></textarea></td></tr>
             <tr><td>3.2 Tracheostomaversorgung</td><td><select data-qm-status="qpr32"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr32"></textarea></td></tr>
             <tr><td>3.3 Ernährung</td><td><select data-qm-status="qpr33"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr33"></textarea></td></tr>
@@ -5069,9 +5089,11 @@ function printQmForm(type){
     html+='<div class="qm-print-meta">Digitale QM-Erfassung · Ausdruck / PDF</div>';
     html+='<div class="qm-print-grid">'+qmPrintField("Patient / Bewohner",qmText("qmpatient"))+qmPrintField("Geb.-Dat.",qmPrintDate(qmText("qmbirth")))+qmPrintField("Lfd.-Nr.",qmText("qmlfd"))+qmPrintField("Datum Pflegevisite",qmPrintDate(qmText("qmvisitdate")))+qmPrintField("Durchführende Person",qmText("qmvisiteur"))+'</div>';
     const qprs=[
-      ["1.1 Aufnahmemanagement","qpr11"],["1.2 Erfassung von und Reaktion auf Risiken und Gefahren","qpr12"],["1.3 Erfassung von und Reaktion auf Anzeichen einer Destabilisierung der Versorgungssituation","qpr13"],["2.1 Unterstützung im Bereich der Mobilität","qpr21"],["2.2 Unterstützung bei beeinträchtigter Kognition","qpr22"],["2.3 Unterstützung im Bereich der Kommunikation","qpr23"],["2.4 Unterstützung bei Verhaltensauffälligkeiten und psychischen Problemlagen","qpr24"],["3.1 Atmung / Beatmung","qpr31"],["3.2 Tracheostomaversorgung","qpr32"],["3.3 Ernährung","qpr33"]
+      ["1.1 Aufnahmemanagement","qpr11"],["1.2 Erfassung von und Reaktion auf Risiken und Gefahren","qpr12"],["1.3 Erfassung von und Reaktion auf Anzeichen einer Destabilisierung der Versorgungssituation","qpr13"],["2.1 Unterstützung im Bereich der Mobilität","qpr21"],["2.2 Unterstützung bei beeinträchtigter Kognition","qpr22"],["2.3 Unterstützung im Bereich der Kommunikation","qpr23"],["2.4 Unterstützung bei Verhaltensauffälligkeiten und psychischen Problemlagen","qpr24"],      ["2.5 Unterstützung bei der Körperpflege","qpr25"],["2.6 Unterstützung bei der Nahrungs- und Flüssigkeitsaufnahme","qpr26"],["2.7 Unterstützung bei der Ausscheidung","qpr27"],["2.8 Unterstützung bei der Gestaltung des Alltagslebens sowie bei der Aufrechterhaltung und Förderung sozialer Kontakte","qpr28"],["2.9 Anleitung und Beratung pflegender An- und Zugehöriger zur Verbesserung der Pflegekompetenz","qpr29"],["2.10 Anleitung und Beratung der versorgten Person zur Verbesserung der Selbstpflegekompetenz","qpr210"],["3.1 Atmung / Beatmung","qpr31"],["3.2 Tracheostomaversorgung","qpr32"],["3.3 Ernährung","qpr33"]
     ];
     html+=qmPrintSection("QPR-Bereiche",'<table class="qm-print-table"><thead><tr><th>Bereich</th><th>Bewertung</th><th>Bemerkung / Feststellung</th></tr></thead><tbody>'+qprs.map(function(x){return '<tr><td>'+qmEscape(x[0])+'</td><td class="qm-print-status">'+qmEscape(qmStatus('[data-qm-status="'+x[1]+'"]'))+'</td><td>'+qmEscape(qmNote('[data-qm-note="'+x[1]+'"]')).replace(/\n/g,"<br>")+'</td></tr>';}).join("")+'</tbody></table>');
+    const versorgung=[["Körperpflege / Grundpflege","versorgung_koerper"],["Mobilität / Transfer / Lagerung","versorgung_mobilitaet"],["Behandlungspflege","versorgung_behandlung"],["Ernährung / Flüssigkeitsaufnahme","versorgung_ernaehrung"],["Ausscheidung / Kontinenz","versorgung_ausscheidung"],["Alltagsgestaltung / soziale Kontakte","versorgung_alltag"]];
+    html+=qmPrintSection("Pflegebereiche / individuelle Versorgung",'<table class="qm-print-table"><thead><tr><th>Pflegebereich</th><th>Bewertung</th><th>Bemerkung / Feststellung</th></tr></thead><tbody>'+versorgung.map(function(x){return '<tr><td>'+qmEscape(x[0])+'</td><td class="qm-print-status">'+qmEscape(qmStatus('[data-qm-status="'+x[1]+'"]'))+'</td><td>'+qmEscape(qmNote('[data-qm-note="'+x[1]+'"]')).replace(/\n/g,"<br>")+'</td></tr>';}).join("")+'</tbody></table>');
     const specials=[["Cuff vorhanden",qmStatus('[data-qm-special="cuff"]'),qmText(document.querySelector('[data-qm-detail="cuff"]')?.value)],["Cuff-Druck",qmText(document.querySelector('[data-qm-special="cuffdruck"]')?.value),""],["Inhalationsintervalle",qmText(document.querySelector('[data-qm-special="inhalation"]')?.value),""],["Reinigungsintervalle",qmText(document.querySelector('[data-qm-special="reinigung"]')?.value),""],["Katheter vorhanden",qmStatus('[data-qm-special="katheter"]'),qmStatus('[data-qm-detail="katheter"]')],["Invasive Beatmung",qmStatus('[data-qm-special="invbeat"]'),qmText(document.querySelector('[data-qm-detail="invbeat"]')?.value)],["Nicht-invasive Beatmung",qmStatus('[data-qm-special="niv"]'),qmText(document.querySelector('[data-qm-detail="niv"]')?.value)],["Sauerstoff benötigt",qmStatus('[data-qm-special="o2"]'),qmText(document.querySelector('[data-qm-detail="o2"]')?.value)],["Händedesinfektion",qmStatus('[data-qm-special="haendedes"]'),qmText(document.querySelector('[data-qm-detail="haendedes"]')?.value)],["Flächendesinfektion / -mittel",qmStatus('[data-qm-special="flaeche"]'),qmText(document.querySelector('[data-qm-detail="flaeche"]')?.value)],["Einwirkzeit",qmText(document.querySelector('[data-qm-special="einwirkzeit"]')?.value),""],["Reinigungs- / Desinfektionsintervalle",qmText(document.querySelector('[data-qm-special="desintervalle"]')?.value),""]];
     html+=qmPrintSection("Ergänzende pflegerische / medizinische Angaben",'<table class="qm-print-table"><thead><tr><th>Prüfpunkt</th><th>Angabe</th><th>Details / Intervall</th></tr></thead><tbody>'+specials.map(function(x){return '<tr><td>'+qmEscape(x[0])+'</td><td>'+qmEscape(x[1]||"–")+'</td><td>'+qmEscape(x[2]||"–")+'</td></tr>';}).join("")+'</tbody></table>');
     html+=qmPrintSection("Ergänzungen / Angaben zur Zufriedenheit",'<div class="qm-print-box">'+qmEscape(qmText("qmzufriedenheit")).replace(/\n/g,"<br>")+'</div>');
@@ -5085,6 +5107,18 @@ function printQmForm(type){
     html+='<div class="qm-print-signatures"><div class="qm-print-sign">'+qmEscape(qmText("bzeichen1")||"Unterschrift Mitarbeiter")+'</div><div class="qm-print-sign">'+qmEscape(qmText("bzeichen2")||"Unterschrift Begleitung")+'</div></div>';
   }
   area.innerHTML=html;
+  const originalParent=area.parentNode;
+  const originalNext=area.nextSibling;
+  const cleanup=function(){
+    if(originalParent){
+      if(originalNext && originalNext.parentNode===originalParent) originalParent.insertBefore(area,originalNext);
+      else originalParent.appendChild(area);
+    }
+    document.body.classList.remove("qm-printing");
+  };
+  document.body.appendChild(area);
+  document.body.classList.add("qm-printing");
+  window.addEventListener("afterprint",cleanup,{once:true});
   window.setTimeout(function(){window.print();},80);
 }
 
