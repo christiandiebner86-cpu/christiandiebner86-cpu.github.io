@@ -899,6 +899,63 @@ main {
   color: #8c2929;
 }
 
+
+
+/* =========================================================
+   DIGITALE QM-FORMULARE – ADMIN
+========================================================= */
+.qm-forms-admin{margin-top:28px;padding-top:28px;border-top:1px solid var(--line)}
+.qm-form-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.qm-form-tab{border:1px solid var(--line);background:#f6f8f2;color:var(--text);padding:11px 14px;border-radius:11px;font-weight:800;cursor:pointer}
+.qm-form-tab.active{background:var(--green);color:#fff;border-color:var(--green)}
+.qm-form-card{display:none;background:#fbfcfa;border:1px solid var(--line);border-radius:18px;padding:20px}
+.qm-form-card.active{display:block}
+.qm-form-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
+.qm-form-head h3{margin:0;font-size:21px}
+.qm-form-subtitle{margin:5px 0 0;color:var(--muted);font-size:13px}
+.qm-form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.qm-form-actions button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
+.qm-btn-print{background:#17313a;color:#fff}
+.qm-btn-reset{background:#ffe8e8;color:#8c2929}
+.qm-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.qm-field{display:flex;flex-direction:column;gap:6px}
+.qm-field.full{grid-column:1/-1}
+.qm-field label{font-weight:750;font-size:13px}
+.qm-field input,.qm-field select,.qm-field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 11px;font:inherit;background:#fff;color:var(--text);outline:none}
+.qm-field textarea{min-height:78px;resize:vertical}
+.qm-field input:focus,.qm-field select:focus,.qm-field textarea:focus{border-color:#a8c86f;box-shadow:0 0 0 3px rgba(118,168,43,.12)}
+.qm-check-table{width:100%;border-collapse:collapse;margin-top:9px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.qm-check-table th,.qm-check-table td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+.qm-check-table th{background:#f2f6ec;font-size:12px}
+.qm-check-table tr:last-child td{border-bottom:0}
+.qm-check-table .qm-status{width:170px}
+.qm-check-table select,.qm-check-table textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px;font:inherit;background:#fff}
+.qm-section-label{margin:22px 0 9px;font-size:16px;color:var(--green-dark)}
+.qm-note{padding:11px 13px;border-radius:11px;background:#f0f6e7;color:#4b5a3b;font-size:13px;line-height:1.5;margin-bottom:12px}
+.qm-sign-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:14px}
+.qm-print-area{display:none}
+.qm-form-hint{color:var(--muted);font-size:12px;margin-top:7px}
+@media(max-width:700px){.qm-form-grid,.qm-sign-grid{grid-template-columns:1fr}.qm-check-table{display:block;overflow-x:auto}.qm-check-table .qm-status{min-width:155px}}
+@media print{
+  body{background:#fff!important}
+  body *{visibility:hidden!important}
+  #qmPrintArea,#qmPrintArea *{visibility:visible!important}
+  #qmPrintArea{display:block!important;position:absolute;inset:0;width:100%;padding:18mm 15mm;background:#fff;color:#222}
+  .qm-print-title{font-size:22px;font-weight:800;color:#17313a;margin-bottom:4px}
+  .qm-print-meta{font-size:12px;color:#5f6c72;margin-bottom:16px}
+  .qm-print-section{margin-top:16px;break-inside:avoid}
+  .qm-print-section h4{font-size:14px;margin:0 0 7px;color:#4f7818}
+  .qm-print-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .qm-print-box{border:1px solid #ccd6d9;border-radius:7px;padding:8px;min-height:28px}
+  .qm-print-box strong{display:block;font-size:10px;text-transform:uppercase;color:#68777e;margin-bottom:3px}
+  .qm-print-table{width:100%;border-collapse:collapse;font-size:10.5px}
+  .qm-print-table th,.qm-print-table td{border:1px solid #ccd6d9;padding:6px;vertical-align:top}
+  .qm-print-table th{background:#f1f5ef!important;font-weight:800}
+  .qm-print-status{font-weight:800;white-space:nowrap}
+  .qm-print-signatures{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:30px}
+  .qm-print-sign{border-top:1px solid #777;padding-top:5px;font-size:10px}
+}
+
 /* =========================================================
    LOADING
 ========================================================= */
@@ -1674,6 +1731,10 @@ body.document-viewer-open {
     >
       🛡️ Adminbereich
     </a>
+    <a id="qmFormsNav" href="#qm-forms" style="display:none">
+      📋 QM-Formulare
+    </a>
+
 
   </div>
 
@@ -2238,6 +2299,128 @@ body.document-viewer-open {
       </table>
 
     </div>
+
+
+    <div id="qm-forms" class="qm-forms-admin">
+
+      <div class="admin-header" style="margin-bottom:10px">
+        <div>
+          <h2>📋 QM-Formulare</h2>
+          <p style="color:var(--muted)">Digitale Erfassung für die beiden QM-Bögen. Nur für Administratoren sichtbar.</p>
+        </div>
+      </div>
+
+      <div class="qm-note">
+        Die Formulare können direkt im Portal ausgefüllt und anschließend als saubere Druckansicht ausgegeben werden. Es wird hier bewusst kein Patienten-/Mitarbeiterinhalt in GitHub gespeichert.
+      </div>
+
+      <div class="qm-form-tabs" role="tablist">
+        <button type="button" class="qm-form-tab active" data-qm-tab="pflegevisite">📋 Pflegevisite QPR 2026</button>
+        <button type="button" class="qm-form-tab" data-qm-tab="begleitung">👩‍⚕️ Ergänzende praktische Begleitung</button>
+      </div>
+
+      <div id="qmFormPflegevisite" class="qm-form-card active">
+        <div class="qm-form-head">
+          <div><h3>Pflegevisite QPR 2026</h3><div class="qm-form-subtitle">Stammdaten, QPR-Bewertung und ergänzende pflegerische / medizinische Punkte</div></div>
+        </div>
+
+        <div class="qm-form-grid">
+          <div class="qm-field"><label for="qmpatient">Patient / Bewohner</label><input id="qmpatient" type="text"></div>
+          <div class="qm-field"><label for="qmbirth">Geb.-Dat.</label><input id="qmbirth" type="date"></div>
+          <div class="qm-field"><label for="qmlfd">Lfd.-Nr.</label><input id="qmlfd" type="text"></div>
+          <div class="qm-field"><label for="qmvisitdate">Datum der Pflegevisite</label><input id="qmvisitdate" type="date"></div>
+          <div class="qm-field full"><label for="qmvisiteur">Durchführende Person</label><input id="qmvisiteur" type="text"></div>
+        </div>
+
+        <h4 class="qm-section-label">QPR-Bereiche</h4>
+        <table class="qm-check-table">
+          <thead><tr><th>Bereich</th><th class="qm-status">Bewertung</th><th>Bemerkung / Feststellung</th></tr></thead>
+          <tbody>
+            <tr><td>1.1 Aufnahmemanagement</td><td><select data-qm-status="qpr11"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr11"></textarea></td></tr>
+            <tr><td>1.2 Erfassung von und Reaktion auf Risiken und Gefahren</td><td><select data-qm-status="qpr12"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr12"></textarea></td></tr>
+            <tr><td>1.3 Erfassung von und Reaktion auf Anzeichen einer Destabilisierung der Versorgungssituation</td><td><select data-qm-status="qpr13"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr13"></textarea></td></tr>
+            <tr><td>2.1 Unterstützung im Bereich der Mobilität</td><td><select data-qm-status="qpr21"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr21"></textarea></td></tr>
+            <tr><td>2.2 Unterstützung bei beeinträchtigter Kognition</td><td><select data-qm-status="qpr22"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr22"></textarea></td></tr>
+            <tr><td>2.3 Unterstützung im Bereich der Kommunikation</td><td><select data-qm-status="qpr23"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr23"></textarea></td></tr>
+            <tr><td>2.4 Unterstützung bei Verhaltensauffälligkeiten und psychischen Problemlagen</td><td><select data-qm-status="qpr24"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr24"></textarea></td></tr>
+            <tr><td>3.1 Atmung / Beatmung</td><td><select data-qm-status="qpr31"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr31"></textarea></td></tr>
+            <tr><td>3.2 Tracheostomaversorgung</td><td><select data-qm-status="qpr32"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr32"></textarea></td></tr>
+            <tr><td>3.3 Ernährung</td><td><select data-qm-status="qpr33"><option>🟢 In Ordnung</option><option>🟡 Beobachtung / Entwicklungsbedarf</option><option>🔴 Handlungsbedarf</option></select></td><td><textarea data-qm-note="qpr33"></textarea></td></tr>
+          </tbody>
+        </table>
+
+        <h4 class="qm-section-label">Ergänzende pflegerische / medizinische Angaben</h4>
+        <table class="qm-check-table">
+          <thead><tr><th>Prüfpunkt</th><th class="qm-status">Angabe</th><th>Details / Intervall</th></tr></thead>
+          <tbody>
+            <tr><td>Cuff vorhanden</td><td><select data-qm-special="cuff"><option>Nein</option><option>Ja</option></select></td><td><input data-qm-detail="cuff"></td></tr>
+            <tr><td>Cuff-Druck</td><td><input data-qm-special="cuffdruck" placeholder="z. B. cmH₂O"></td><td><span class="qm-form-hint">Messwert / Vorgabe</span></td></tr>
+            <tr><td>Inhalationsintervalle</td><td colspan="2"><input data-qm-special="inhalation"></td></tr>
+            <tr><td>Reinigungsintervalle</td><td colspan="2"><input data-qm-special="reinigung"></td></tr>
+            <tr><td>Katheter vorhanden</td><td><select data-qm-special="katheter"><option>Nein</option><option>Ja</option></select></td><td><select data-qm-detail="katheter"><option>suprapubisch</option><option>transurethral</option><option>sonstiger</option></select></td></tr>
+            <tr><td>Invasive Beatmung</td><td><select data-qm-special="invbeat"><option>Nein</option><option>Ja</option></select></td><td><input data-qm-detail="invbeat" placeholder="Gerät / Besonderheiten"></td></tr>
+            <tr><td>Nicht-invasive Beatmung</td><td><select data-qm-special="niv"><option>Nein</option><option>Ja</option></select></td><td><input data-qm-detail="niv" placeholder="Gerät / Besonderheiten"></td></tr>
+            <tr><td>Sauerstoff benötigt</td><td><select data-qm-special="o2"><option>Nein</option><option>Ja</option></select></td><td><input data-qm-detail="o2" placeholder="z. B. l/min, System"></td></tr>
+            <tr><td>Händedesinfektion</td><td><select data-qm-special="haendedes"><option>🟢 Sicher</option><option>🟡 Auffällig</option><option>🔴 Handlungsbedarf</option></select></td><td><input data-qm-detail="haendedes" placeholder="Bemerkung"></td></tr>
+            <tr><td>Flächendesinfektion / -mittel</td><td><select data-qm-special="flaeche"><option>🟢 Sicher</option><option>🟡 Auffällig</option><option>🔴 Handlungsbedarf</option></select></td><td><input data-qm-detail="flaeche" placeholder="Mittel / Bereich"></td></tr>
+            <tr><td>Einwirkzeit</td><td colspan="2"><input data-qm-special="einwirkzeit"></td></tr>
+            <tr><td>Reinigungs- / Desinfektionsintervalle</td><td colspan="2"><input data-qm-special="desintervalle"></td></tr>
+          </tbody>
+        </table>
+
+        <div class="qm-form-grid" style="margin-top:14px">
+          <div class="qm-field full"><label for="qmzufriedenheit">Ergänzungen / Angaben zur Zufriedenheit</label><textarea id="qmzufriedenheit"></textarea></div>
+        </div>
+        <div class="qm-sign-grid">
+          <div class="qm-field"><label for="qmzeichen1">Unterschrift / Name Pflegevisite</label><input id="qmzeichen1" type="text"></div>
+          <div class="qm-field"><label for="qmzeichen2">Unterschrift / Name Mitarbeiter / Bewohnervertretung</label><input id="qmzeichen2" type="text"></div>
+        </div>
+        <div class="qm-form-actions"><button type="button" class="qm-btn-print" onclick="printQmForm('pflegevisite')">🖨️ Drucken / PDF</button><button type="button" class="qm-btn-reset" onclick="resetQmForm('pflegevisite')">↺ Formular leeren</button></div>
+      </div>
+
+      <div id="qmFormBegleitung" class="qm-form-card">
+        <div class="qm-form-head">
+          <div><h3>Ergänzende praktische Begleitung</h3><div class="qm-form-subtitle">Mitarbeiterdaten direkt auf Seite 1 · praktische Durchführung · Unterstützungs- und Schulungsbedarf</div></div>
+        </div>
+
+        <h4 class="qm-section-label" style="margin-top:0">Mitarbeiterdaten</h4>
+        <div class="qm-form-grid">
+          <div class="qm-field"><label for="bmitarbeiter">Mitarbeiter</label><input id="bmitarbeiter" type="text"></div>
+          <div class="qm-field"><label for="bteam">Team / Bereich</label><input id="bteam" type="text"></div>
+          <div class="qm-field"><label for="bdatum">Datum</label><input id="bdatum" type="date"></div>
+          <div class="qm-field"><label for="bbegleiter">Begleitung durch</label><input id="bbegleiter" type="text"></div>
+          <div class="qm-field full"><label for="bposition">Funktion / Tätigkeit</label><input id="bposition" type="text"></div>
+        </div>
+
+        <h4 class="qm-section-label">Praktische Tätigkeiten</h4>
+        <table class="qm-check-table">
+          <thead><tr><th>Tätigkeit</th><th class="qm-status">Durchführung</th><th>Beobachtung / Hinweise</th></tr></thead>
+          <tbody>
+            <tr><td>Endotracheales Absaugen</td><td><select data-b-status="endo"><option>🟢 Sicher</option><option>🟡 Begleitungsbedarf</option><option>🔴 Schulungsbedarf</option><option>Nicht durchgeführt</option></select></td><td><textarea data-b-note="endo"></textarea></td></tr>
+            <tr><td>Orales Absaugen</td><td><select data-b-status="oral"><option>🟢 Sicher</option><option>🟡 Begleitungsbedarf</option><option>🔴 Schulungsbedarf</option><option>Nicht durchgeführt</option></select></td><td><textarea data-b-note="oral"></textarea></td></tr>
+            <tr><td>Wundversorgung</td><td><select data-b-status="wunde"><option>🟢 Sicher</option><option>🟡 Begleitungsbedarf</option><option>🔴 Schulungsbedarf</option><option>Nicht durchgeführt</option></select></td><td><textarea data-b-note="wunde"></textarea></td></tr>
+            <tr><td>Tracheostomaversorgung</td><td><select data-b-status="tracheo"><option>🟢 Sicher</option><option>🟡 Begleitungsbedarf</option><option>🔴 Schulungsbedarf</option><option>Nicht durchgeführt</option></select></td><td><textarea data-b-note="tracheo"></textarea></td></tr>
+            <tr><td>Hygiene / Händedesinfektion</td><td><select data-b-status="hygiene"><option>🟢 Sicher</option><option>🟡 Begleitungsbedarf</option><option>🔴 Schulungsbedarf</option><option>Nicht durchgeführt</option></select></td><td><textarea data-b-note="hygiene"></textarea></td></tr>
+            <tr><td>Weitere praktische Tätigkeit</td><td><select data-b-status="weitere"><option>🟢 Sicher</option><option>🟡 Begleitungsbedarf</option><option>🔴 Schulungsbedarf</option><option>Nicht durchgeführt</option></select></td><td><textarea data-b-note="weitere"></textarea></td></tr>
+          </tbody>
+        </table>
+
+        <div class="qm-form-grid" style="margin-top:14px">
+          <div class="qm-field full"><label for="bschulung">Festgestellter Unterstützungs- oder Schulungsbedarf</label><textarea id="bschulung"></textarea></div>
+          <div class="qm-field full"><label for="bmassnahme">Vereinbarte Maßnahme / Nachschulung</label><textarea id="bmassnahme"></textarea></div>
+          <div class="qm-field"><label for="bergebnis">Gesamtergebnis</label><select id="bergebnis"><option>🟢 Sicher durchgeführt</option><option>🟡 Teilweise sicher / Begleitung erforderlich</option><option>🔴 Schulung / Nachschulung erforderlich</option></select></div>
+          <div class="qm-field"><label for="bfolge">Erneute Begleitung am</label><input id="bfolge" type="date"></div>
+        </div>
+        <div class="qm-sign-grid">
+          <div class="qm-field"><label for="bzeichen1">Unterschrift Mitarbeiter</label><input id="bzeichen1" type="text"></div>
+          <div class="qm-field"><label for="bzeichen2">Unterschrift Begleitung</label><input id="bzeichen2" type="text"></div>
+        </div>
+        <div class="qm-form-actions"><button type="button" class="qm-btn-print" onclick="printQmForm('begleitung')">🖨️ Drucken / PDF</button><button type="button" class="qm-btn-reset" onclick="resetQmForm('begleitung')">↺ Formular leeren</button></div>
+      </div>
+
+    </div>
+
+    <div id="qmPrintArea" class="qm-print-area" aria-hidden="true"></div>
 
   </div>
 
@@ -3691,6 +3874,9 @@ function updateAdminVisibility() {
   const section =
     getElement("admin");
 
+  const qmFormsNav =
+    getElement("qmFormsNav");
+
 
   if (nav) {
 
@@ -3711,6 +3897,10 @@ function updateAdminVisibility() {
         ? "block"
         : "none";
 
+  }
+
+  if (qmFormsNav) {
+    qmFormsNav.style.display = isAdmin ? "block" : "none";
   }
 
 }
@@ -4803,6 +4993,70 @@ async function changeUserName(
 
   }
 
+}
+
+
+/* =========================================================
+   DIGITALE QM-FORMULARE
+========================================================= */
+function qmInitForms(){
+  document.querySelectorAll("[data-qm-tab]").forEach(function(btn){
+    if(btn.dataset.ready==="true")return;
+    btn.dataset.ready="true";
+    btn.addEventListener("click",function(){
+      const tab=btn.dataset.qmTab;
+      document.querySelectorAll("[data-qm-tab]").forEach(function(b){b.classList.toggle("active",b.dataset.qmTab===tab);});
+      const pv=document.getElementById("qmFormPflegevisite");
+      const bm=document.getElementById("qmFormBegleitung");
+      if(pv)pv.classList.toggle("active",tab==="pflegevisite");
+      if(bm)bm.classList.toggle("active",tab==="begleitung");
+    });
+  });
+}
+
+function qmText(id){const el=document.getElementById(id);return el?String(el.value||"").trim():"";}
+function qmStatus(selector){const el=document.querySelector(selector);return el?String(el.value||""):"";}
+function qmNote(selector){const el=document.querySelector(selector);return el?String(el.value||"").trim():"";}
+function qmEscape(v){return escapeHTML(v==null?"":v);}
+function qmPrintField(label,value){return '<div class="qm-print-box"><strong>'+qmEscape(label)+'</strong>'+qmEscape(value||"–").replace(/\n/g,"<br>")+'</div>';}
+function qmPrintSection(title,body){return '<div class="qm-print-section"><h4>'+qmEscape(title)+'</h4>'+body+'</div>';}
+function qmPrintDate(v){if(!v)return "–";const p=String(v).split("-");return p.length===3?p[2]+"."+p[1]+"."+p[0]:v;}
+
+function printQmForm(type){
+  qmInitForms();
+  const area=document.getElementById("qmPrintArea");
+  if(!area)return;
+  let html="";
+  if(type==="pflegevisite"){
+    html+='<div class="qm-print-title">Pflegevisite QPR 2026</div>';
+    html+='<div class="qm-print-meta">Digitale QM-Erfassung · Ausdruck / PDF</div>';
+    html+='<div class="qm-print-grid">'+qmPrintField("Patient / Bewohner",qmText("qmpatient"))+qmPrintField("Geb.-Dat.",qmPrintDate(qmText("qmbirth")))+qmPrintField("Lfd.-Nr.",qmText("qmlfd"))+qmPrintField("Datum Pflegevisite",qmPrintDate(qmText("qmvisitdate")))+qmPrintField("Durchführende Person",qmText("qmvisiteur"))+'</div>';
+    const qprs=[
+      ["1.1 Aufnahmemanagement","qpr11"],["1.2 Erfassung von und Reaktion auf Risiken und Gefahren","qpr12"],["1.3 Erfassung von und Reaktion auf Anzeichen einer Destabilisierung der Versorgungssituation","qpr13"],["2.1 Unterstützung im Bereich der Mobilität","qpr21"],["2.2 Unterstützung bei beeinträchtigter Kognition","qpr22"],["2.3 Unterstützung im Bereich der Kommunikation","qpr23"],["2.4 Unterstützung bei Verhaltensauffälligkeiten und psychischen Problemlagen","qpr24"],["3.1 Atmung / Beatmung","qpr31"],["3.2 Tracheostomaversorgung","qpr32"],["3.3 Ernährung","qpr33"]
+    ];
+    html+=qmPrintSection("QPR-Bereiche",'<table class="qm-print-table"><thead><tr><th>Bereich</th><th>Bewertung</th><th>Bemerkung / Feststellung</th></tr></thead><tbody>'+qprs.map(function(x){return '<tr><td>'+qmEscape(x[0])+'</td><td class="qm-print-status">'+qmEscape(qmStatus('[data-qm-status="'+x[1]+'"]'))+'</td><td>'+qmEscape(qmNote('[data-qm-note="'+x[1]+'"]')).replace(/\n/g,"<br>")+'</td></tr>';}).join("")+'</tbody></table>');
+    const specials=[["Cuff vorhanden",qmStatus('[data-qm-special="cuff"]'),qmText(document.querySelector('[data-qm-detail="cuff"]')?.value)],["Cuff-Druck",qmText(document.querySelector('[data-qm-special="cuffdruck"]')?.value),""],["Inhalationsintervalle",qmText(document.querySelector('[data-qm-special="inhalation"]')?.value),""],["Reinigungsintervalle",qmText(document.querySelector('[data-qm-special="reinigung"]')?.value),""],["Katheter vorhanden",qmStatus('[data-qm-special="katheter"]'),qmStatus('[data-qm-detail="katheter"]')],["Invasive Beatmung",qmStatus('[data-qm-special="invbeat"]'),qmText(document.querySelector('[data-qm-detail="invbeat"]')?.value)],["Nicht-invasive Beatmung",qmStatus('[data-qm-special="niv"]'),qmText(document.querySelector('[data-qm-detail="niv"]')?.value)],["Sauerstoff benötigt",qmStatus('[data-qm-special="o2"]'),qmText(document.querySelector('[data-qm-detail="o2"]')?.value)],["Händedesinfektion",qmStatus('[data-qm-special="haendedes"]'),qmText(document.querySelector('[data-qm-detail="haendedes"]')?.value)],["Flächendesinfektion / -mittel",qmStatus('[data-qm-special="flaeche"]'),qmText(document.querySelector('[data-qm-detail="flaeche"]')?.value)],["Einwirkzeit",qmText(document.querySelector('[data-qm-special="einwirkzeit"]')?.value),""],["Reinigungs- / Desinfektionsintervalle",qmText(document.querySelector('[data-qm-special="desintervalle"]')?.value),""]];
+    html+=qmPrintSection("Ergänzende pflegerische / medizinische Angaben",'<table class="qm-print-table"><thead><tr><th>Prüfpunkt</th><th>Angabe</th><th>Details / Intervall</th></tr></thead><tbody>'+specials.map(function(x){return '<tr><td>'+qmEscape(x[0])+'</td><td>'+qmEscape(x[1]||"–")+'</td><td>'+qmEscape(x[2]||"–")+'</td></tr>';}).join("")+'</tbody></table>');
+    html+=qmPrintSection("Ergänzungen / Angaben zur Zufriedenheit",'<div class="qm-print-box">'+qmEscape(qmText("qmzufriedenheit")).replace(/\n/g,"<br>")+'</div>');
+    html+='<div class="qm-print-signatures"><div class="qm-print-sign">'+qmEscape(qmText("qmzeichen1")||"Name / Unterschrift Pflegevisite")+'</div><div class="qm-print-sign">'+qmEscape(qmText("qmzeichen2")||"Name / Unterschrift")+'</div></div>';
+  }else{
+    html+='<div class="qm-print-title">Ergänzende praktische Begleitung</div><div class="qm-print-meta">Digitale QM-Erfassung · Ausdruck / PDF</div>';
+    html+='<div class="qm-print-grid">'+qmPrintField("Mitarbeiter",qmText("bmitarbeiter"))+qmPrintField("Team / Bereich",qmText("bteam"))+qmPrintField("Datum",qmPrintDate(qmText("bdatum")))+qmPrintField("Begleitung durch",qmText("bbegleiter"))+qmPrintField("Funktion / Tätigkeit",qmText("bposition"))+'</div>';
+    const bs=[["Endotracheales Absaugen","endo"],["Orales Absaugen","oral"],["Wundversorgung","wunde"],["Tracheostomaversorgung","tracheo"],["Hygiene / Händedesinfektion","hygiene"],["Weitere praktische Tätigkeit","weitere"]];
+    html+=qmPrintSection("Ergänzende praktische Begleitung",'<table class="qm-print-table"><thead><tr><th>Tätigkeit</th><th>Durchführung</th><th>Beobachtung / Hinweise</th></tr></thead><tbody>'+bs.map(function(x){return '<tr><td>'+qmEscape(x[0])+'</td><td class="qm-print-status">'+qmEscape(qmStatus('[data-b-status="'+x[1]+'"]'))+'</td><td>'+qmEscape(qmNote('[data-b-note="'+x[1]+'"]')).replace(/\n/g,"<br>")+'</td></tr>';}).join("")+'</tbody></table>');
+    html+=qmPrintSection("Ergebnis / Entwicklungsbedarf",'<div class="qm-print-grid">'+qmPrintField("Festgestellter Unterstützungs- oder Schulungsbedarf",qmText("bschulung"))+qmPrintField("Vereinbarte Maßnahme / Nachschulung",qmText("bmassnahme"))+qmPrintField("Gesamtergebnis",qmText("bergebnis"))+qmPrintField("Erneute Begleitung am",qmPrintDate(qmText("bfolge")))+'</div>');
+    html+='<div class="qm-print-signatures"><div class="qm-print-sign">'+qmEscape(qmText("bzeichen1")||"Unterschrift Mitarbeiter")+'</div><div class="qm-print-sign">'+qmEscape(qmText("bzeichen2")||"Unterschrift Begleitung")+'</div></div>';
+  }
+  area.innerHTML=html;
+  window.setTimeout(function(){window.print();},80);
+}
+
+function resetQmForm(type){
+  if(!confirm("Dieses QM-Formular wirklich leeren?"))return;
+  const card=document.getElementById(type==="pflegevisite"?"qmFormPflegevisite":"qmFormBegleitung");
+  if(!card)return;
+  card.querySelectorAll("input,textarea").forEach(function(el){el.value="";});
+  card.querySelectorAll("select").forEach(function(el){el.selectedIndex=0;});
 }
 
 
