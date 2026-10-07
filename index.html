@@ -4143,6 +4143,15 @@ async function loadAdminProfiles() {
                   >
                     🔓 Freischalten
                   </button>
+                  <button
+                    class="btn-lock"
+                    type="button"
+                    data-action="delete"
+                    data-user-id="${escapeHTML(profile.id)}"
+                    title="Gesperrtes Benutzerkonto endgültig entfernen"
+                  >
+                    🗑️ Entfernen
+                  </button>
                 `
             }
 
@@ -4261,6 +4270,9 @@ async function loadAdminProfiles() {
                 );
 
               }
+              else if (action === "delete") {
+                deleteUserAccount(userId);
+              }
               else if (action === "role") {
 
                 changeUserRole(
@@ -4316,6 +4328,61 @@ async function loadAdminProfiles() {
 /* =========================================================
    ADMIN STATUS
 ========================================================= */
+
+async function deleteUserAccount(userId) {
+
+  if (
+    !currentProfile ||
+    currentProfile.role !== "admin" ||
+    currentProfile.active !== true ||
+    !userId ||
+    !currentUser ||
+    userId === currentUser.id
+  ) {
+    return;
+  }
+
+  if (
+    !confirm(
+      "Dieses gesperrte Benutzerkonto wirklich endgültig entfernen?\n\n" +
+      "Der Benutzer kann sich danach nicht mehr mit diesem Konto anmelden."
+    )
+  ) {
+    return;
+  }
+
+  try {
+    const result = await withTimeout(
+      supabaseClient.functions.invoke(
+        "admin-delete-user",
+        { body: { user_id: userId } }
+      ),
+      15000,
+      "Das Entfernen hat zu lange gedauert."
+    );
+
+    if (result.error) {
+      throw result.error;
+    }
+
+    showAdminMessage(
+      "Das gesperrte Benutzerkonto wurde endgültig entfernt.",
+      "success"
+    );
+
+    await loadAdminProfiles();
+
+  }
+  catch (error) {
+    console.error("Benutzer entfernen:", error);
+    showAdminMessage(
+      "Entfernen fehlgeschlagen: " +
+      (error.message || "Unbekannter Fehler."),
+      "error"
+    );
+  }
+}
+
 
 async function changeUserStatus(
   userId,
