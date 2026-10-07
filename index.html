@@ -904,6 +904,15 @@ main {
 /* =========================================================
    DIGITALE QM-FORMULARE – ADMIN
 ========================================================= */
+.qm-record-toolbar{display:grid;grid-template-columns:minmax(260px,1fr) auto;gap:12px;align-items:end;margin-bottom:14px;padding:12px;border:1px solid var(--line);border-radius:13px;background:#f5f8f1}
+.qm-record-select-wrap{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:800;color:var(--muted)}
+.qm-record-select-wrap select{width:100%;border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px;font:inherit;color:var(--text)}
+.qm-record-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.qm-record-actions button{border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--text);padding:9px 11px;font-weight:800;cursor:pointer}
+.qm-record-actions button:hover{border-color:#a8c86f;background:#f8fbf3}
+.qm-record-actions .qm-btn-delete{color:#8c2929;background:#fff0f0;border-color:#efcaca}
+@media(max-width:700px){.qm-record-toolbar{grid-template-columns:1fr}.qm-record-actions{justify-content:stretch}.qm-record-actions button{flex:1}}
+
 .qm-forms-admin{margin-top:28px;padding-top:28px;border-top:1px solid var(--line)}
 .qm-form-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
 .qm-form-tab{border:1px solid var(--line);background:#f6f8f2;color:var(--text);padding:11px 14px;border-radius:11px;font-weight:800;cursor:pointer}
@@ -2320,6 +2329,19 @@ body.document-viewer-open {
       </div>
 
       <div id="qmFormPflegevisite" class="qm-form-card active">
+        <div class="qm-record-toolbar">
+          <label class="qm-record-select-wrap">
+            <span>Gespeicherte Pflegevisiten</span>
+            <select id="qmPflegevisiteRecordSelect" onchange="qmLoadSelectedRecord('pflegevisite',this.value)">
+              <option value="">+ Neue Pflegevisite</option>
+            </select>
+          </label>
+          <div class="qm-record-actions">
+            <button type="button" onclick="qmSaveForm('pflegevisite')">💾 Speichern</button>
+            <button type="button" onclick="qmRefreshRecords('pflegevisite')">🔄 Liste aktualisieren</button>
+            <button type="button" class="qm-btn-delete" onclick="qmDeleteCurrentRecord('pflegevisite')">🗑️ Löschen</button>
+          </div>
+        </div>
         <div class="qm-form-head">
           <div><h3>Pflegevisite QPR 2026</h3><div class="qm-form-subtitle">Stammdaten, QPR-Bewertung und ergänzende pflegerische / medizinische Punkte</div></div>
         </div>
@@ -2379,6 +2401,19 @@ body.document-viewer-open {
       </div>
 
       <div id="qmFormBegleitung" class="qm-form-card">
+        <div class="qm-record-toolbar">
+          <label class="qm-record-select-wrap">
+            <span>Gespeicherte Mitarbeiterbegleitungen</span>
+            <select id="qmBegleitungRecordSelect" onchange="qmLoadSelectedRecord('begleitung',this.value)">
+              <option value="">+ Neue Begleitung</option>
+            </select>
+          </label>
+          <div class="qm-record-actions">
+            <button type="button" onclick="qmSaveForm('begleitung')">💾 Speichern</button>
+            <button type="button" onclick="qmRefreshRecords('begleitung')">🔄 Liste aktualisieren</button>
+            <button type="button" class="qm-btn-delete" onclick="qmDeleteCurrentRecord('begleitung')">🗑️ Löschen</button>
+          </div>
+        </div>
         <div class="qm-form-head">
           <div><h3>Ergänzende praktische Begleitung</h3><div class="qm-form-subtitle">Mitarbeiterdaten direkt auf Seite 1 · praktische Durchführung · Unterstützungs- und Schulungsbedarf</div></div>
         </div>
@@ -4042,6 +4077,8 @@ async function initializePortal() {
     ) {
 
       await loadAdminProfiles();
+      await qmLoadSavedQmRecords("pflegevisite");
+      await qmLoadSavedQmRecords("begleitung");
 
     }
 
@@ -5059,6 +5096,133 @@ function resetQmForm(type){
   card.querySelectorAll("select").forEach(function(el){el.selectedIndex=0;});
 }
 
+
+
+/* =========================================================
+   GESPEICHERTE QM-FORMULARE
+========================================================= */
+const qmSavedFormRecords = { pflegevisite: [], begleitung: [] };
+const qmCurrentFormRecordId = { pflegevisite: "", begleitung: "" };
+
+function qmFormCard(type){
+  return document.getElementById(type === "pflegevisite" ? "qmFormPflegevisite" : "qmFormBegleitung");
+}
+function qmRecordSelect(type){
+  return document.getElementById(type === "pflegevisite" ? "qmPflegevisiteRecordSelect" : "qmBegleitungRecordSelect");
+}
+function qmCollectFormData(type){
+  const card=qmFormCard(type);
+  if(!card)return {};
+  const data={};
+  card.querySelectorAll("input,select,textarea").forEach(function(el){
+    const key=el.id || el.dataset.qmStatus || el.dataset.qmNote || el.dataset.qmSpecial || el.dataset.qmDetail || el.dataset.bStatus || el.dataset.bNote;
+    if(key)data[key]=el.value ?? "";
+  });
+  return data;
+}
+function qmApplyFormData(type,data){
+  const card=qmFormCard(type);
+  if(!card)return;
+  const values=data||{};
+  card.querySelectorAll("input,select,textarea").forEach(function(el){
+    const key=el.id || el.dataset.qmStatus || el.dataset.qmNote || el.dataset.qmSpecial || el.dataset.qmDetail || el.dataset.bStatus || el.dataset.bNote;
+    if(key && Object.prototype.hasOwnProperty.call(values,key))el.value=values[key]==null?"":String(values[key]);
+  });
+}
+function qmNewFormRecord(type){
+  qmCurrentFormRecordId[type]="";
+  const card=qmFormCard(type);
+  if(card){
+    card.querySelectorAll("input,textarea").forEach(function(el){el.value="";});
+    card.querySelectorAll("select").forEach(function(el){el.selectedIndex=0;});
+  }
+  const sel=qmRecordSelect(type);
+  if(sel)sel.value="";
+}
+function qmFormatRecordLabel(record){
+  const when=record.updated_at?new Date(record.updated_at).toLocaleDateString("de-DE"):"";
+  return (when?when+" · ":"")+(record.subject_name||"Ohne Zuordnung")+" · "+(record.form_type==="pflegevisite"?"Pflegevisite":"Begleitung");
+}
+async function qmLoadSavedQmRecords(type){
+  if(!currentProfile || currentProfile.role!=="admin" || currentProfile.active!==true)return;
+  const sel=qmRecordSelect(type);
+  if(!sel)return;
+  sel.disabled=true;
+  sel.innerHTML="<option value=''>Wird geladen …</option>";
+  try{
+    const result=await withTimeout(supabaseClient.rpc("admin_list_qm_form_records",{p_form_type:type}),10000,"Die gespeicherten QM-Formulare konnten nicht geladen werden.");
+    if(result.error)throw result.error;
+    qmSavedFormRecords[type]=Array.isArray(result.data)?result.data:[];
+    sel.innerHTML="<option value=''>+ Neue "+(type==="pflegevisite"?"Pflegevisite":"Begleitung")+"</option>";
+    qmSavedFormRecords[type].forEach(function(record){
+      const option=document.createElement("option");
+      option.value=record.id;
+      option.textContent=qmFormatRecordLabel(record);
+      sel.appendChild(option);
+    });
+    sel.value=qmCurrentFormRecordId[type]||"";
+  }catch(error){
+    qmSavedFormRecords[type]=[];
+    sel.innerHTML="<option value=''>Fehler beim Laden</option>";
+    console.error("QM-Formulare laden:",error);
+  }finally{sel.disabled=false;}
+}
+async function qmRefreshRecords(type){await qmLoadSavedQmRecords(type);}
+async function qmLoadSelectedRecord(type,id){
+  if(!id){qmNewFormRecord(type);return;}
+  const record=qmSavedFormRecords[type].find(function(item){return item.id===id;});
+  if(!record)return;
+  qmCurrentFormRecordId[type]=record.id;
+  qmApplyFormData(type,record.form_data||{});
+}
+async function qmSaveForm(type){
+  if(!currentProfile || currentProfile.role!=="admin" || currentProfile.active!==true){
+    alert("Nur aktive Administratoren dürfen QM-Formulare speichern."); return;
+  }
+  const data=qmCollectFormData(type);
+  const subjectName=type==="pflegevisite"?String(data.qmpatient||"").trim():String(data.bmitarbeiter||"").trim();
+  if(!subjectName){
+    alert(type==="pflegevisite"?"Bitte zuerst Patient / Bewohner eintragen.":"Bitte zuerst den Mitarbeiter eintragen."); return;
+  }
+  const existing=qmSavedFormRecords[type].find(function(item){return item.id===qmCurrentFormRecordId[type];});
+  const payload={
+    ...(existing?{id:existing.id,created_by:existing.created_by}:{}),
+    form_type:type,
+    title:type==="pflegevisite"?"Pflegevisite QPR 2026":"Ergänzende praktische Begleitung",
+    subject_name:subjectName,
+    subject_birth_date:type==="pflegevisite"?(data.qmbirth||null):null,
+    form_data:data,
+    created_by:existing?existing.created_by:currentUser.id,
+    updated_by:currentUser.id
+  };
+  try{
+    const result=await withTimeout(supabaseClient.from("qm_form_records").upsert(payload,{onConflict:"id"}).select().single(),12000,"Das QM-Formular konnte nicht gespeichert werden.");
+    if(result.error)throw result.error;
+    qmCurrentFormRecordId[type]=result.data.id;
+    await qmLoadSavedQmRecords(type);
+    const sel=qmRecordSelect(type); if(sel)sel.value=result.data.id;
+    alert("✅ QM-Formular wurde gespeichert.");
+  }catch(error){
+    console.error("QM-Formular speichern:",error);
+    alert("Speichern fehlgeschlagen: "+(error.message||"Unbekannter Fehler"));
+  }
+}
+async function qmDeleteCurrentRecord(type){
+  const id=qmCurrentFormRecordId[type];
+  if(!id){qmNewFormRecord(type);return;}
+  const record=qmSavedFormRecords[type].find(function(item){return item.id===id;});
+  if(!confirm("Dieses gespeicherte QM-Formular wirklich löschen?\n\n"+(record?.subject_name||"")))return;
+  try{
+    const result=await withTimeout(supabaseClient.rpc("admin_delete_qm_form_record",{p_id:id}),10000,"Das QM-Formular konnte nicht gelöscht werden.");
+    if(result.error)throw result.error;
+    qmNewFormRecord(type);
+    await qmLoadSavedQmRecords(type);
+    alert("QM-Formular wurde gelöscht.");
+  }catch(error){
+    console.error("QM-Formular löschen:",error);
+    alert("Löschen fehlgeschlagen: "+(error.message||"Unbekannter Fehler"));
+  }
+}
 
 /* =========================================================
    GITHUB FILE URL
