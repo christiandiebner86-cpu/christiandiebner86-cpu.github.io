@@ -3341,54 +3341,42 @@ function setupRegisterForm() {
 
 
         /*
-         * Administrator per E-Mail über die neue Registrierung informieren.
-         * Das passiert noch vor dem Logout, solange die neue Session gültig ist.
+         * Administrator über jede erfolgreiche Registrierung informieren.
+         * Funktion prüft den neuen Auth-Benutzer serverseitig; dadurch klappt
+         * die Meldung auch dann, wenn E-Mail-Bestätigung aktiv ist und Supabase
+         * zunächst keine Session zurückgibt.
          */
-        const registrationSession =
-          result.data &&
-          result.data.session;
+        try {
 
-        if (registrationSession) {
-
-          try {
-
-            const notification =
-              await withTimeout(
-                supabaseClient.functions.invoke(
-                  "notify-registration",
-                  {
-                    body: {
-                      name: name,
-                      email: email
-                    }
+          const notification =
+            await withTimeout(
+              supabaseClient.functions.invoke(
+                "notify-registration",
+                {
+                  body: {
+                    userId: user.id,
+                    name: name,
+                    email: email
                   }
-                ),
-                15000,
-                "Die Registrierungs-Benachrichtigung hat zu lange gedauert."
-              );
-
-            if (notification.error) {
-              console.warn(
-                "Registrierungs-Benachrichtigung konnte nicht gesendet werden:",
-                notification.error
-              );
-            }
-
-          }
-          catch (notificationError) {
-
-            console.warn(
-              "Registrierungs-Benachrichtigung:",
-              notificationError
+                }
+              ),
+              15000,
+              "Die Registrierungs-Benachrichtigung hat zu lange gedauert."
             );
 
+          if (notification.error) {
+            console.warn(
+              "Registrierungs-Benachrichtigung konnte nicht gesendet werden:",
+              notification.error
+            );
           }
 
         }
-        else {
+        catch (notificationError) {
 
           console.warn(
-            "Keine aktive Registrierungssession vorhanden; E-Mail-Benachrichtigung wurde nicht ausgelöst."
+            "Registrierungs-Benachrichtigung:",
+            notificationError
           );
 
         }
