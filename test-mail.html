@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#4f7818">
+<title>QM-Portal – E-Mail-Test</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:system-ui,-apple-system,sans-serif;background:#f5f7f8;color:#26343b;margin:0;padding:20px}
+main{max-width:520px;margin:7vh auto;background:white;padding:24px;border-radius:18px;box-shadow:0 8px 28px #0001}
+h1{font-size:1.45rem;color:#4f7818}p{line-height:1.5}
+button,a{display:inline-block;font:inherit;font-weight:700;border:0;border-radius:10px;padding:13px 16px}
+button{background:#76a82b;color:white;width:100%;cursor:pointer;margin-top:12px}
+button:disabled{opacity:.6}
+a{background:#eef6e4;color:#4f7818;text-decoration:none;margin-top:10px}
+#status{margin-top:16px;padding:12px;border-radius:10px;background:#f1f4f5;overflow-wrap:anywhere;white-space:pre-wrap}
+</style>
+</head>
+<body><main>
+<h1>Test-E-Mail – QM-Portal</h1>
+<p>Diese Seite sendet eine einzelne Testnachricht an <strong>christian.diebner86@gmail.com</strong>. Es wird kein Konto erstellt oder geändert. Der Test funktioniert nur, wenn du im QM-Portal mit dem vorgesehenen Administratorkonto angemeldet bist.</p>
+<button id="send" type="button">Test-E-Mail senden</button>
+<div id="status" role="status">Prüfe Anmeldung …</div>
+<a href="./">Zurück zum QM-Portal</a>
+</main>
+<script>
+const SUPABASE_URL="https://syvcomshcexhnxhplqhx.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_SQKuCSBTQK0uE6d2nfM5hg_UEeo8x2z";
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,storage:window.localStorage,storageKey:"qm-halle-auth-v1",autoRefreshToken:true,detectSessionInUrl:true}});
+const button=document.getElementById("send");
+const status=document.getElementById("status");
+async function checkSession(){
+ const {data,error}=await client.auth.getSession();
+ if(error){status.textContent="Anmeldung konnte nicht geprüft werden. Bitte öffne das Portal erneut und melde dich an.";return;}
+ if(!data.session){status.textContent="Keine aktive Anmeldung gefunden. Öffne das Portal, melde dich an und kehre dann zu dieser Testseite zurück.";return;}
+ status.textContent="Angemeldet als "+(data.session.user.email||"Benutzer")+". Du kannst den Test senden.";
+}
+button.addEventListener("click",async()=>{
+ button.disabled=true;status.textContent="Sende Testnachricht …";
+ try{
+  const {data,error}=await client.functions.invoke("notify-registration",{body:{action:"test"}});
+  if(error){status.textContent="Test fehlgeschlagen: "+error.message+"\nBitte sende mir genau diese Meldung (keine Passwörter oder Tokens).";return;}
+  if(data&&data.ok===true&&data.test===true&&data.id){status.textContent="Resend hat die Testnachricht angenommen.\nNachrichten-ID: "+data.id+"\nPrüfe jetzt den Posteingang und den Spam-Ordner.";}
+  else{status.textContent="Unerwartete Antwort: "+JSON.stringify(data);}
+ }catch(e){status.textContent="Fehler: "+(e&&e.message?e.message:String(e));}
+ finally{button.disabled=false;}
+});
+checkSession();
+</script>
+</body></html>
