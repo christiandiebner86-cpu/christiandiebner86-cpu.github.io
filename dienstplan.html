@@ -3070,7 +3070,7 @@ function tableFor(users,m,mode){
     for(let d=1;d<=count;d++){
       const disabled=(mode==="adminPrepare"&&r.submitted)||((mode==="employee"||mode==="leaderSelf"||mode==="adminSelf")&&r.submitted);
       const actor=mode==="leader"?`change('${u}','${m}',${d},this.value,'leader','Teamleitung ${esc(info.team)}').then(()=>renderLead())`
-        :mode==="admin"||mode==="adminPrepare"?`change('${u}','${m}',${d},this.value,'admin',${JSON.stringify(mode==="adminPrepare"?"Admin – Vorbereitung":"Admin")}).then(()=>renderAdmin())`
+        :mode==="admin"||mode==="adminPrepare"?`change('${u}','${m}',${d},this.value,'admin',${mode==="adminPrepare"?"'Admin – Vorbereitung'":"'Admin'"}).then(()=>renderAdmin())`
         :mode==="adminSelf"?`change('${u}','${m}',${d},this.value,'adminSelf','${esc(info.name)}').then(()=>renderAdmin())`
         :mode==="leaderSelf"?`change('${u}','${m}',${d},this.value,'employee','${esc(info.name)}').then(()=>renderLead())`
         :`change('${u}','${m}',${d},this.value,'employee','${esc(info.name)}')`;
