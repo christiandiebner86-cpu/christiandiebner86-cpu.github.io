@@ -1030,6 +1030,17 @@ button.danger{
     <button class="secondary" onclick="openVacation()">🏖️ Mein Jahresurlaub</button>
   </div>
 </div>
+<div class="card" style="background:#f0f9ff;border:1px solid #bae6fd">
+  <h3>📝 Dienstwunschplan für Mitarbeiter vorbereiten</h3>
+  <p class="small">Wähle einen Mitarbeiter aus und trage die Dienste oder freien Tage vor. Mit „Zur Bearbeitung freigeben“ wird der Entwurf im Mitarbeiterkonto gespeichert. Der Mitarbeiter kann ihn anschließend selbst ändern und mit „Plan abgeben“ bestätigen.</p>
+  <div class="toolbar">
+    <div style="min-width:240px;flex:1"><label for="adminPrepareUser">Mitarbeiter</label><select id="adminPrepareUser" onchange="renderAdminPreparation()"><option value="">Mitarbeiter auswählen</option></select></div>
+    <button type="button" class="secondary" onclick="renderAdminPreparation()">Plan anzeigen</button>
+    <button type="button" class="primary" id="adminPreparePublishBtn" onclick="publishAdminPreparedPlan()">📨 Zur Bearbeitung freigeben</button>
+  </div>
+  <div id="adminPrepareStatus" class="notice" style="margin-top:10px">Bitte einen Mitarbeiter auswählen.</div>
+  <div class="table-wrap"><table id="adminPrepareTable"></table></div>
+</div>
 <div id="adminApprovalStatus" style="margin:12px 0"></div><div class="actions"><button class="secondary" onclick="openTimesheetAdmin()">🕒 Stundenzettel – Admin</button><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div><div class="table-wrap"><table id="adminTable"></table></div>
 </div>
 <div class="card"><h3>Änderungsprotokoll Admin</h3><div class="table-wrap"><table class="log" id="adminLog"></table></div></div>
@@ -3054,18 +3065,18 @@ function tableFor(users,m,mode){
   for(let d=1;d<=count;d++)h+=`<th class="${weekend(m,d)?"weekend":""}"><div class="day">${d}</div><div class="weekday">${weekday(m,d)}</div></th>`;
   h+="</tr></thead><tbody>";
   users.forEach(([u,info])=>{
-    const r=getRec(u,m);if(mode!=="employee"&&mode!=="leaderSelf"&&mode!=="adminSelf"&&!r.submitted)return;
+    const r=getRec(u,m);if(mode!=="employee"&&mode!=="leaderSelf"&&mode!=="adminSelf"&&mode!=="adminPrepare"&&!r.submitted)return;
     h+=`<tr><th>${esc(info.name)}<div class="small">${esc(info.team)} ${r.submitted?"· abgegeben":"· offen"}</div></th>`;
     for(let d=1;d<=count;d++){
-      const disabled=(mode==="employee"||mode==="leaderSelf"||mode==="adminSelf")&&r.submitted;
+      const disabled=(mode==="adminPrepare"&&r.submitted)||((mode==="employee"||mode==="leaderSelf"||mode==="adminSelf")&&r.submitted);
       const actor=mode==="leader"?`change('${u}','${m}',${d},this.value,'leader','Teamleitung ${esc(info.team)}').then(()=>renderLead())`
-        :mode==="admin"?`change('${u}','${m}',${d},this.value,'admin','Admin').then(()=>renderAdmin())`
+        :mode==="admin"||mode==="adminPrepare"?`change('${u}','${m}',${d},this.value,'admin',${JSON.stringify(mode==="adminPrepare"?"Admin – Vorbereitung":"Admin")}).then(()=>renderAdmin())`
         :mode==="adminSelf"?`change('${u}','${m}',${d},this.value,'adminSelf','${esc(info.name)}').then(()=>renderAdmin())`
         :mode==="leaderSelf"?`change('${u}','${m}',${d},this.value,'employee','${esc(info.name)}').then(()=>renderLead())`
         :`change('${u}','${m}',${d},this.value,'employee','${esc(info.name)}')`;
 
-      const conflict=(mode==="leader"||mode==="admin")&&hasLeaderConflict(u,m,d);
-      const leaderChanged=mode==="admin"&&r.leaderEditedDays&&r.leaderEditedDays[d];
+      const conflict=(mode==="leader"||mode==="admin"||mode==="adminPrepare")&&hasLeaderConflict(u,m,d);
+      const leaderChanged=(mode==="admin"||mode==="adminPrepare")&&r.leaderEditedDays&&r.leaderEditedDays[d];
       let classes=[weekend(m,d)?"weekend":"",valueClass(r.entries[d]||"")];
       if(conflict) classes.push("conflict");
       if(leaderChanged) classes.push("leader-edited");
@@ -3229,9 +3240,13 @@ function renderEmp(){
 
   const status=document.getElementById("empStatus");
   if(status){
+    const preparedAt=r.leaderEditedDays && r.leaderEditedDays._adminPreparedAt;
+    const preparedBy=r.leaderEditedDays && r.leaderEditedDays._adminPreparedBy;
     status.innerHTML=r.submitted
       ? '<span class="badge ok">Abgegeben – zum Ändern zuerst zurückziehen</span>'
-      : '<span class="badge wait">Noch nicht abgegeben – Einträge können geändert werden</span>';
+      : preparedAt
+        ? '<span class="badge wait">📝 Von der Administration vorbereitet – bitte prüfen, bei Bedarf bearbeiten und anschließend abgeben.</span><div class="small">Vorbereitet am '+esc(new Date(preparedAt).toLocaleString("de-DE"))+(preparedBy?' von '+esc(preparedBy):'')+'.</div>'
+        : '<span class="badge wait">Noch nicht abgegeben – Einträge können geändert werden</span>';
   }
 
   const wishTable=document.getElementById("employeeWishTable");
@@ -3455,6 +3470,7 @@ function renderAdmin(){
   const m=document.getElementById("adminMonth").value;
   const t=document.getElementById("adminTeam").value;
   const users=Object.entries(USERS).filter(([u,i])=>t==="ALL"||i.team===t);
+  renderAdminPreparation();
 
   const ownCard=document.getElementById("adminOwnWishCard");
   const ownNoTeam=document.getElementById("adminOwnNoTeam");
@@ -3624,6 +3640,84 @@ function renderAdmin(){
 
   renderLog("adminLog",m,t,false);
 }
+function renderAdminPreparation(){
+  const month=document.getElementById("adminMonth")?.value || nowMonth();
+  const teamFilter=document.getElementById("adminTeam")?.value || "ALL";
+  const select=document.getElementById("adminPrepareUser");
+  const table=document.getElementById("adminPrepareTable");
+  const status=document.getElementById("adminPrepareStatus");
+  const publishBtn=document.getElementById("adminPreparePublishBtn");
+  if(!select||!table||!status||!publishBtn)return;
+
+  const available=Object.entries(USERS)
+    .filter(([u,info])=>!info.isAdmin && (teamFilter==="ALL" || info.team===teamFilter))
+    .sort((a,b)=>a[1].name.localeCompare(b[1].name,"de"));
+  const previous=select.value;
+  select.innerHTML='<option value="">Mitarbeiter auswählen</option>'+
+    available.map(([u,info])=>`<option value="${esc(u)}">${esc(info.name)} – ${esc(info.team)}</option>`).join("");
+  if(available.some(([u])=>u===previous))select.value=previous;
+  else if(available.length)select.value=available[0][0];
+
+  const u=select.value;
+  if(!u || !USERS[u]){
+    table.innerHTML="";
+    status.textContent="Für die aktuelle Auswahl ist kein Mitarbeiter verfügbar.";
+    publishBtn.disabled=true;
+    return;
+  }
+  const r=getRec(u,month);
+  const preparedAt=r.leaderEditedDays && r.leaderEditedDays._adminPreparedAt;
+  table.innerHTML=tableFor([[u,USERS[u]]],month,"adminPrepare");
+  if(r.submitted){
+    status.innerHTML='<span class="badge ok">Dieser Plan wurde bereits abgegeben.</span><div class="small">Die Vorbereitung ist gesperrt. Wenn eine Korrektur nötig ist, nutze bitte den bestehenden Admin-Planprozess.</div>';
+    publishBtn.disabled=true;
+  }else if(preparedAt){
+    status.innerHTML='<span class="badge ok">Bereits zur Bearbeitung freigegeben</span><div class="small">Freigegeben am '+esc(new Date(preparedAt).toLocaleString("de-DE"))+'. Der Mitarbeiter kann den Plan bearbeiten und abgeben.</div>';
+    publishBtn.disabled=false;
+  }else{
+    status.innerHTML='<span class="badge wait">Entwurf – Änderungen werden automatisch gespeichert. Erst nach der Freigabe erscheint der Hinweis beim Mitarbeiter.</span>';
+    publishBtn.disabled=false;
+  }
+}
+
+async function publishAdminPreparedPlan(){
+  if(session.role!=="admin"){
+    alert("Nur Admins können einen Dienstwunschplan vorbereiten.");
+    return;
+  }
+  const u=document.getElementById("adminPrepareUser")?.value;
+  const month=document.getElementById("adminMonth")?.value || nowMonth();
+  if(!u || !USERS[u]){
+    alert("Bitte zuerst einen Mitarbeiter auswählen.");
+    return;
+  }
+  const r=getRec(u,month);
+  if(r.submitted){
+    alert("Dieser Plan wurde bereits abgegeben und kann hier nicht als Entwurf freigegeben werden.");
+    return;
+  }
+  const info=USERS[u];
+  if(!confirm("Den vorbereiteten Dienstwunschplan für "+info.name+" für "+month+" zur eigenen Bearbeitung freigeben? Der Mitarbeiter kann die Einträge danach selbst ändern und den Plan abgeben."))return;
+
+  const s=state(),k=recKey(u,month);
+  if(!s.plans[k])s.plans[k]={entries:{},submitted:false,submittedAt:null,leaderEditedDays:{}};
+  if(!s.plans[k].leaderEditedDays)s.plans[k].leaderEditedDays={};
+  s.plans[k].leaderEditedDays._adminPreparedAt=new Date().toISOString();
+  s.plans[k].leaderEditedDays._adminPreparedBy=USERS[session.user]?.name || "Administration";
+  s.plans[k].submitted=false;
+  s.plans[k].submittedAt=null;
+  save(s);
+  try{
+    await qmSavePlanForUser(u,month);
+    await qmLoadPlansForMonth(month);
+    renderAdmin();
+    alert("Der Dienstwunschplan wurde freigegeben. "+info.name+" kann ihn jetzt bearbeiten und anschließend abgeben.");
+  }catch(error){
+    console.error("Admin-Vorbereitung speichern:",error);
+    alert("Die Freigabe konnte nicht zentral gespeichert werden: "+(error.message||"Unbekannter Fehler"));
+  }
+}
+
 function renderVacation(){
   const y=Number(document.getElementById("vacationYear").value);
 
