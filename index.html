@@ -473,6 +473,14 @@ main {
   color: var(--muted);
 }
 
+.qm-forms-accordion{margin-top:22px;border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 5px 18px rgba(0,0,0,.05)}
+.qm-forms-accordion>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 20px;cursor:pointer;list-style:none;font-weight:800;color:var(--green-dark);font-size:17px;background:#f5f9ef}
+.qm-forms-accordion>summary::-webkit-details-marker{display:none}
+.qm-forms-accordion>summary::after{content:"＋";font-size:22px;margin-left:auto}
+.qm-forms-accordion[open]>summary::after{content:"−"}
+.qm-forms-accordion>summary span{font-size:12px;font-weight:600;color:var(--muted)}
+.qm-forms-accordion[open]>#qm-forms{padding:20px}
+
 /* =========================================================
    CONTENT
 ========================================================= */
@@ -2311,7 +2319,9 @@ body.document-viewer-open {
     </div>
 
 
-    <div id="qm-forms" class="qm-forms-admin">
+    <details class="qm-forms-accordion">
+<summary>📋 Pflegevisite und QM-Formulare <span>Zum Öffnen anklicken</span></summary>
+<div id="qm-forms" class="qm-forms-admin">
 
       <div class="admin-header" style="margin-bottom:10px">
         <div>
@@ -2494,7 +2504,7 @@ body.document-viewer-open {
         <div class="qm-form-actions"><button type="button" class="qm-btn-print" onclick="printQmForm('begleitung')">🖨️ Drucken / PDF</button><button type="button" class="qm-btn-reset" onclick="resetQmForm('begleitung')">↺ Formular leeren</button></div>
       </div>
 
-    </div>
+    </div></details>
 
     <div id="qmPrintArea" class="qm-print-area" aria-hidden="true"></div>
 
