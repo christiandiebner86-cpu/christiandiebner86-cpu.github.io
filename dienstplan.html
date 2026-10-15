@@ -3830,8 +3830,8 @@ async function saveTeamDraftCell(userId,day,value){
   const draftShifts=qmTeamDraftCache.entries[userId];
   const previous=day>1?(draftShifts[String(day-1)]||""):"";
   const next=day<days(month)?(draftShifts[String(day+1)]||""):"";
-  const conflictAfterNight=previous==="N" && ["T","B"].includes(value);
-  const conflictBeforeDay=value==="N" && ["T","B"].includes(next);
+  const conflictAfterNight=previous==="N" && ["T","B","U"].includes(value);
+  const conflictBeforeDay=value==="N" && ["T","B","U"].includes(next);
   if(conflictAfterNight || conflictBeforeDay){
     const issueDay=conflictAfterNight?day-1:day;
     const followDay=conflictAfterNight?day:day+1;
