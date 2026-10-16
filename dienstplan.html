@@ -4443,6 +4443,13 @@ function renderLog(id,m,team,leaderOnly){
 
 
 <script>
+/* Lokaler HTML-Escaper: dieses Script darf nicht von Hilfsfunktionen
+   aus dem vorherigen Script-Block abhängen. */
+function qmEsc(value){
+  return String(value == null ? "" : value).replace(/[&<>"']/g, ch => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[ch]);
+}
 /* =========================================================
    AUTOMATISCHE QM-PORTAL-ANMELDUNG
    Nutzt dieselbe Supabase-Session wie index.html.
@@ -4508,7 +4515,7 @@ async function qmLoadTeams(){
   if(sel){
     const old=sel.value||"ALL";
     sel.innerHTML='<option value="ALL">Alle Teams</option>'+
-      teams.map(t=>`<option value="${esc(t)}">${esc(t)}${teamMeta[t]&&teamMeta[t].is_springer?" (Springer)":""}</option>`).join("");
+      teams.map(t=>`<option value="${qmEsc(t)}">${qmEsc(t)}${teamMeta[t]&&teamMeta[t].is_springer?" (Springer)":""}</option>`).join("");
     sel.value=teams.includes(old)?old:"ALL";
   }
 }
