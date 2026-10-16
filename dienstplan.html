@@ -4454,6 +4454,11 @@ function qmEsc(value){
    AUTOMATISCHE QM-PORTAL-ANMELDUNG
    Nutzt dieselbe Supabase-Session wie index.html.
 ========================================================= */
+// Eigene Referenz im QM-Skript: unabhängig davon, ob der Hauptskript-Block
+// seine globalen Variablen erfolgreich initialisiert hat.
+const qmUsers = window.USERS || (window.USERS = {});
+const qmTeams = window.TEAMS || (window.TEAMS = []);
+const qmTeamMeta = window.TEAM_META || (window.TEAM_META = {});
 const QM_SUPABASE_URL = "https://syvcomshcexhnxhplqhx.supabase.co";
 const QM_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_SQKuCSBTQK0uE6d2nfM5hg_UEeo8x2z";
 let qmSupabase = null;
@@ -4470,7 +4475,7 @@ function qmUserKey(profileId){
 }
 
 function qmReplaceUsers(rows){
-  Object.keys(USERS).forEach(k=>delete USERS[k]);
+  Object.keys(qmUsers).forEach(k=>delete qmUsers[k]);
 
   (rows || []).forEach(p=>{
     if(!p || !p.id || !p.active) return;
@@ -4482,7 +4487,7 @@ function qmReplaceUsers(rows){
     ) return;
 
     const key=qmUserKey(p.id);
-    USERS[key]={
+    qmUsers[key]={
       id:p.id,
       name:p.name || "Ohne Namen",
       team:p.team || "Nicht zugeordnet",
@@ -4499,8 +4504,8 @@ async function qmLoadTeams(){
 
   // Diese QM-Funktionen laufen in einem eigenen Script. Deshalb die Teamdaten
   // ausdrücklich über window beziehen, statt eine globale Lexical-Variable vorauszusetzen.
-  const teams = window.TEAMS || (window.TEAMS = []);
-  const teamMeta = window.TEAM_META || (window.TEAM_META = {});
+  const teams = window.qmTeams || (window.qmTeams = []);
+  const teamMeta = window.qmTeamMeta || (window.qmTeamMeta = {});
 
   teams.splice(0,teams.length);
   Object.keys(teamMeta).forEach(k=>delete teamMeta[k]);
@@ -4540,8 +4545,8 @@ async function qmLoadDutyUsers(currentProfile){
     (currentProfile.role==="mitarbeiter" || currentProfile.role==="teamleitung" || currentProfile.role==="admin")
   ){
     const key=qmUserKey(currentProfile.id);
-    if(!USERS[key]){
-      USERS[key]={
+    if(!qmUsers[key]){
+      qmUsers[key]={
         id:currentProfile.id,
         name:currentProfile.name || (currentProfile.role==="admin" ? "Administrator" : "Mitarbeiter"),
         team:currentProfile.team || "Nicht zugeordnet",
@@ -4554,7 +4559,7 @@ async function qmLoadDutyUsers(currentProfile){
 
 function qmFindLocalUserByName(name){
   const n=qmNormalizeName(name);
-  return Object.keys(USERS).find(k=>qmNormalizeName(USERS[k].name)===n) || null;
+  return Object.keys(qmUsers).find(k=>qmNormalizeName(qmUsers[k].name)===n) || null;
 }
 
 
@@ -4590,7 +4595,7 @@ async function qmLoadPlansForMonth(month){
 async function qmSavePlanForUser(localUser,month){
   if(!qmSupabase || !localUser || !month)return;
 
-  const info=USERS[localUser];
+  const info=qmUsers[localUser];
   if(!info || !info.id)return;
 
   const r=getRec(localUser,month);
@@ -4760,8 +4765,8 @@ async function qmOpenDutyPlanner(){
 
     let localUser=qmUserKey(profile.id);
 
-    if(!USERS[localUser]){
-      USERS[localUser]={
+    if(!qmUsers[localUser]){
+      qmUsers[localUser]={
         id:profile.id,
         name:profile.name || authUser.email || "Mitarbeiter",
         team:profile.team || "Nicht zugeordnet",
@@ -4770,7 +4775,7 @@ async function qmOpenDutyPlanner(){
     }
 
     if(profile.role==="teamleitung"){
-      const team=profile.team || (USERS[localUser] && USERS[localUser].team) || "Nicht zugeordnet";
+      const team=profile.team || (qmUsers[localUser] && qmUsers[localUser].team) || "Nicht zugeordnet";
       session={role:"leader",user:localUser,team:team};
       document.getElementById("leadMonth").value=nowMonth();
       await qmLoadPlansForMonth(nowMonth());
