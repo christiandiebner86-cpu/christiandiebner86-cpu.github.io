@@ -2679,6 +2679,12 @@ async function qmNotifyDutyplanSubmission(team,month){
   if(result.data && result.data.error)throw new Error(result.data.error);
   return result.data;
 }
+async function qmNotifyDutyplanApproval(team,month){
+  const result=await qmSupabase.functions.invoke("notify-dutyplan-approval",{body:{team,month}});
+  if(result.error)throw result.error;
+  if(result.data && result.data.error)throw new Error(result.data.error);
+  return result.data;
+}
 async function qmSaveWorkflowStatus(team,month,action,employeeConfirmations,note){
   const result=await qmSupabase.rpc(
     "save_dutyplan_workflow_status",
@@ -2850,8 +2856,15 @@ async function adminApproveTeam(team,m){
 
   try{
     await qmSaveWorkflowStatus(team,m,"admin_approve",{},"");
+    let emailWarning="";
+    try{
+      await qmNotifyDutyplanApproval(team,m);
+    }catch(emailError){
+      console.error("Freigabe-E-Mail:",emailError);
+      emailWarning="\\n\\nAchtung: Die Freigabe wurde gespeichert, aber die E-Mail an die Mitarbeiter konnte nicht versendet werden. Bitte E-Mail-Konfiguration prüfen.";
+    }
     await qmLoadTeamApprovals(m);
-    alert("Bestätigt. Der Dienstwunschplan ist jetzt der Dienstplan.");
+    alert("Bestätigt. Der Dienstwunschplan ist jetzt der Dienstplan."+emailWarning);
     renderAdmin();
   }catch(error){
     alert("Admin-Freigabe fehlgeschlagen: "+(error.message||"Unbekannter Fehler"));
