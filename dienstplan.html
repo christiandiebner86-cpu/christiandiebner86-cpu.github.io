@@ -2961,7 +2961,7 @@ async function adminRejectTeam(team,m){
 
 async function confirmFinalPlan(){
   const m=document.getElementById("empMonth").value;
-  const team=USERS[session.user].team;
+  const team=window.USERS[session.user].team;
   const a=getApproval(team,m);
 
   if(!a.adminApproved){
@@ -3015,7 +3015,7 @@ function validateWishFree(u,m,day,newValue){
 
 async function change(u,m,day,value,actorRole,actorName){
   const ownEntry = actorRole==="employee" || actorRole==="adminSelf";
-  if(isSpringerTeam(USERS[u]?.team) && ownEntry && (value==="T"||value==="N")){
+  if(isSpringerTeam(window.USERS[u]?.team) && ownEntry && (value==="T"||value==="N")){
     alert("Im Springer-Team dürfen keine Tag- oder Nachtdienstwünsche eingetragen werden.");
     if(actorRole==="adminSelf")renderAdmin(); else renderEmp();
     return;
@@ -3043,7 +3043,7 @@ async function change(u,m,day,value,actorRole,actorName){
     const followDay=conflictAfterNight?day:day+1;
     const followValue=conflictAfterNight?value:next;
     const followName=followValue==="T"?"Tagdienst":followValue==="B"?"Bürodienst":"Urlaub";
-    alert("⚠️ Dienstplanfehler: "+USERS[u].name+" hat am "+issueDay+"."+m.split("-")[1]+" Nachtdienst und am "+followDay+"."+m.split("-")[1]+" direkt danach "+followName+". Diese Eintragung wurde nicht übernommen.");
+    alert("⚠️ Dienstplanfehler: "+window.USERS[u].name+" hat am "+issueDay+"."+m.split("-")[1]+" Nachtdienst und am "+followDay+"."+m.split("-")[1]+" direkt danach "+followName+". Diese Eintragung wurde nicht übernommen.");
     if(actorRole==="leader")renderLead();
     else if(actorRole==="employee")renderEmp();
     else renderAdmin();
@@ -3053,7 +3053,7 @@ async function change(u,m,day,value,actorRole,actorName){
   if(actorRole==="leader"){
     s.plans[k].leaderEditedDays[day]=true;
     if(!s.approvals)s.approvals={};
-    const ak=approvalKey(USERS[u].team,m);
+    const ak=approvalKey(window.USERS[u].team,m);
     if(s.approvals[ak] && s.approvals[ak].approved){
       s.approvals[ak]={approved:false,approvedAt:null,employeeConfirmations:{}};
     }
@@ -3062,7 +3062,7 @@ async function change(u,m,day,value,actorRole,actorName){
     // Admin-Änderungen lassen die Teamleiter-Freigabe bestehen.
     // Mitarbeiterbestätigungen werden ebenfalls nicht automatisch zurückgesetzt.
   }
-  if(actorRole!=="employee" && actorRole!=="adminSelf")s.logs.push({time:new Date().toISOString(),month:m,user:u,employee:USERS[u].name,team:USERS[u].team,day,oldValue:old,newValue:value,actorRole,actorName});
+  if(actorRole!=="employee" && actorRole!=="adminSelf")s.logs.push({time:new Date().toISOString(),month:m,user:u,employee:window.USERS[u].name,team:window.USERS[u].team,day,oldValue:old,newValue:value,actorRole,actorName});
   save(s);
 
   try{
@@ -3107,7 +3107,7 @@ async function submitEmp(){
 }
 async function reopenEmp(){
   const m=document.getElementById("empMonth").value,s=state(),k=recKey(session.user,m),r=getRec(session.user,m);
-  const team=USERS[session.user].team;
+  const team=window.USERS[session.user].team;
   const a=getApproval(team,m);
 
   if(a.adminApproved){
@@ -3148,7 +3148,7 @@ async function reopenEmp(){
 }
 
 function allowedValuesForUser(u){
-  const team=(USERS[u]&&USERS[u].team)||"";
+  const team=(window.USERS[u]&&window.USERS[u].team)||"";
   if(isSpringerTeam(team)){
     return [
       ["","–"],
@@ -3232,7 +3232,7 @@ function tableFor(users,m,mode){
 }
 
 function candidateScore(u,m,day,target){
-  if(isSpringerTeam(USERS[u]?.team) && (target==="T"||target==="N"))return -999;
+  if(isSpringerTeam(window.USERS[u]?.team) && (target==="T"||target==="N"))return -999;
   const r=getRec(u,m), cur=r.entries[day]||"";
   if(cur==="Urlaub"||cur==="WF"||cur==="B"||cur==="HO")return -999;
   if(target==="T" && day>1 && (r.entries[day-1]||"")==="N")return -999;
@@ -3323,7 +3323,7 @@ function buildSuggestions(team,m,needT,needN){
 }
 function applySuggestion(role,user,m,day,target){
   const actorRole=role==="leader"?"leader":"admin";
-  const actorName=role==="leader"?"Teamleitung "+USERS[user].team:"Admin";
+  const actorName=role==="leader"?"Teamleitung "+window.USERS[user].team:"Admin";
   change(user,m,day,target,actorRole,actorName);
   if(role==="leader"){renderLead();renderSuggestions("leader")}
   else{renderAdmin();renderSuggestions("admin")}
@@ -3363,7 +3363,7 @@ function renderSuggestions(role){
 
 
 function renderEmployeeWishTable(u,m){
-  return tableFor([[u,USERS[u]]],m,"employee");
+  return tableFor([[u,window.USERS[u]]],m,"employee");
 }
 
 function renderEmp(){
@@ -3371,7 +3371,7 @@ function renderEmp(){
   document.getElementById("empMonth").value=m;
 
   const r=getRec(session.user,m);
-  const info=USERS[session.user];
+  const info=window.USERS[session.user];
 
   const title=document.getElementById("empTitle");
   const meta=document.getElementById("empMeta");
@@ -3435,7 +3435,7 @@ async function submitLeaderOwn(){
 async function reopenLeaderOwn(){
   if(!session.user)return;
   const m=document.getElementById("leadMonth").value,s=state(),k=recKey(session.user,m),r=getRec(session.user,m);
-  const team=USERS[session.user].team;
+  const team=window.USERS[session.user].team;
   const a=getApproval(team,m);
 
   if(a.adminApproved){
@@ -3471,14 +3471,14 @@ function renderLead(){
   const a=getApproval(session.team,m);
 
   const ownCard=document.getElementById("leaderOwnWishCard");
-  if(session.user&&USERS[session.user]){
+  if(session.user&&window.USERS[session.user]){
     ownCard.classList.remove("hidden");
     const own=getRec(session.user,m);
     document.getElementById("leaderOwnStatus").innerHTML=own.submitted
       ? '<span class="badge ok">Eigener Dienstwunschplan abgegeben</span>'
       : '<span class="badge wait">Eigener Dienstwunschplan noch offen</span>';
     document.getElementById("leaderOwnTable").innerHTML=
-      tableFor([[session.user,USERS[session.user]]],m,"leaderSelf");
+      tableFor([[session.user,window.USERS[session.user]]],m,"leaderSelf");
   }else{
     ownCard.classList.add("hidden");
   }
@@ -3533,8 +3533,8 @@ function renderLead(){
   renderLog("leadLog",m,session.team,true);
 }
 async function submitAdminOwn(){
-  if(!session.user || !USERS[session.user])return;
-  const info=USERS[session.user];
+  if(!session.user || !window.USERS[session.user])return;
+  const info=window.USERS[session.user];
   if(!info.team || info.team==="Nicht zugeordnet"){
     alert("Bitte dem Admin zuerst im QM-Portal ein Team zuweisen.");
     return;
@@ -3566,8 +3566,8 @@ async function submitAdminOwn(){
 }
 
 async function reopenAdminOwn(){
-  if(!session.user || !USERS[session.user])return;
-  const info=USERS[session.user];
+  if(!session.user || !window.USERS[session.user])return;
+  const info=window.USERS[session.user];
   if(!info.team || info.team==="Nicht zugeordnet"){
     alert("Bitte dem Admin zuerst im QM-Portal ein Team zuweisen.");
     return;
@@ -3652,7 +3652,7 @@ function dutyWishPrintDocument(title,body,landscape){
   w.document.close();
 }
 function dutyWishPrintTable(userKey,month){
-  const info=USERS[userKey]||{};
+  const info=window.USERS[userKey]||{};
   const rec=getRec(userKey,month);
   const count=days(month);
   const weekdays=["So","Mo","Di","Mi","Do","Fr","Sa"];
@@ -3678,7 +3678,7 @@ function dutyWishPrintTable(userKey,month){
 function dutyWishSubmittedUsers(){
   const month=document.getElementById("adminMonth")?.value||nowMonth();
   const team=document.getElementById("adminTeam")?.value||"ALL";
-  return Object.entries(USERS).filter(([key,info])=>(team==="ALL"||info.team===team)&&getRec(key,month).submitted===true);
+  return Object.entries(window.USERS).filter(([key,info])=>(team==="ALL"||info.team===team)&&getRec(key,month).submitted===true);
 }
 function refreshDutyWishPrintOptions(){
   const select=document.getElementById("printWishUser");
@@ -3693,7 +3693,7 @@ function printSelectedWishPlan(){
   if(!key){alert("Bitte zuerst einen abgegebenen Dienstwunschplan auswählen.");return;}
   const month=document.getElementById("adminMonth")?.value||nowMonth();
   if(!getRec(key,month).submitted){alert("Dieser Dienstwunschplan wurde noch nicht abgegeben.");return;}
-  dutyWishPrintDocument("Dienstwunschplan – "+(USERS[key]?.name||key)+" – "+month,dutyWishPrintTable(key,month),true);
+  dutyWishPrintDocument("Dienstwunschplan – "+(window.USERS[key]?.name||key)+" – "+month,dutyWishPrintTable(key,month),true);
 }
 function printSubmittedWishOverview(){
   const month=document.getElementById("adminMonth")?.value||nowMonth();
@@ -3739,7 +3739,7 @@ function printSubmittedWishOverview(){
 function renderAdmin(){
   const m=document.getElementById("adminMonth").value;
   const t=document.getElementById("adminTeam").value;
-  const users=Object.entries(USERS).filter(([u,i])=>t==="ALL"||i.team===t);
+  const users=Object.entries(window.USERS).filter(([u,i])=>t==="ALL"||i.team===t);
   ensureDraftTeamOptions();
   renderTeamDraftAdmin();
   void refreshTeamDraftAdmin();
@@ -3767,9 +3767,9 @@ function renderAdmin(){
   const ownStatus=document.getElementById("adminOwnStatus");
   const ownTable=document.getElementById("adminOwnTable");
 
-  if(session.user && USERS[session.user]){
+  if(session.user && window.USERS[session.user]){
     ownCard.classList.remove("hidden");
-    const info=USERS[session.user];
+    const info=window.USERS[session.user];
     const hasTeam=!!info.team && info.team!=="Nicht zugeordnet";
     ownNoTeam.classList.toggle("hidden",hasTeam);
 
@@ -3945,7 +3945,7 @@ function ensureDraftTeamOptions(){
   const select=document.getElementById("adminDraftTeam");
   if(!select)return;
   const previous=select.value;
-  const teams=[...new Set(Object.values(USERS).map(x=>x.team).filter(t=>t&&t!=="Nicht zugeordnet"))].sort((a,b)=>a.localeCompare(b,"de"));
+  const teams=[...new Set(Object.values(window.USERS).map(x=>x.team).filter(t=>t&&t!=="Nicht zugeordnet"))].sort((a,b)=>a.localeCompare(b,"de"));
   select.innerHTML=teams.map(t=>'<option value="'+esc(t)+'">'+esc(t)+'</option>').join("");
   if(teams.includes(previous))select.value=previous;
   else {
@@ -4130,10 +4130,10 @@ async function finalizeTeamDraft(){
 }
 
 async function refreshTeamDraftEmployee(){
-  if(!["employee","leader"].includes(session.role)||!session.user||!USERS[session.user])return;
+  if(!["employee","leader"].includes(session.role)||!session.user||!window.USERS[session.user])return;
   const prefix=session.role==="leader"?"leader":"employee";
   const month=document.getElementById(session.role==="leader"?"leadMonth":"empMonth")?.value||nowMonth();
-  const info=USERS[session.user];
+  const info=window.USERS[session.user];
   const card=document.getElementById(prefix+"TeamDraftCard");
   if(!card)return;
   try{
@@ -4174,7 +4174,7 @@ async function refreshTeamDraftEmployee(){
 }
 
 async function respondTeamDraft(status){
-  const info=USERS[session.user],month=document.getElementById(session.role==="leader"?"leadMonth":"empMonth")?.value||nowMonth();
+  const info=window.USERS[session.user],month=document.getElementById(session.role==="leader"?"leadMonth":"empMonth")?.value||nowMonth();
   if(!info)return;
   let note="";
   if(status==="change_requested"){
@@ -4198,7 +4198,7 @@ function renderAdminPreparation(){
   const publishBtn=document.getElementById("adminPreparePublishBtn");
   if(!select||!table||!status||!publishBtn)return;
 
-  const available=Object.entries(USERS)
+  const available=Object.entries(window.USERS)
     .filter(([u,info])=>!info.isAdmin && (teamFilter==="ALL" || info.team===teamFilter))
     .sort((a,b)=>a[1].name.localeCompare(b[1].name,"de"));
   const previous=select.value;
@@ -4208,7 +4208,7 @@ function renderAdminPreparation(){
   else if(available.length)select.value=available[0][0];
 
   const u=select.value;
-  if(!u || !USERS[u]){
+  if(!u || !window.USERS[u]){
     table.innerHTML="";
     status.textContent="Für die aktuelle Auswahl ist kein Mitarbeiter verfügbar.";
     publishBtn.disabled=true;
@@ -4216,7 +4216,7 @@ function renderAdminPreparation(){
   }
   const r=getRec(u,month);
   const preparedAt=r.leaderEditedDays && r.leaderEditedDays._adminPreparedAt;
-  table.innerHTML=tableFor([[u,USERS[u]]],month,"adminPrepare");
+  table.innerHTML=tableFor([[u,window.USERS[u]]],month,"adminPrepare");
   if(r.submitted){
     status.innerHTML='<span class="badge ok">Dieser Plan wurde bereits abgegeben.</span><div class="small">Die Vorbereitung ist gesperrt. Wenn eine Korrektur nötig ist, nutze bitte den bestehenden Admin-Planprozess.</div>';
     publishBtn.disabled=true;
@@ -4236,7 +4236,7 @@ async function publishAdminPreparedPlan(){
   }
   const u=document.getElementById("adminPrepareUser")?.value;
   const month=document.getElementById("adminMonth")?.value || nowMonth();
-  if(!u || !USERS[u]){
+  if(!u || !window.USERS[u]){
     alert("Bitte zuerst einen Mitarbeiter auswählen.");
     return;
   }
@@ -4245,14 +4245,14 @@ async function publishAdminPreparedPlan(){
     alert("Dieser Plan wurde bereits abgegeben und kann hier nicht als Entwurf freigegeben werden.");
     return;
   }
-  const info=USERS[u];
+  const info=window.USERS[u];
   if(!confirm("Den vorbereiteten Dienstwunschplan für "+info.name+" für "+month+" zur eigenen Bearbeitung freigeben? Der Mitarbeiter kann die Einträge danach selbst ändern und den Plan abgeben."))return;
 
   const s=state(),k=recKey(u,month);
   if(!s.plans[k])s.plans[k]={entries:{},submitted:false,submittedAt:null,leaderEditedDays:{}};
   if(!s.plans[k].leaderEditedDays)s.plans[k].leaderEditedDays={};
   s.plans[k].leaderEditedDays._adminPreparedAt=new Date().toISOString();
-  s.plans[k].leaderEditedDays._adminPreparedBy=USERS[session.user]?.name || "Administration";
+  s.plans[k].leaderEditedDays._adminPreparedBy=window.USERS[session.user]?.name || "Administration";
   s.plans[k].submitted=false;
   s.plans[k].submittedAt=null;
   save(s);
@@ -4275,7 +4275,7 @@ function renderVacation(){
   const submitBtn=document.getElementById("vacationSubmitBtn");
   const reopenBtn=document.getElementById("vacationReopenBtn");
 
-  if(session.user && USERS[session.user]){
+  if(session.user && window.USERS[session.user]){
     ownWorkflow.classList.remove("hidden");
     const submitted=vacationIsSubmitted(session.user,y);
     const submittedAt=vacationSubmittedAt(session.user,y);
@@ -4290,13 +4290,13 @@ function renderVacation(){
 
   let users=[];
   if(session.role==="employee"){
-    users=teamUsers(USERS[session.user].team);
-    document.getElementById("vacationRoleInfo").textContent="Teamansicht "+USERS[session.user].team+" – du kannst nur deinen eigenen Urlaubswunsch ändern.";
+    users=teamUsers(window.USERS[session.user].team);
+    document.getElementById("vacationRoleInfo").textContent="Teamansicht "+window.USERS[session.user].team+" – du kannst nur deinen eigenen Urlaubswunsch ändern.";
   }else if(session.role==="leader"){
     users=teamUsers(session.team);
     document.getElementById("vacationRoleInfo").textContent="Teamansicht "+session.team+" – du kannst deinen eigenen Urlaubswunsch ändern.";
   }else{
-    users=Object.entries(USERS);
+    users=Object.entries(window.USERS);
     document.getElementById("vacationRoleInfo").textContent="Admin – alle Teams, Änderungen möglich.";
   }
 
