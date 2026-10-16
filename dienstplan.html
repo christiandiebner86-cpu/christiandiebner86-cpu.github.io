@@ -2679,8 +2679,8 @@ async function qmNotifyDutyplanSubmission(team,month){
   if(result.data && result.data.error)throw new Error(result.data.error);
   return result.data;
 }
-async function qmNotifyDutyplanApproval(team,month){
-  const result=await qmSupabase.functions.invoke("notify-dutyplan-approval",{body:{team,month}});
+async function qmNotifyDutyplanApproval(team,month,event="team_draft_finalized"){
+  const result=await qmSupabase.functions.invoke("notify-dutyplan-approval",{body:{team,month,event}});
   if(result.error)throw result.error;
   if(result.data && result.data.error)throw new Error(result.data.error);
   return result.data;
@@ -2857,7 +2857,15 @@ async function adminApproveTeam(team,m){
   try{
     await qmSaveWorkflowStatus(team,m,"admin_approve",{},"");
     await qmLoadTeamApprovals(m);
-    alert("Bestätigt. Der Dienstwunschplan ist jetzt der Dienstplan.");
+    let mailHinweis = "";
+    try {
+      const mailResult = await qmNotifyDutyplanApproval(team,m,"admin_approve");
+      mailHinweis = mailResult?.duplicate ? "\\nDie Benachrichtigung wurde bereits versendet." : "\\nE-Mail an " + (mailResult?.sent || 0) + " Mitarbeiter gesendet.";
+    } catch (mailError) {
+      console.error("Dienstplan-Freigabe-E-Mail:", mailError);
+      mailHinweis = "\\nDie Freigabe ist gespeichert, aber die E-Mail konnte nicht gesendet werden: " + (mailError.message || "Unbekannter Fehler");
+    }
+    alert("Bestätigt. Der Dienstwunschplan ist jetzt der Dienstplan." + mailHinweis);
     renderAdmin();
   }catch(error){
     alert("Admin-Freigabe fehlgeschlagen: "+(error.message||"Unbekannter Fehler"));
