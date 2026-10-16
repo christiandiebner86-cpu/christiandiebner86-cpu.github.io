@@ -871,13 +871,6 @@ button.danger{
   }
 }
 
-/* Einklappbare Bereiche für eine übersichtlichere Dienstplan-Seite */
-.collapsible-card-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px}
-.collapsible-card-heading h3{margin:0;flex:1}
-.collapsible-card-toggle{flex-shrink:0;background:#eef2f7;color:#1f2937;border:1px solid #d8dee8;padding:6px 10px;font-size:12px;font-weight:700}
-.collapsible-card-body.is-collapsed{display:none!important}
-.card.is-collapsible{padding-top:14px}
-
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2626,43 +2619,6 @@ function printTimesheet(index){
     </table>
     <script>window.onload=()=>{window.print();}<\/script>
 
-<script>
-(function(){
-  function makeCollapsibleCards(){
-    document.querySelectorAll('#employee .card > h3, #leader .card > h3, #admin .card > h3, #timesheet .card > h3, #timesheetAdmin .card > h3, #vacation .card > h3').forEach(function(heading){
-      var card=heading.parentElement;
-      if(!card || card.dataset.collapsibleReady==='true') return;
-      card.dataset.collapsibleReady='true';
-      card.classList.add('is-collapsible');
-      var header=document.createElement('div');
-      header.className='collapsible-card-heading';
-      heading.parentNode.insertBefore(header,heading);
-      header.appendChild(heading);
-      var toggle=document.createElement('button');
-      toggle.type='button';
-      toggle.className='collapsible-card-toggle';
-      toggle.setAttribute('aria-expanded','false');
-      toggle.textContent='＋ Aufklappen';
-      header.appendChild(toggle);
-      var body=document.createElement('div');
-      body.className='collapsible-card-body is-collapsed';
-      while(header.nextSibling) body.appendChild(header.nextSibling);
-      card.appendChild(body);
-      toggle.addEventListener('click',function(){
-        var open=toggle.getAttribute('aria-expanded')!=='true';
-        toggle.setAttribute('aria-expanded',String(open));
-        body.classList.toggle('is-collapsed',!open);
-        toggle.textContent=open?'− Zuklappen':'＋ Aufklappen';
-      });
-    });
-  }
-  window.addEventListener('DOMContentLoaded',function(){
-    makeCollapsibleCards();
-    var observer=new MutationObserver(makeCollapsibleCards);
-    observer.observe(document.body,{childList:true,subtree:true});
-  });
-})();
-</script>
 
 </body></html>`);
   w.document.close();
