@@ -3957,7 +3957,7 @@ function renderTeamDraftAdmin(){
   const changes=users.filter(([u,info])=>responses[info.id]?.status==="change_requested");
   const pending=users.filter(([u,info])=>!responses[info.id] || responses[info.id].status!=="confirmed");
   if(finalized){
-    status.innerHTML='<span class="badge ok">✅ Endgültiger Dienstplan freigegeben</span><div class="small">Freigegeben am '+esc(d.finalized_at?new Date(d.finalized_at).toLocaleString("de-DE"):"–")+'.</div>';
+    status.innerHTML='<span class="badge ok">✅ Endgültiger Dienstplan freigegeben</span><div class="small">Freigegeben am '+esc(d.finalized_at?new Date(d.finalized_at).toLocaleString("de-DE"):"–")+'.</div><button type="button" class="secondary" style="margin-top:8px" onclick="retryTeamDraftApprovalEmail()">✉️ Freigabe-E-Mail prüfen / erneut anstoßen</button>';
   }else if(released){
     status.innerHTML='<b>Entwurf beim Team</b><div class="small">'+confirmed+' von '+users.length+' bestätigt. '+changes.length+' Änderungswunsch(e); '+pending.length+' Person(en) noch nicht abschließend bestätigt.</div>'+
       (changes.length?'<div class="small">Änderungswünsche: '+changes.map(([u,info])=>esc(info.name)+(responses[info.id]?.note?': '+esc(responses[info.id].note):'')).join(' · ')+'</div>':'');
@@ -4031,6 +4031,18 @@ async function releaseTeamDraft(){
     await refreshTeamDraftEmployee();
     alert("Der Entwurf wurde für das Team freigegeben.");
   }catch(error){alert("Freigabe fehlgeschlagen: "+(error.message||"Unbekannter Fehler"));}
+}
+
+async function retryTeamDraftApprovalEmail(){
+  const team=draftTeam(),month=draftMonth();
+  if(!team)return;
+  try{
+    const result=await qmNotifyDutyplanApproval(team,month);
+    if(result?.duplicate)alert("Für diesen Dienstplan wurde die Benachrichtigung bereits versendet.");
+    else alert("E-Mail-Benachrichtigung wurde an "+(result?.sent||0)+" Mitarbeiter gesendet.");
+  }catch(error){
+    alert("E-Mail konnte nicht versendet werden: "+(error.message||"Unbekannter Fehler"));
+  }
 }
 
 async function finalizeTeamDraft(){
