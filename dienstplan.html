@@ -4490,21 +4490,26 @@ async function qmLoadTeams(){
   const result=await qmSupabase.rpc("get_qm_teams");
   if(result.error)throw new Error("Teams konnten nicht geladen werden: "+result.error.message);
 
-  TEAMS.splice(0,TEAMS.length);
-  Object.keys(TEAM_META).forEach(k=>delete TEAM_META[k]);
+  // Diese QM-Funktionen laufen in einem eigenen Script. Deshalb die Teamdaten
+  // ausdrücklich über window beziehen, statt eine globale Lexical-Variable vorauszusetzen.
+  const teams = window.TEAMS || (window.TEAMS = []);
+  const teamMeta = window.TEAM_META || (window.TEAM_META = {});
+
+  teams.splice(0,teams.length);
+  Object.keys(teamMeta).forEach(k=>delete teamMeta[k]);
 
   (result.data||[]).forEach(t=>{
     if(!t || !t.name)return;
-    TEAMS.push(t.name);
-    TEAM_META[t.name]={id:t.id,is_springer:t.is_springer===true};
+    teams.push(t.name);
+    teamMeta[t.name]={id:t.id,is_springer:t.is_springer===true};
   });
 
   const sel=document.getElementById("adminTeam");
   if(sel){
     const old=sel.value||"ALL";
     sel.innerHTML='<option value="ALL">Alle Teams</option>'+
-      TEAMS.map(t=>`<option value="${esc(t)}">${esc(t)}${isSpringerTeam(t)?" (Springer)":""}</option>`).join("");
-    sel.value=TEAMS.includes(old)?old:"ALL";
+      teams.map(t=>`<option value="${esc(t)}">${esc(t)}${teamMeta[t]&&teamMeta[t].is_springer?" (Springer)":""}</option>`).join("");
+    sel.value=teams.includes(old)?old:"ALL";
   }
 }
 
