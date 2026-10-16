@@ -2856,11 +2856,6 @@ async function adminSubmitAsTeamLeader(team,m){
 
 async function adminApproveTeam(team,m){
   const a=getApproval(team,m);
-  if(!a.leaderApproved){
-    alert("Die Teamleitung hat diesen Dienstwunschplan noch nicht an den Admin gesendet.");
-    return;
-  }
-
   const missing=teamUsers(team).filter(([u])=>!getRec(u,m).submitted);
   if(missing.length){
     alert(
@@ -3516,10 +3511,12 @@ async function submitAdminOwn(){
   try{
     await qmSavePlanForUser(session.user,m);
 
-    // Admins dürfen ihren eigenen Dienstwunschplan selbst zur Admin-Bestätigung geben,
-    // auch wenn sie zusätzlich als Teamleitung hinterlegt sind.
-    await qmMarkAdminOwnForApproval(info.team,m);
-    await qmLoadTeamApprovals(m);
+    // Admins ohne zusätzliche Teamleitungsrolle reichen den eigenen Plan direkt ein.
+    // Ist der Admin zugleich Teamleitung, kann er nach vollständiger Abgabe selbst final bestätigen.
+    if(info.isLeader!==true){
+      await qmMarkAdminOwnForApproval(info.team,m);
+      await qmLoadTeamApprovals(m);
+    }
   }catch(error){
     console.error("Admin-Eigenplan abgeben:",error);
     alert("Die eigene Abgabe konnte nicht vollständig gespeichert/weitergeleitet werden: "+(error.message||"Unbekannter Fehler"));
@@ -3750,7 +3747,7 @@ function renderAdmin(){
           ownStatus.innerHTML=`
             <span class="badge wait">Dienstwunschplan abgelehnt – bitte überarbeiten · ${esc(info.team)}</span>
           `;
-        }else if(ownApproval.leaderApproved){
+        }else if(ownApproval.leaderApproved || (teamUsers(info.team).length>0 && teamUsers(info.team).every(([u])=>getRec(u,m).submitted))){
           ownStatus.innerHTML=`
             <span class="badge wait">Bereit zur Admin-Bestätigung · ${esc(info.team)}</span>
             <div class="workflow-admin-buttons" style="margin-top:10px">
@@ -3871,7 +3868,16 @@ function renderAdmin(){
         session.team===team;
       const allSubmitted=members.length>0 && submitted===members.length;
 
-      statusHtml=`
+      if(allSubmitted && !a.leaderApproved){
+        statusHtml=`
+          <div class="workflow-wait">
+            <b>✅ Alle Dienstwunschpläne abgegeben</b>
+            <div class="small" style="margin:5px 0 10px">Du kannst den Monatsplan als Admin direkt endgültig abschließen, ohne auf eine separate Weitergabe durch die Teamleitung zu warten.</div>
+            <div class="workflow-admin-buttons">
+              <button class="primary workflow-main-button" onclick="adminApproveTeam('${team}','${m}')">✅ Endgültig abschließen</button>
+            </div>
+          </div>`;
+      }else statusHtml=`
         <div>
           <b>${isDirectAdminTeam ? "Noch nicht zur Admin-Bestätigung eingereicht" : "Noch nicht von Teamleitung eingereicht"}</b>
           <div class="small">${submitted}/${members.length} Dienstwunschpläne wurden abgegeben.</div>
