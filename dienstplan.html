@@ -3585,16 +3585,25 @@ function dutyWishPrintTable(userKey,month){
   const info=USERS[userKey]||{};
   const rec=getRec(userKey,month);
   const count=days(month);
-  let rows="";
-  for(let day=1;day<=count;day++){
-    const date=new Date(Number(month.slice(0,4)),Number(month.slice(5,7))-1,day);
-    const code=(rec.entries||{})[day]||"";
-    rows+=`<tr><td>${String(day).padStart(2,"0")}.${month.slice(5,7)}.${month.slice(0,4)}</td><td>${["So","Mo","Di","Mi","Do","Fr","Sa"][date.getDay()]}</td><td>${esc(dutyWishPrintLabel(code))}</td></tr>`;
-  }
-  return `<div class="person"><h2>${esc(info.name||userKey)} · Team: ${esc(info.team||"–")}</h2>
-  <div class="submitted">Monat: ${esc(month)} · Abgegeben: ${rec.submittedAt?new Date(rec.submittedAt).toLocaleString("de-DE"):"Ja"}</div>
-  <table><thead><tr><th>Datum</th><th>Wochentag</th><th>Dienstwunsch</th></tr></thead><tbody>${rows}</tbody></table>
-  <div>Unterschrift Mitarbeiter: ____________________________ &nbsp;&nbsp; Prüfung: ____________________________</div></div>`;
+  const weekdays=["So","Mo","Di","Mi","Do","Fr","Sa"];
+  let hours=0;
+  const headings=Array.from({length:count},(_,i)=>{
+    const d=i+1;
+    const date=new Date(Number(month.slice(0,4)),Number(month.slice(5,7))-1,d);
+    return `<th><span>${d}</span><small>${weekdays[date.getDay()]}</small></th>`;
+  }).join("");
+  const cells=Array.from({length:count},(_,i)=>{
+    const code=String((rec.entries||{})[i+1]||"").trim();
+    if(code==="T"||code==="N")hours+=11;
+    return `<td class="duty-code ${code==="T"?"code-day":code==="N"?"code-night":""}">${esc(code||"–")}</td>`;
+  }).join("");
+  return `<section class="compact-team-print single-employee-print">
+    <h2>${esc(info.name||userKey)} <span class="month-label">· Team: ${esc(info.team||"–")} · ${esc(month)}</span></h2>
+    <p class="print-note">Monatsübersicht · T/N jeweils 11 Stunden · Gesamt: <strong>${hours} h</strong></p>
+    <table class="team-summary"><thead><tr><th class="employee-name">Mitarbeiter</th>${headings}<th class="hours-total">Std.</th></tr></thead>
+    <tbody><tr><th class="employee-name">${esc(info.name||userKey)}</th>${cells}<td class="hours-total">${hours} h</td></tr></tbody></table>
+    <div style="font-size:8px;margin-top:8mm">Unterschrift Mitarbeiter: ____________________________ &nbsp;&nbsp; Prüfung: ____________________________</div>
+  </section>`;
 }
 function dutyWishSubmittedUsers(){
   const month=document.getElementById("adminMonth")?.value||nowMonth();
