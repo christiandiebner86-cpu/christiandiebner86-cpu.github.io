@@ -1155,6 +1155,10 @@ button.danger{
     <button type="button" class="warning" id="vacationReopenBtn" onclick="reopenVacationWishes()">Abgabe zurücknehmen</button>
   </div>
 </div>
+<div class="toolbar" style="margin:12px 0;align-items:end;gap:12px;flex-wrap:wrap">
+  <div id="vacationTeamFilterWrap"><label for="vacationTeamFilter">Team</label><select id="vacationTeamFilter" onchange="renderVacation()"><option value="ALL">Alle Teams</option></select></div>
+  <div style="min-width:220px;flex:1"><label for="vacationPersonFilter">Mitarbeiter suchen</label><input id="vacationPersonFilter" type="search" placeholder="Name eingeben …" oninput="renderVacation()" autocomplete="off"></div>
+</div>
 <div id="vacationSummary" style="margin-bottom:12px"></div>
 <div class="table-wrap"><table id="vacationTable"></table></div>
 <div style="margin-top:24px">
@@ -4258,9 +4262,24 @@ function renderVacation(){
     users=teamUsers(session.team);
     document.getElementById("vacationRoleInfo").textContent="Teamansicht "+session.team+" – du kannst deinen eigenen Urlaubswunsch ändern.";
   }else{
-    users=Object.entries(window.USERS);
+    users=Object.entries(window.USERS).filter(([u,info])=>!info.isAdmin);
     document.getElementById("vacationRoleInfo").textContent="Admin – alle Teams, Änderungen möglich.";
   }
+
+  // Filter nur innerhalb der bereits rollenberechtigten Mitarbeiter anwenden.
+  const teamSelect=document.getElementById("vacationTeamFilter");
+  const teamWrap=document.getElementById("vacationTeamFilterWrap");
+  const personInput=document.getElementById("vacationPersonFilter");
+  const selectedTeam=teamSelect?.value||"ALL";
+  const searchText=(personInput?.value||"").trim().toLocaleLowerCase("de");
+  if(teamWrap)teamWrap.style.display=session.role==="admin"?"":"none";
+  if(teamSelect){
+    const teams=[...new Set(users.map(([u,info])=>String(info.team||"")).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"de"));
+    teamSelect.innerHTML='<option value="ALL">Alle Teams</option>'+teams.map(t=>'<option value="'+esc(t)+'">'+esc(t)+'</option>').join("");
+    teamSelect.value=teams.includes(selectedTeam)?selectedTeam:"ALL";
+  }
+  const activeTeam=teamSelect?.value||"ALL";
+  users=users.filter(([u,info])=>(activeTeam==="ALL"||String(info.team||"")===activeTeam)&&(!searchText||String(info.name||u).toLocaleLowerCase("de").includes(searchText)||String(info.team||"").toLocaleLowerCase("de").includes(searchText)));
 
   let h="<thead><tr><th>Mitarbeiter/in</th><th style='min-width:180px'>Urlaubstage</th><th style='min-width:520px'>Urlaubsblöcke</th><th style='min-width:360px'>Neuen Urlaub eintragen</th></tr></thead><tbody>";
 
