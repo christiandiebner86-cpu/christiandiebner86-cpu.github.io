@@ -1169,7 +1169,7 @@ button.danger{
 </main>
 
 <script>
-const TEAMS=[]; const TEAM_META={};
+var TEAMS = window.TEAMS || []; window.TEAMS = TEAMS; const TEAM_META = window.TEAM_META || {}; window.TEAM_META = TEAM_META;
 function isSpringerTeam(team){return !!(TEAM_META[String(team||"")]&&TEAM_META[String(team||"")].is_springer);}
 const USERS={};
 const qmVacationRows={};
