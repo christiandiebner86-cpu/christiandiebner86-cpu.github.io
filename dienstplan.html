@@ -3105,7 +3105,11 @@ async function reopenEmp(){
       "und der Plan muss anschließend erneut vom Admin bestätigt werden.\n\nFortfahren?"
     ))return;
     try{
-      await qmInvalidateAdminApprovalAfterOwnReopen(team,m);
+      if(a.adminApproved){
+        await qmInvalidateAdminApprovalAfterOwnReopen(team,m);
+      }else{
+        await qmSaveWorkflowStatus(team,m,"employee_reopen_plan",{},"");
+      }
       await qmLoadTeamApprovals(m);
     }catch(error){
       alert("Die Admin-Freigabe konnte nicht zurückgesetzt werden: "+(error.message||"Unbekannter Fehler"));
