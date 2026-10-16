@@ -2856,15 +2856,8 @@ async function adminApproveTeam(team,m){
 
   try{
     await qmSaveWorkflowStatus(team,m,"admin_approve",{},"");
-    let emailWarning="";
-    try{
-      await qmNotifyDutyplanApproval(team,m);
-    }catch(emailError){
-      console.error("Freigabe-E-Mail:",emailError);
-      emailWarning="\n\nAchtung: Die Freigabe wurde gespeichert, aber die E-Mail an die Mitarbeiter konnte nicht versendet werden. Bitte E-Mail-Konfiguration prüfen.";
-    }
     await qmLoadTeamApprovals(m);
-    alert("Bestätigt. Der Dienstwunschplan ist jetzt der Dienstplan."+emailWarning);
+    alert("Bestätigt. Der Dienstwunschplan ist jetzt der Dienstplan.");
     renderAdmin();
   }catch(error){
     alert("Admin-Freigabe fehlgeschlagen: "+(error.message||"Unbekannter Fehler"));
@@ -4048,7 +4041,15 @@ async function finalizeTeamDraft(){
     if(result.error)throw result.error;
     qmTeamDraftCache=result.data;
     renderTeamDraftAdmin();
-    alert("Der endgültige Dienstplan wurde freigegeben.");
+    let emailWarning="";
+    try{
+      const mailResult=await qmNotifyDutyplanApproval(team,month);
+      if(mailResult?.duplicate)emailWarning="\\n\\nDie Benachrichtigung für diesen Monat wurde bereits versendet.";
+    }catch(emailError){
+      console.error("Dienstplan-Freigabe-E-Mail:",emailError);
+      emailWarning="\\n\\nAchtung: Der Dienstplan wurde freigegeben, aber die E-Mail konnte nicht versendet werden. Bitte E-Mail-Konfiguration prüfen.";
+    }
+    alert("Der endgültige Dienstplan wurde freigegeben."+emailWarning);
   }catch(error){alert("Endgültige Freigabe nicht möglich: "+(error.message||"Bitte prüfe die Rückmeldungen des Teams."));}
 }
 
