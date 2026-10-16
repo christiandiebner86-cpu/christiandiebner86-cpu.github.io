@@ -2681,7 +2681,16 @@ async function qmNotifyDutyplanSubmission(team,month){
 }
 async function qmNotifyDutyplanApproval(team,month,event="team_draft_finalized"){
   const result=await qmSupabase.functions.invoke("notify-dutyplan-approval",{body:{team,month,event}});
-  if(result.error)throw result.error;
+  if(result.error){
+    let detail="";
+    try{
+      if(result.error.context && typeof result.error.context.json==="function"){
+        const payload=await result.error.context.json();
+        detail=payload?.error || payload?.message || "";
+      }
+    }catch(_){}
+    throw new Error(detail || result.error.message || "E-Mail-Versand fehlgeschlagen.");
+  }
   if(result.data && result.data.error)throw new Error(result.data.error);
   return result.data;
 }
