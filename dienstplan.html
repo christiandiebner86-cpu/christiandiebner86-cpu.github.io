@@ -1171,7 +1171,7 @@ button.danger{
 <script>
 var TEAMS = window.TEAMS || []; window.TEAMS = TEAMS; const TEAM_META = window.TEAM_META || {}; window.TEAM_META = TEAM_META;
 function isSpringerTeam(team){return !!(TEAM_META[String(team||"")]&&TEAM_META[String(team||"")].is_springer);}
-const USERS={};
+var USERS = window.USERS || {}; window.USERS = USERS;
 const qmVacationRows={};
 const KEY="qm_roles_vacation30_v2";let session={role:null,user:null,team:null};
 /* Kompatibilitäts-Fallback für ältere Hilfsfunktionen, die noch auf `team` zugreifen. */
