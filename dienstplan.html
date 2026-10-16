@@ -4799,11 +4799,11 @@ window.addEventListener("DOMContentLoaded",qmOpenDutyPlanner);
       var toggle=document.createElement('button');
       toggle.type='button';
       toggle.className='secondary collapsible-card-toggle';
-      toggle.setAttribute('aria-expanded','true');
-      toggle.textContent='− Zuklappen';
+      toggle.setAttribute('aria-expanded','false');
+      toggle.textContent='＋ Aufklappen';
       header.appendChild(toggle);
       var body=document.createElement('div');
-      body.className='collapsible-card-body';
+      body.className='collapsible-card-body is-collapsed';
       while(header.nextSibling) body.appendChild(header.nextSibling);
       card.appendChild(body);
       toggle.addEventListener('click',function(){
