@@ -3545,7 +3545,7 @@ function dutyWishPrintDocument(title,body,landscape){
   .submitted{font-size:10px;color:#475569;margin:3px 0 8px}
   @media print{button{display:none}}
   </style></head><body><h1>${esc(title)}</h1><div class="meta">Erstellt am ${new Date().toLocaleString("de-DE")} · QM-Portal Intensivpflege-Halle-GmbH</div>${body}
-  <script>window.onload=function(){window.focus();window.print();};<\/script></body></html>`);
+  <div class="legend"><strong>Legende der Kürzel:</strong> T = Tagdienst · N = Nachtdienst · WF = Wunschfrei · U/Urlaub = Urlaub · F = Flexibel · B = Bürodienst · HO = Home-Office</div>\n  <script>window.onload=function(){window.focus();window.print();};<\/script></body></html>`);
   w.document.close();
 }
 function dutyWishPrintTable(userKey,month){
