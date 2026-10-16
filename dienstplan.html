@@ -3002,6 +3002,21 @@ async function change(u,m,day,value,actorRole,actorName){
     alert("Änderung konnte nicht zentral gespeichert werden: "+(error.message||"Unbekannter Fehler"));
   }
 }
+async function notifyOwnDutyWishSubmission(month, roleLabel){
+  try{
+    const {error}=await qmSupabase.functions.invoke("notify-own-dutywish-submission",{
+      body:{month,roleLabel}
+    });
+    if(error){
+      console.error("E-Mail-Benachrichtigung:",error);
+      alert("Der Dienstwunschplan wurde gespeichert, aber die E-Mail-Benachrichtigung konnte nicht gesendet werden. Bitte die Verwaltung informieren.");
+    }
+  }catch(error){
+    console.error("E-Mail-Benachrichtigung:",error);
+    alert("Der Dienstwunschplan wurde gespeichert, aber die E-Mail-Benachrichtigung konnte nicht gesendet werden.");
+  }
+}
+
 async function submitEmp(){
   const m=document.getElementById("empMonth").value,s=state(),k=recKey(session.user,m);
   if(!s.plans[k])s.plans[k]={entries:{},submitted:false,submittedAt:null,leaderEditedDays:{}};
@@ -3017,6 +3032,7 @@ async function submitEmp(){
     return;
   }
 
+  await notifyOwnDutyWishSubmission(m,"Mitarbeiter");
   renderEmp();
 }
 async function reopenEmp(){
@@ -3343,6 +3359,7 @@ async function submitLeaderOwn(){
     alert("Die Abgabe konnte nicht zentral gespeichert werden: "+(error.message||"Unbekannter Fehler"));
     return;
   }
+  await notifyOwnDutyWishSubmission(m,"Teamleitung");
   renderLead();
 }
 async function reopenLeaderOwn(){
@@ -3474,6 +3491,7 @@ async function submitAdminOwn(){
     alert("Die eigene Abgabe konnte nicht vollständig gespeichert/weitergeleitet werden: "+(error.message||"Unbekannter Fehler"));
     return;
   }
+  await notifyOwnDutyWishSubmission(m,"Admin");
   renderAdmin();
 }
 
