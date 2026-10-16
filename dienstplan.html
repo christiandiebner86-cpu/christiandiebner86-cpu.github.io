@@ -1010,6 +1010,18 @@ button.danger{
       <input id="adminMonth" type="month" onchange="refreshAdmin()">
       <button type="button" class="secondary" title="Nächster Monat" onclick="shiftPlanMonth('adminMonth',1,'refreshAdmin')">→</button>
     </div></div><div><label>Team</label><select id="adminTeam" onchange="renderAdmin()"><option value="ALL">Alle Teams</option></select></div><button class="secondary" onclick="logout()">Abmelden</button></div>
+<div class="card" id="dutyPrintTools" style="background:#f0fdf4;border:1px solid #bbf7d0">
+  <h3>🖨️ Dienstwunschpläne drucken</h3>
+  <div class="toolbar">
+    <div style="min-width:240px;flex:1">
+      <label for="printWishUser">Einzelnen abgegebenen Plan auswählen</label>
+      <select id="printWishUser"><option value="">Mitarbeiter auswählen</option></select>
+    </div>
+    <button type="button" class="primary" onclick="printSelectedWishPlan()">🖨️ Einzelplan drucken</button>
+    <button type="button" class="secondary" onclick="printSubmittedWishOverview()">🖨️ Gesamtübersicht drucken</button>
+  </div>
+  <div class="small" style="margin-top:8px">Gedruckt werden nur abgegebene Dienstwunschpläne für den ausgewählten Monat und das ausgewählte Team.</div>
+</div>
 <div class="notice">Tagdienst = grün, Nachtdienst = orange. Rot umrandet = Überschneidung oder Nachtdienst → Tag-/Bürodienst oder Urlaub am Folgetag. Gelb umrandet = von Teamleitung geändert.</div>
 <div class="card" style="background:#f8fafc">
   <h3>Planungsvorschläge</h3>
@@ -3511,6 +3523,76 @@ async function reopenAdminOwn(){
   renderAdmin();
 }
 
+
+function dutyWishPrintLabel(code){
+  const labels={T:"Tagdienst",N:"Nachtdienst",WF:"Wunschfrei",U:"Urlaub",Urlaub:"Urlaub",F:"Flexibel",B:"Bürodienst",HO:"Home-Office"};
+  return labels[code] || code || "–";
+}
+function dutyWishPrintDocument(title,body,landscape){
+  const w=window.open("","_blank","width=1200,height=850");
+  if(!w){alert("Der Druck wurde vom Browser blockiert. Bitte Pop-ups für das QM-Portal erlauben.");return;}
+  w.document.open();
+  w.document.write(`<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${esc(title)}</title>
+  <style>
+  @page{size:A4 ${landscape?"landscape":"portrait"};margin:12mm}
+  body{font-family:Arial,sans-serif;color:#172033;font-size:11px}
+  h1{font-size:20px;margin:0 0 6px}h2{font-size:15px;margin:18px 0 6px}
+  .meta{color:#475569;margin-bottom:14px}
+  table{width:100%;border-collapse:collapse;margin:8px 0 18px;page-break-inside:auto}
+  th,td{border:1px solid #cbd5e1;padding:5px;text-align:center;vertical-align:middle}
+  th{background:#eef2f7}td:first-child,th:first-child{text-align:left}
+  .person{page-break-inside:avoid;margin-bottom:18px}
+  .submitted{font-size:10px;color:#475569;margin:3px 0 8px}
+  @media print{button{display:none}}
+  </style></head><body><h1>${esc(title)}</h1><div class="meta">Erstellt am ${new Date().toLocaleString("de-DE")} · QM-Portal Intensivpflege-Halle-GmbH</div>${body}
+  <script>window.onload=function(){window.focus();window.print();};<\/script></body></html>`);
+  w.document.close();
+}
+function dutyWishPrintTable(userKey,month){
+  const info=USERS[userKey]||{};
+  const rec=getRec(userKey,month);
+  const count=days(month);
+  let rows="";
+  for(let day=1;day<=count;day++){
+    const date=new Date(Number(month.slice(0,4)),Number(month.slice(5,7))-1,day);
+    const code=(rec.entries||{})[day]||"";
+    rows+=`<tr><td>${String(day).padStart(2,"0")}.${month.slice(5,7)}.${month.slice(0,4)}</td><td>${["So","Mo","Di","Mi","Do","Fr","Sa"][date.getDay()]}</td><td>${esc(dutyWishPrintLabel(code))}</td></tr>`;
+  }
+  return `<div class="person"><h2>${esc(info.name||userKey)} · Team: ${esc(info.team||"–")}</h2>
+  <div class="submitted">Monat: ${esc(month)} · Abgegeben: ${rec.submittedAt?new Date(rec.submittedAt).toLocaleString("de-DE"):"Ja"}</div>
+  <table><thead><tr><th>Datum</th><th>Wochentag</th><th>Dienstwunsch</th></tr></thead><tbody>${rows}</tbody></table>
+  <div>Unterschrift Mitarbeiter: ____________________________ &nbsp;&nbsp; Prüfung: ____________________________</div></div>`;
+}
+function dutyWishSubmittedUsers(){
+  const month=document.getElementById("adminMonth")?.value||nowMonth();
+  const team=document.getElementById("adminTeam")?.value||"ALL";
+  return Object.entries(USERS).filter(([key,info])=>(team==="ALL"||info.team===team)&&getRec(key,month).submitted===true);
+}
+function refreshDutyWishPrintOptions(){
+  const select=document.getElementById("printWishUser");
+  if(!select)return;
+  const old=select.value;
+  const users=dutyWishSubmittedUsers();
+  select.innerHTML='<option value="">Mitarbeiter auswählen</option>'+users.map(([key,info])=>`<option value="${esc(key)}">${esc(info.name||key)} · ${esc(info.team||"–")}</option>`).join("");
+  if(users.some(([key])=>key===old))select.value=old;
+}
+function printSelectedWishPlan(){
+  const key=document.getElementById("printWishUser")?.value;
+  if(!key){alert("Bitte zuerst einen abgegebenen Dienstwunschplan auswählen.");return;}
+  const month=document.getElementById("adminMonth")?.value||nowMonth();
+  if(!getRec(key,month).submitted){alert("Dieser Dienstwunschplan wurde noch nicht abgegeben.");return;}
+  dutyWishPrintDocument("Dienstwunschplan – "+(USERS[key]?.name||key)+" – "+month,dutyWishPrintTable(key,month),false);
+}
+function printSubmittedWishOverview(){
+  const month=document.getElementById("adminMonth")?.value||nowMonth();
+  const users=dutyWishSubmittedUsers();
+  if(!users.length){alert("Für diesen Monat und diese Team-Auswahl wurden noch keine Dienstwunschpläne abgegeben.");return;}
+  const labels=users.map(([key,info])=>`<tr><td>${esc(info.name||key)}</td><td>${esc(info.team||"–")}</td><td>${getRec(key,month).submittedAt?new Date(getRec(key,month).submittedAt).toLocaleString("de-DE"):"Ja"}</td></tr>`).join("");
+  let body=`<h2>Abgabeübersicht · ${esc(month)}</h2><table><thead><tr><th>Mitarbeiter</th><th>Team</th><th>Abgegeben am</th></tr></thead><tbody>${labels}</tbody></table><h2>Einzelne Dienstwünsche</h2>`;
+  body+=users.map(([key])=>dutyWishPrintTable(key,month)).join("");
+  dutyWishPrintDocument("Dienstwunschplan – Gesamtübersicht – "+month,body,true);
+}
+
 function renderAdmin(){
   const m=document.getElementById("adminMonth").value;
   const t=document.getElementById("adminTeam").value;
@@ -3590,6 +3672,7 @@ function renderAdmin(){
 
   if(document.getElementById("adminSuggestions"))document.getElementById("adminSuggestions").innerHTML="";
   document.getElementById("adminTable").innerHTML=tableFor(users,m,"admin");
+  refreshDutyWishPrintOptions();
 
   const teams=t==="ALL"?TEAMS:[t];
 
