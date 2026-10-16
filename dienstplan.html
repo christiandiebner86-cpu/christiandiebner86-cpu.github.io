@@ -2861,7 +2861,7 @@ async function adminApproveTeam(team,m){
       await qmNotifyDutyplanApproval(team,m);
     }catch(emailError){
       console.error("Freigabe-E-Mail:",emailError);
-      emailWarning="\\n\\nAchtung: Die Freigabe wurde gespeichert, aber die E-Mail an die Mitarbeiter konnte nicht versendet werden. Bitte E-Mail-Konfiguration prüfen.";
+      emailWarning="\n\nAchtung: Die Freigabe wurde gespeichert, aber die E-Mail an die Mitarbeiter konnte nicht versendet werden. Bitte E-Mail-Konfiguration prüfen.";
     }
     await qmLoadTeamApprovals(m);
     alert("Bestätigt. Der Dienstwunschplan ist jetzt der Dienstplan."+emailWarning);
