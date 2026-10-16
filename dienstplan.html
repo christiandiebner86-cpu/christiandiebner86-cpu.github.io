@@ -4443,6 +4443,8 @@ function renderLog(id,m,team,leaderOnly){
 
 
 <script>
+function qmNowMonth(){const n=new Date(),l=new Date(n.getTime()-n.getTimezoneOffset()*60000);return l.toISOString().slice(0,7)}
+
 /* Lokaler HTML-Escaper: dieses Script darf nicht von Hilfsfunktionen
    aus dem vorherigen Script-Block abhängen. */
 function qmEsc(value){
@@ -4618,7 +4620,7 @@ async function qmSavePlanForUser(localUser,month){
 }
 
 async function refreshEmp(){
-  const m=document.getElementById("empMonth").value || nowMonth();
+  const m=document.getElementById("empMonth").value || qmNowMonth();
   try{
     await qmLoadPlansForMonth(m);
     await qmLoadTeamApprovals(m);
@@ -4631,7 +4633,7 @@ async function refreshEmp(){
 }
 
 async function refreshLead(){
-  const m=document.getElementById("leadMonth").value || nowMonth();
+  const m=document.getElementById("leadMonth").value || qmNowMonth();
   try{
     await qmLoadPlansForMonth(m);
     await qmLoadTeamApprovals(m);
@@ -4644,7 +4646,7 @@ async function refreshLead(){
 }
 
 async function refreshAdmin(){
-  const m=document.getElementById("adminMonth").value || nowMonth();
+  const m=document.getElementById("adminMonth").value || qmNowMonth();
   try{
     await qmLoadPlansForMonth(m);
     await qmLoadTeamApprovals(m);
@@ -4755,9 +4757,9 @@ async function qmOpenDutyPlanner(){
         team:profile.team || null,
         isTeamLeader:profile.is_teamleitung===true
       };
-      document.getElementById("adminMonth").value=nowMonth();
-      await qmLoadPlansForMonth(nowMonth());
-      await qmLoadTeamApprovals(nowMonth());
+      document.getElementById("adminMonth").value=qmNowMonth();
+      await qmLoadPlansForMonth(qmNowMonth());
+      await qmLoadTeamApprovals(qmNowMonth());
       show("admin");
       renderAdmin();
       return;
@@ -4777,9 +4779,9 @@ async function qmOpenDutyPlanner(){
     if(profile.role==="teamleitung"){
       const team=profile.team || (qmUsers[localUser] && qmUsers[localUser].team) || "Nicht zugeordnet";
       session={role:"leader",user:localUser,team:team};
-      document.getElementById("leadMonth").value=nowMonth();
-      await qmLoadPlansForMonth(nowMonth());
-      await qmLoadTeamApprovals(nowMonth());
+      document.getElementById("leadMonth").value=qmNowMonth();
+      await qmLoadPlansForMonth(qmNowMonth());
+      await qmLoadTeamApprovals(qmNowMonth());
       await refreshTeamDraftEmployee();
       show("leader");
       renderLead();
@@ -4787,9 +4789,9 @@ async function qmOpenDutyPlanner(){
     }
 
     session={role:"employee",user:localUser};
-    document.getElementById("empMonth").value=nowMonth();
-    await qmLoadPlansForMonth(nowMonth());
-    await qmLoadTeamApprovals(nowMonth());
+    document.getElementById("empMonth").value=qmNowMonth();
+    await qmLoadPlansForMonth(qmNowMonth());
+    await qmLoadTeamApprovals(qmNowMonth());
     await refreshTeamDraftEmployee();
     show("employee");
     renderEmp();
@@ -4806,7 +4808,7 @@ setInterval(async function(){
   const adminSection=document.getElementById("admin");
   if(!adminSection || adminSection.classList.contains("hidden"))return;
 
-  const m=document.getElementById("adminMonth").value || nowMonth();
+  const m=document.getElementById("adminMonth").value || qmNowMonth();
   try{
     await qmLoadPlansForMonth(m);
     await qmLoadTeamApprovals(m);
