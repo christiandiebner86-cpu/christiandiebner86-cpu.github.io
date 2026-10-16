@@ -4262,7 +4262,7 @@ function renderVacation(){
     users=teamUsers(session.team);
     document.getElementById("vacationRoleInfo").textContent="Teamansicht "+session.team+" – du kannst deinen eigenen Urlaubswunsch ändern.";
   }else{
-    users=Object.entries(window.USERS).filter(([u,info])=>!info.isAdmin);
+    users=Object.entries(window.USERS);
     document.getElementById("vacationRoleInfo").textContent="Admin – alle Teams, Änderungen möglich.";
   }
 
