@@ -2665,6 +2665,30 @@ function isPlanApprovedForUser(userKey,team,m){
   return !!(profileId && a.employeePlanApprovals && a.employeePlanApprovals[profileId]?.approved===true);
 }
 
+async function adminRejectEmployeePlan(team,m,userKey){
+  const info=window.USERS[userKey];
+  if(!info || !info.id || !getRec(userKey,m).submitted){
+    alert("Dieser Dienstwunschplan wurde nicht als abgegeben erkannt.");
+    return;
+  }
+  const note=prompt("Dienstwunschplan von "+info.name+" für "+m+" ablehnen.\n\nBitte gib nach Möglichkeit einen Grund oder Korrekturhinweis ein:","");
+  if(note===null)return;
+  if(!confirm("Den Dienstwunsch von "+info.name+" ablehnen und zur Überarbeitung zurückgeben?"))return;
+  try{
+    const result=await qmSupabase.rpc("admin_reject_dutyplan_employee",{
+      p_team:team,p_month:m,p_user_id:info.id,p_note:note
+    });
+    if(result.error)throw result.error;
+    const s=state(),k=recKey(userKey,m);
+    if(s.plans && s.plans[k]){s.plans[k].submitted=false;s.plans[k].submittedAt=null;save(s);}
+    await qmLoadTeamApprovals(m);
+    alert("Der Dienstwunsch von "+info.name+" wurde abgelehnt und zur Überarbeitung zurückgegeben.");
+    renderAdmin();
+  }catch(error){
+    alert("Ablehnung fehlgeschlagen: "+(error.message||"Unbekannter Fehler"));
+  }
+}
+
 async function adminApproveEmployeePlan(team,m,userKey){
   const info=window.USERS[userKey];
   if(!info || !info.id || !getRec(userKey,m).submitted){
@@ -3198,6 +3222,7 @@ function valueClass(v){
 function tableFor(users,m,mode){
   const count=days(m);let h="<thead><tr><th>Mitarbeiter/in</th>";
   for(let d=1;d<=count;d++)h+=`<th class="${weekend(m,d)?"weekend":""}"><div class="day">${d}</div><div class="weekday">${weekday(m,d)}</div></th>`;
+  if(mode==="admin")h+="<th>Freigabe / Entscheidung</th>";
   h+="</tr></thead><tbody>";
   users.forEach(([u,info])=>{
     const r=getRec(u,m);if(mode!=="employee"&&mode!=="leaderSelf"&&mode!=="adminSelf"&&mode!=="adminPrepare"&&!r.submitted)return;
@@ -3217,6 +3242,12 @@ function tableFor(users,m,mode){
       if(leaderChanged) classes.push("leader-edited");
       classes=classes.filter(Boolean).join(" ");
       h+=`<td class="${classes}"><select class="cell" ${disabled?"disabled":""} onchange="applySelectColor(this);${actor}">${optionsForUser(u,r.entries[d]||"")}</select></td>`;
+    }
+    if(mode==="admin" && r.submitted){
+      h+=`<td class="workflow-admin-buttons" style="min-width:230px">
+        <button type="button" class="primary workflow-main-button" onclick="adminApproveEmployeePlan('${esc(info.team)}','${m}','${esc(u)}')">✅ Endgültig freigeben</button>
+        <button type="button" class="danger workflow-main-button" style="margin-top:6px" onclick="adminRejectEmployeePlan('${esc(info.team)}','${m}','${esc(u)}')">❌ Ablehnen / zurückgeben</button>
+      </td>`;
     }
     h+="</tr>";
   });
