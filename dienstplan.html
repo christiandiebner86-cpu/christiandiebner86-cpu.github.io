@@ -2956,7 +2956,9 @@ async function confirmFinalPlan(){
   }
 
   const conf=Object.assign({},a.employeeConfirmations||{});
-  conf[session.user]={
+  const profileId=window.USERS[session.user]?.id;
+  if(!profileId){alert("Dein Benutzerprofil konnte nicht zugeordnet werden.");return;}
+  conf[profileId]={
     confirmed:true,
     confirmedAt:new Date().toISOString()
   };
@@ -3371,8 +3373,11 @@ function renderEmp(){
   if(status){
     const preparedAt=r.leaderEditedDays && r.leaderEditedDays._adminPreparedAt;
     const preparedBy=r.leaderEditedDays && r.leaderEditedDays._adminPreparedBy;
-    status.innerHTML=r.submitted
-      ? '<span class="badge ok">Abgegeben – zum Ändern zuerst zurückziehen</span>'
+    const individuallyFinal=isPlanApprovedForUser(session.user,info.team,m);
+    status.innerHTML=individuallyFinal
+      ? '<span class="badge ok">✅ Endgültig freigegeben – das ist dein verbindlicher Dienstplan</span>'
+      : r.submitted
+        ? '<span class="badge ok">Abgegeben – zum Ändern zuerst zurückziehen</span>'
       : preparedAt
         ? '<span class="badge wait">📝 Von der Administration vorbereitet – bitte prüfen, bei Bedarf bearbeiten und anschließend abgeben.</span><div class="small">Vorbereitet am '+esc(new Date(preparedAt).toLocaleString("de-DE"))+(preparedBy?' von '+esc(preparedBy):'')+'.</div>'
         : '<span class="badge wait">Noch nicht abgegeben – Einträge können geändert werden</span>';
@@ -3388,7 +3393,7 @@ function renderEmp(){
   if(btn){
     if(a && isPlanApprovedForUser(session.user,info.team,m)){
       btn.classList.remove("hidden");
-      if(a.employeeConfirmations && a.employeeConfirmations[session.user]){
+      if(a.employeeConfirmations && a.employeeConfirmations[info.id]){
         btn.disabled=true;
         btn.textContent="Endgültigen Plan bestätigt";
       }else{
