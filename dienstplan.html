@@ -1087,7 +1087,7 @@ button.danger{
     <button type="button" class="secondary" onclick="refreshTeamDraftAdmin()">Aktualisieren</button>
   </div>
 </div>
-<div id="adminApprovalStatus" style="margin:12px 0"></div><div class="actions"><button class="secondary" onclick="openTimesheetAdmin()">🕒 Stundenzettel – Admin</button><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div><div id="adminRestWarnings" aria-live="polite"></div><div class="table-wrap"><table id="adminTable"></table></div>
+<div id="adminApprovalStatus" style="margin:12px 0"></div><div class="actions"><button class="secondary" onclick="openTimesheetAdmin()">🕒 Stundenzettel – Admin</button><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div><div id="adminRestWarnings" aria-live="polite"></div><div class="table-wrap"><table id="adminTable"></table></div><div class="card" style="margin-top:16px"><details id="adminApprovedDetails"><summary style="cursor:pointer;font-weight:700;padding:8px 0">✅ Genehmigte Dienstpläne (<span id="adminApprovedCount">0</span>)</summary><p class="small">Abgeschlossene Einzelpläne und teamweit freigegebene Pläne liegen hier. Sie werden aus der offenen Bearbeitungsliste ausgeblendet.</p><div class="table-wrap"><table id="adminApprovedTable"></table></div></details></div>
 </div>
 <div class="card"><h3>Änderungsprotokoll Admin</h3><div class="table-wrap"><table class="log" id="adminLog"></table></div></div>
 </section>
@@ -2679,10 +2679,18 @@ async function adminRejectEmployeePlan(team,m,userKey){
       p_team:team,p_month:m,p_user_id:info.id,p_note:note
     });
     if(result.error)throw result.error;
+    let mailHint="";
+    try{
+      const mailResult=await qmNotifyDutyplanApproval(team,m,"individual_employee_rejected",{target_user_id:info.id});
+      mailHint=mailResult?.duplicate?"\nDie E-Mail war für diese Ablehnung bereits versendet.":"\nE-Mail mit dem Korrekturhinweis wurde versendet.";
+    }catch(mailError){
+      console.error("Ablehnungs-E-Mail:",mailError);
+      mailHint="\nDie Ablehnung ist gespeichert, aber die E-Mail konnte nicht gesendet werden: "+(mailError.message||"Unbekannter Fehler");
+    }
     const s=state(),k=recKey(userKey,m);
     if(s.plans && s.plans[k]){s.plans[k].submitted=false;s.plans[k].submittedAt=null;save(s);}
     await qmLoadTeamApprovals(m);
-    alert("Der Dienstwunsch von "+info.name+" wurde abgelehnt und zur Überarbeitung zurückgegeben.");
+    alert("Der Dienstwunsch von "+info.name+" wurde abgelehnt und zur Überarbeitung zurückgegeben."+mailHint);
     renderAdmin();
   }catch(error){
     alert("Ablehnung fehlgeschlagen: "+(error.message||"Unbekannter Fehler"));
@@ -2698,8 +2706,16 @@ async function adminApproveEmployeePlan(team,m,userKey){
   if(!confirm("Den Dienstplan von "+info.name+" für "+m+" endgültig freigeben?\n\nNur dieser Mitarbeiter erhält die endgültige Freigabe."))return;
   try{
     await qmSaveWorkflowStatus(team,m,"admin_approve_employee",{target_user_id:info.id},"");
+    let mailHint="";
+    try{
+      const mailResult=await qmNotifyDutyplanApproval(team,m,"individual_employee_approved",{target_user_id:info.id});
+      mailHint=mailResult?.duplicate?"\nDie E-Mail war für diese Freigabe bereits versendet.":"\nE-Mail an den Mitarbeiter wurde versendet.";
+    }catch(mailError){
+      console.error("Einzelfreigabe-E-Mail:",mailError);
+      mailHint="\nDie Freigabe ist gespeichert, aber die E-Mail konnte nicht gesendet werden: "+(mailError.message||"Unbekannter Fehler");
+    }
     await qmLoadTeamApprovals(m);
-    alert("Der Dienstplan von "+info.name+" ist jetzt endgültig freigegeben.");
+    alert("Der Dienstplan von "+info.name+" ist jetzt endgültig freigegeben."+mailHint);
     renderAdmin();
   }catch(error){
     alert("Individuelle Freigabe fehlgeschlagen: "+(error.message||"Unbekannter Fehler"));
@@ -2741,8 +2757,8 @@ async function qmNotifyDutyplanSubmission(team,month){
   if(result.data && result.data.error)throw new Error(result.data.error);
   return result.data;
 }
-async function qmNotifyDutyplanApproval(team,month,event="team_draft_finalized"){
-  const result=await qmSupabase.functions.invoke("notify-dutyplan-approval",{body:{team,month,event}});
+async function qmNotifyDutyplanApproval(team,month,event="team_draft_finalized",extra={}){
+  const result=await qmSupabase.functions.invoke("notify-dutyplan-approval",{body:{team,month,event,...extra}});
   if(result.error){
     let detail="";
     try{
@@ -3226,9 +3242,9 @@ function tableFor(users,m,mode){
   h+="</tr></thead><tbody>";
   users.forEach(([u,info])=>{
     const r=getRec(u,m);if(mode!=="employee"&&mode!=="leaderSelf"&&mode!=="adminSelf"&&mode!=="adminPrepare"&&!r.submitted)return;
-    h+=`<tr><th>${esc(info.name)}<div class="small">${esc(info.team)} ${r.submitted?"· abgegeben":"· offen"}</div></th>`;
+    h+=`<tr><th>${esc(info.name)}<div class="small">${esc(info.team)} ${mode==="adminApproved"?"· endgültig freigegeben":r.submitted?"· abgegeben":"· offen"}</div></th>`;
     for(let d=1;d<=count;d++){
-      const disabled=(mode==="adminPrepare"&&r.submitted)||((mode==="employee"||mode==="leaderSelf"||mode==="adminSelf")&&r.submitted);
+      const disabled=mode==="adminApproved"||(mode==="adminPrepare"&&r.submitted)||((mode==="employee"||mode==="leaderSelf"||mode==="adminSelf")&&r.submitted);
       const actor=mode==="leader"?`change('${u}','${m}',${d},this.value,'leader','Teamleitung ${esc(info.team)}').then(()=>renderLead())`
         :mode==="admin"||mode==="adminPrepare"?`change('${u}','${m}',${d},this.value,'admin',${mode==="adminPrepare"?"'Admin – Vorbereitung'":"'Admin'"}).then(()=>renderAdmin())`
         :mode==="adminSelf"?`change('${u}','${m}',${d},this.value,'adminSelf','${esc(info.name)}').then(()=>renderAdmin())`
@@ -3840,7 +3856,15 @@ function renderAdmin(){
   }
 
   if(document.getElementById("adminSuggestions"))document.getElementById("adminSuggestions").innerHTML="";
-  document.getElementById("adminTable").innerHTML=tableFor(users,m,"admin");
+  const approvedUsers=users.filter(([u,info])=>getRec(u,m).submitted && isPlanApprovedForUser(u,info.team,m));
+  const pendingUsers=users.filter(([u,info])=>!isPlanApprovedForUser(u,info.team,m));
+  document.getElementById("adminTable").innerHTML=tableFor(pendingUsers,m,"admin");
+  const approvedCount=document.getElementById("adminApprovedCount");
+  const approvedTable=document.getElementById("adminApprovedTable");
+  if(approvedCount)approvedCount.textContent=String(approvedUsers.length);
+  if(approvedTable)approvedTable.innerHTML=approvedUsers.length
+    ? tableFor(approvedUsers,m,"adminApproved")
+    : "<tbody><tr><td>Für diesen Monat gibt es noch keine genehmigten Einzelpläne.</td></tr></tbody>";
   refreshDutyWishPrintOptions();
 
   const teams=t==="ALL"?TEAMS:[t];
