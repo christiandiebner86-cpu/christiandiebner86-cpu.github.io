@@ -2658,6 +2658,30 @@ function setApproval(team,m,obj){
   save(s);
 }
 
+function isPlanApprovedForUser(userKey,team,m){
+  const a=getApproval(team,m);
+  if(a.adminApproved)return true;
+  const profileId=window.USERS[userKey]?.id;
+  return !!(profileId && a.employeePlanApprovals && a.employeePlanApprovals[profileId]?.approved===true);
+}
+
+async function adminApproveEmployeePlan(team,m,userKey){
+  const info=window.USERS[userKey];
+  if(!info || !info.id || !getRec(userKey,m).submitted){
+    alert("Dieser Dienstwunschplan wurde noch nicht abgegeben.");
+    return;
+  }
+  if(!confirm("Den Dienstplan von "+info.name+" für "+m+" endgültig freigeben?\n\nNur dieser Mitarbeiter erhält die endgültige Freigabe."))return;
+  try{
+    await qmSaveWorkflowStatus(team,m,"admin_approve_employee",{target_user_id:info.id},"");
+    await qmLoadTeamApprovals(m);
+    alert("Der Dienstplan von "+info.name+" ist jetzt endgültig freigegeben.");
+    renderAdmin();
+  }catch(error){
+    alert("Individuelle Freigabe fehlgeschlagen: "+(error.message||"Unbekannter Fehler"));
+  }
+}
+
 async function qmLoadTeamApprovals(month){
   if(!qmSupabase || !month)return;
 
@@ -2679,7 +2703,8 @@ async function qmLoadTeamApprovals(month){
       adminRejected:row.admin_rejected===true,
       adminRejectedAt:row.admin_rejected_at || null,
       adminRejectionNote:row.admin_rejection_note || "",
-      employeeConfirmations:row.employee_confirmations || {}
+      employeeConfirmations:Object.fromEntries(Object.entries(row.employee_confirmations || {}).filter(([key])=>key!=="__plan_approvals")),
+      employeePlanApprovals:(row.employee_confirmations || {}).__plan_approvals || {}
     };
   });
 
@@ -2925,8 +2950,8 @@ async function confirmFinalPlan(){
   const team=window.USERS[session.user].team;
   const a=getApproval(team,m);
 
-  if(!a.adminApproved){
-    alert("Der Dienstplan wurde vom Admin noch nicht final freigegeben.");
+  if(!isPlanApprovedForUser(session.user,team,m)){
+    alert("Dein Dienstplan wurde vom Admin noch nicht final freigegeben.");
     return;
   }
 
@@ -3071,9 +3096,9 @@ async function reopenEmp(){
   const team=window.USERS[session.user].team;
   const a=getApproval(team,m);
 
-  if(a.adminApproved){
+  if(isPlanApprovedForUser(session.user,team,m)){
     if(!confirm(
-      "Dieser Dienstplan wurde bereits vom Admin bestätigt.\n\n"+
+      "Dein Dienstplan wurde bereits vom Admin bestätigt.\n\n"+
       "Wenn du deine Abgabe zurücknimmst, wird die Admin-Bestätigung aufgehoben "+
       "und der Plan muss anschließend erneut vom Admin bestätigt werden.\n\nFortfahren?"
     ))return;
@@ -3361,7 +3386,7 @@ function renderEmp(){
   const a=getApproval(info.team,m);
   const btn=document.getElementById("employeeConfirmBtn");
   if(btn){
-    if(a && a.adminApproved){
+    if(a && isPlanApprovedForUser(session.user,info.team,m)){
       btn.classList.remove("hidden");
       if(a.employeeConfirmations && a.employeeConfirmations[session.user]){
         btn.disabled=true;
@@ -3739,7 +3764,7 @@ function renderAdmin(){
       const ownApproval=getApproval(info.team,m);
 
       if(own.submitted){
-        if(ownApproval.adminApproved){
+        if(isPlanApprovedForUser(session.user,info.team,m)){
           ownStatus.innerHTML=`
             <span class="badge ok">Eigener Dienstplan bestätigt · ${esc(info.team)}</span>
           `;
@@ -3892,10 +3917,19 @@ function renderAdmin(){
         </div>`;
     }
 
+    const individualRows = !a.adminApproved ? members.filter(([u])=>getRec(u,m).submitted).map(([u,info])=>{
+      const profileId=info.id;
+      const approved=!!(profileId && a.employeePlanApprovals && a.employeePlanApprovals[profileId]?.approved===true);
+      return `<div class="workflow-wait" style="margin-top:8px;padding:9px">
+        <div><b>${esc(info.name)}</b> — ${approved ? '<span class="badge ok">Endgültig freigegeben</span>' : '<span class="small">Dienstwunsch abgegeben</span>'}</div>
+        ${approved ? '' : `<div class="workflow-admin-buttons" style="margin-top:7px"><button class="primary workflow-main-button" onclick="adminApproveEmployeePlan('${team}','${m}','${u}')">✅ Nur diesen Plan endgültig freigeben</button></div>`}
+      </div>`;
+    }).join("") : "";
     return `
       <div class="workflow-action-box" style="margin:10px 0">
         <div style="font-size:17px;margin-bottom:7px"><b>${esc(team)}</b></div>
         ${statusHtml}
+        ${individualRows ? `<div style="margin-top:14px"><b>Einzelne Dienstpläne freigeben</b><div class="small">Diese Freigabe gilt nur für die ausgewählte Person und wartet nicht auf die übrigen Abgaben.</div>${individualRows}</div>` : ""}
       </div>`;
   }).join("");
 
