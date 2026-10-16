@@ -3516,12 +3516,10 @@ async function submitAdminOwn(){
   try{
     await qmSavePlanForUser(session.user,m);
 
-    // PDL / Verwaltung haben keine Teamleitungsstufe:
-    // Nach der eigenen Abgabe geht der Plan direkt in die Admin-Bestätigung.
-    if(info.isLeader!==true){
-      await qmMarkAdminOwnForApproval(info.team,m);
-      await qmLoadTeamApprovals(m);
-    }
+    // Admins dürfen ihren eigenen Dienstwunschplan selbst zur Admin-Bestätigung geben,
+    // auch wenn sie zusätzlich als Teamleitung hinterlegt sind.
+    await qmMarkAdminOwnForApproval(info.team,m);
+    await qmLoadTeamApprovals(m);
   }catch(error){
     console.error("Admin-Eigenplan abgeben:",error);
     alert("Die eigene Abgabe konnte nicht vollständig gespeichert/weitergeleitet werden: "+(error.message||"Unbekannter Fehler"));
@@ -3743,7 +3741,7 @@ function renderAdmin(){
       const own=getRec(session.user,m);
       const ownApproval=getApproval(info.team,m);
 
-      if(own.submitted && info.isLeader!==true){
+      if(own.submitted){
         if(ownApproval.adminApproved){
           ownStatus.innerHTML=`
             <span class="badge ok">Eigener Dienstplan bestätigt · ${esc(info.team)}</span>
