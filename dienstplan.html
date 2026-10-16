@@ -1171,7 +1171,7 @@ button.danger{
 <script>
 var TEAMS = window.TEAMS || []; window.TEAMS = TEAMS; const TEAM_META = window.TEAM_META || {}; window.TEAM_META = TEAM_META;
 function isSpringerTeam(team){return !!(TEAM_META[String(team||"")]&&TEAM_META[String(team||"")].is_springer);}
-var USERS = window.USERS || {}; window.USERS = USERS;
+window.USERS = window.USERS || {};
 const qmVacationRows={};
 const KEY="qm_roles_vacation30_v2";let session={role:null,user:null,team:null};
 /* Kompatibilitäts-Fallback für ältere Hilfsfunktionen, die noch auf `team` zugreifen. */
@@ -1254,7 +1254,7 @@ function getVacationAllowance(u,y){
 async function setVacationAllowance(u,y,val){
   if(session.role!=="admin")return;
   const n=Math.max(0,Math.round(Number(val)||0));
-  const info=USERS[u];
+  const info=window.USERS[u];
   if(!info || !info.id)return;
 
   const s=state();
@@ -1308,7 +1308,7 @@ async function saveVacationBlocks(u,y,blocks){
   s.vacations[vacationKey(u,y)]=blocks;
   save(s);
 
-  const info=USERS[u];
+  const info=window.USERS[u];
   if(!info || !info.id)return;
 
   const result=await qmSupabase.rpc("save_vacation_wishes",{
@@ -1381,14 +1381,14 @@ async function refreshVacation(){
 }
 
 async function submitVacationWishes(){
-  if(!session.user || !USERS[session.user])return;
+  if(!session.user || !window.USERS[session.user])return;
   const y=Number(document.getElementById("vacationYear").value);
   if(vacationIsSubmitted(session.user,y))return;
 
   if(!confirm("Jahresurlaub für "+y+" abgeben? Danach ist die eigene Eingabe zunächst gesperrt."))return;
 
   const result=await qmSupabase.rpc("save_vacation_wishes",{
-    p_user_id:USERS[session.user].id,
+    p_user_id:window.USERS[session.user].id,
     p_year:y,
     p_blocks:getVacationBlocks(session.user,y),
     p_submitted:true
@@ -1403,14 +1403,14 @@ async function submitVacationWishes(){
 }
 
 async function reopenVacationWishes(){
-  if(!session.user || !USERS[session.user])return;
+  if(!session.user || !window.USERS[session.user])return;
   const y=Number(document.getElementById("vacationYear").value);
   if(!vacationIsSubmitted(session.user,y))return;
 
   if(!confirm("Abgabe für "+y+" zurücknehmen und den Jahresurlaub wieder bearbeiten?"))return;
 
   const result=await qmSupabase.rpc("save_vacation_wishes",{
-    p_user_id:USERS[session.user].id,
+    p_user_id:window.USERS[session.user].id,
     p_year:y,
     p_blocks:getVacationBlocks(session.user,y),
     p_submitted:false
@@ -1477,7 +1477,7 @@ async function deleteVacationBlock(u,y,index){
     alert("Urlaubswunsch konnte nicht gelöscht werden: "+(error.message||"Unbekannter Fehler"));
   }
 }
-function teamUsers(team){return Object.entries(USERS).filter(([u,i])=>i.team===team)}
+function teamUsers(team){return Object.entries(window.USERS).filter(([u,i])=>i.team===team)}
 function show(id){
   ["login","employee","leader","admin","timesheet","timesheetAdmin","vacation"].forEach(x=>{
     const el=document.getElementById(x);
@@ -1508,7 +1508,7 @@ function hasLeaderConflict(user,m,day){
   if(hasRestConflict(user,m,day))return true;
   const v=mine.entries[day]||"";
   if(!isShift(v))return false;
-  return teamUsers(USERS[user].team).some(([other])=>{
+  return teamUsers(window.USERS[user].team).some(([other])=>{
     if(other===user)return false;
     const r=getRec(other,m);
     return r.submitted && (r.entries[day]||"")===v;
