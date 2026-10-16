@@ -3534,18 +3534,18 @@ function dutyWishPrintDocument(title,body,landscape){
   w.document.open();
   w.document.write(`<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${esc(title)}</title>
   <style>
-  @page{size:A4 ${landscape?"landscape":"portrait"};margin:12mm}
-  body{font-family:Arial,sans-serif;color:#172033;font-size:11px}
-  h1{font-size:20px;margin:0 0 6px}h2{font-size:15px;margin:18px 0 6px}
+  @page{size:A4 landscape;margin:8mm}
+  body{font-family:Arial,sans-serif;color:#172033;font-size:9px}
+  h1{font-size:16px;margin:0 0 4px}h2{font-size:12px;margin:10px 0 4px}
   .meta{color:#475569;margin-bottom:14px}
-  table{width:100%;border-collapse:collapse;margin:8px 0 18px;page-break-inside:auto}
-  th,td{border:1px solid #cbd5e1;padding:5px;text-align:center;vertical-align:middle}
+  table{width:100%;border-collapse:collapse;margin:5px 0 10px;page-break-inside:auto}
+  th,td{border:1px solid #cbd5e1;padding:3px 4px;text-align:center;vertical-align:middle}
   th{background:#eef2f7}td:first-child,th:first-child{text-align:left}
   .person{page-break-inside:avoid;margin-bottom:18px}
   .submitted{font-size:10px;color:#475569;margin:3px 0 8px}
   @media print{button{display:none}}
   </style></head><body><h1>${esc(title)}</h1><div class="meta">Erstellt am ${new Date().toLocaleString("de-DE")} · QM-Portal Intensivpflege-Halle-GmbH</div>${body}
-  <div class="legend"><strong>Legende der Kürzel:</strong> T = Tagdienst · N = Nachtdienst · WF = Wunschfrei · U/Urlaub = Urlaub · F = Flexibel · B = Bürodienst · HO = Home-Office</div>\n  <script>window.onload=function(){window.focus();window.print();};<\/script></body></html>`);
+  <div class="legend" style="font-size:9px;margin-top:8px"><strong>Legende der Kürzel:</strong> T = Tagdienst · N = Nachtdienst · WF = Wunschfrei · U/Urlaub = Urlaub · F = Flexibel · B = Bürodienst · HO = Home-Office</div>\n  <script>window.onload=function(){window.focus();window.print();};<\/script></body></html>`);
   w.document.close();
 }
 function dutyWishPrintTable(userKey,month){
@@ -3581,7 +3581,7 @@ function printSelectedWishPlan(){
   if(!key){alert("Bitte zuerst einen abgegebenen Dienstwunschplan auswählen.");return;}
   const month=document.getElementById("adminMonth")?.value||nowMonth();
   if(!getRec(key,month).submitted){alert("Dieser Dienstwunschplan wurde noch nicht abgegeben.");return;}
-  dutyWishPrintDocument("Dienstwunschplan – "+(USERS[key]?.name||key)+" – "+month,dutyWishPrintTable(key,month),false);
+  dutyWishPrintDocument("Dienstwunschplan – "+(USERS[key]?.name||key)+" – "+month,dutyWishPrintTable(key,month),true);
 }
 function printSubmittedWishOverview(){
   const month=document.getElementById("adminMonth")?.value||nowMonth();
