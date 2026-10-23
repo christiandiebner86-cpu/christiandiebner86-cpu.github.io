@@ -1087,7 +1087,7 @@ button.danger{
     <button type="button" class="secondary" onclick="refreshTeamDraftAdmin()">Aktualisieren</button>
   </div>
 </div>
-<div id="adminApprovalStatus" style="margin:12px 0"></div><div class="actions"><button class="secondary" onclick="openTimesheetAdmin()">🕒 Stundenzettel – Admin</button><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div><div id="adminRestWarnings" aria-live="polite"></div><div class="table-wrap"><table id="adminTable"></table></div><div class="card" style="margin-top:16px"><details id="adminApprovedDetails"><summary style="cursor:pointer;font-weight:700;padding:8px 0">✅ Genehmigte Dienstpläne (<span id="adminApprovedCount">0</span>)</summary><p class="small">Abgeschlossene Einzelpläne und teamweit freigegebene Pläne liegen hier. Sie werden aus der offenen Bearbeitungsliste ausgeblendet.</p><div class="table-wrap"><table id="adminApprovedTable"></table></div></details></div>
+<div id="adminApprovalStatus" style="margin:12px 0"></div><div class="actions"><button class="secondary" onclick="openTimesheetAdmin()">🕒 Stundenzettel – Admin</button><button class="secondary" onclick="openVacation()">Jahres-Urlaubswünsche</button></div><div id="adminRestWarnings" aria-live="polite"></div><div class="table-wrap"><table id="adminTable"></table></div><div class="card" style="margin-top:16px"><details id="adminApprovedDetails" open><summary style="cursor:pointer;font-weight:700;padding:8px 0">✅ Genehmigte Dienstpläne (<span id="adminApprovedCount">0</span>)</summary><p class="small">Abgeschlossene Einzelpläne und teamweit freigegebene Pläne liegen hier. Sie werden aus der offenen Bearbeitungsliste ausgeblendet.</p><div class="table-wrap"><table id="adminApprovedTable"></table></div></details></div>
 </div>
 <div class="card"><h3>Änderungsprotokoll Admin</h3><div class="table-wrap"><table class="log" id="adminLog"></table></div></div>
 </section>
@@ -3242,7 +3242,13 @@ function tableFor(users,m,mode){
   h+="</tr></thead><tbody>";
   users.forEach(([u,info])=>{
     const r=getRec(u,m);if(mode!=="employee"&&mode!=="leaderSelf"&&mode!=="adminSelf"&&mode!=="adminPrepare"&&!r.submitted)return;
-    h+=`<tr><th>${esc(info.name)}<div class="small">${esc(info.team)} ${mode==="adminApproved"?"· endgültig freigegeben":r.submitted?"· abgegeben":"· offen"}</div></th>`;
+    const approval=getApproval(info.team,m);
+    const profileId=info.id;
+    const individuallyApproved=!!(profileId && approval.employeePlanApprovals && approval.employeePlanApprovals[profileId]?.approved===true);
+    const approvalLabel=approval.adminApproved ? "Teamweit freigegeben" : individuallyApproved ? "Individuell freigegeben" : "Wartet auf Admin-Freigabe";
+    const submittedLabel=r.submittedAt ? "Abgegeben: "+new Date(r.submittedAt).toLocaleString("de-DE") : (r.submitted ? "Abgegeben" : "Noch nicht abgegeben");
+    const statusLine=(mode==="admin"||mode==="adminApproved") ? `<div class="small">${esc(info.team)} · ${esc(submittedLabel)}</div><div class="small"><b>${esc(approvalLabel)}</b></div>` : `<div class="small">${esc(info.team)} ${mode==="adminApproved"?"· endgültig freigegeben":r.submitted?"· abgegeben":"· offen"}</div>`;
+    h+=`<tr><th>${esc(info.name)}${statusLine}</th>`;
     for(let d=1;d<=count;d++){
       const disabled=mode==="adminApproved"||(mode==="adminPrepare"&&r.submitted)||((mode==="employee"||mode==="leaderSelf"||mode==="adminSelf")&&r.submitted);
       const actor=mode==="leader"?`change('${u}','${m}',${d},this.value,'leader','Teamleitung ${esc(info.team)}').then(()=>renderLead())`
