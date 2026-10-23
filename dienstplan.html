@@ -3241,7 +3241,7 @@ function tableFor(users,m,mode){
   if(mode==="admin")h+="<th>Freigabe / Entscheidung</th>";
   h+="</tr></thead><tbody>";
   users.forEach(([u,info])=>{
-    const r=getRec(u,m);const hasPlanEntries=Object.values(r.entries||{}).some(v=>String(v||"").trim()!=="");if(mode!=="employee"&&mode!=="leaderSelf"&&mode!=="adminSelf"&&mode!=="adminPrepare"&&!r.submitted&&!hasPlanEntries)return;
+    const r=getRec(u,m);const hasPlanEntries=Object.values(r.entries||{}).some(v=>String(v||"").trim()!=="");if(mode!=="employee"&&mode!=="leaderSelf"&&mode!=="adminSelf"&&mode!=="adminPrepare"&&mode!=="admin"&&!r.submitted&&!hasPlanEntries)return;
     const approval=getApproval(info.team,m);
     const profileId=info.id;
     const individuallyApproved=!!(profileId && approval.employeePlanApprovals && approval.employeePlanApprovals[profileId]?.approved===true);
