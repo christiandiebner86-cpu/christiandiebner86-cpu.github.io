@@ -3241,12 +3241,12 @@ function tableFor(users,m,mode){
   if(mode==="admin")h+="<th>Freigabe / Entscheidung</th>";
   h+="</tr></thead><tbody>";
   users.forEach(([u,info])=>{
-    const r=getRec(u,m);if(mode!=="employee"&&mode!=="leaderSelf"&&mode!=="adminSelf"&&mode!=="adminPrepare"&&!r.submitted)return;
+    const r=getRec(u,m);const hasPlanEntries=Object.values(r.entries||{}).some(v=>String(v||"").trim()!=="");if(mode!=="employee"&&mode!=="leaderSelf"&&mode!=="adminSelf"&&mode!=="adminPrepare"&&!r.submitted&&!hasPlanEntries)return;
     const approval=getApproval(info.team,m);
     const profileId=info.id;
     const individuallyApproved=!!(profileId && approval.employeePlanApprovals && approval.employeePlanApprovals[profileId]?.approved===true);
     const approvalLabel=approval.adminApproved ? "Teamweit freigegeben" : individuallyApproved ? "Individuell freigegeben" : "Wartet auf Admin-Freigabe";
-    const submittedLabel=r.submittedAt ? "Abgegeben: "+new Date(r.submittedAt).toLocaleString("de-DE") : (r.submitted ? "Abgegeben" : "Noch nicht abgegeben");
+    const submittedLabel=r.submittedAt ? "Abgegeben: "+new Date(r.submittedAt).toLocaleString("de-DE") : (r.submitted ? "Abgegeben" : (hasPlanEntries ? "Einträge vorhanden – Abgabe nicht bestätigt" : "Noch nicht abgegeben"));
     const statusLine=(mode==="admin"||mode==="adminApproved") ? `<div class="small">${esc(info.team)} · ${esc(submittedLabel)}</div><div class="small"><b>${esc(approvalLabel)}</b></div>` : `<div class="small">${esc(info.team)} ${mode==="adminApproved"?"· endgültig freigegeben":r.submitted?"· abgegeben":"· offen"}</div>`;
     h+=`<tr><th>${esc(info.name)}${statusLine}</th>`;
     for(let d=1;d<=count;d++){
@@ -3863,7 +3863,7 @@ function renderAdmin(){
 
   if(document.getElementById("adminSuggestions"))document.getElementById("adminSuggestions").innerHTML="";
   const approvedUsers=users.filter(([u,info])=>getRec(u,m).submitted && isPlanApprovedForUser(u,info.team,m));
-  const pendingUsers=users.filter(([u,info])=>!isPlanApprovedForUser(u,info.team,m));
+  const pendingUsers=users.filter(([u,info])=>!getRec(u,m).submitted || !isPlanApprovedForUser(u,info.team,m));
   document.getElementById("adminTable").innerHTML=tableFor(pendingUsers,m,"admin");
   const approvedCount=document.getElementById("adminApprovedCount");
   const approvedTable=document.getElementById("adminApprovedTable");
