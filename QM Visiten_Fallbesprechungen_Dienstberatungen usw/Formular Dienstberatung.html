@@ -13,6 +13,9 @@ button{border:0;border-radius:8px;padding:10px 16px;background:var(--green);colo
 .sheet{width:210mm;min-height:297mm;margin:0 auto 18px;padding:13mm 14mm;background:#fff;box-shadow:0 4px 22px #0002}
 .brand{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--leaf);padding-bottom:8px;margin-bottom:12px}
 .brand img{width:46mm;max-height:18mm;object-fit:contain}
+.brand-name{display:flex;flex:1;flex-direction:column;align-items:flex-start;margin-left:8mm;color:var(--text)}
+.brand-name strong{font-size:15px;letter-spacing:.15px;color:var(--green)}
+.brand-name span{font-size:9px;color:#52636b;margin-top:2px}
 .brand small{color:#52636b;text-align:right;font-size:9px}
 h1{font-size:20px;letter-spacing:.5px;color:var(--green);margin:12px 0 3px}
 .intro{font-size:10px;color:#52636b;margin:0 0 12px}
@@ -47,7 +50,7 @@ h2{font-size:12px;color:var(--leaf);border-bottom:1px solid #cbd8d4;padding-bott
 <div class="toolbar"><button type="button" onclick="window.print()">🖨️ Drucken / als PDF speichern</button></div>
 
 <main class="sheet">
-  <div class="brand"><img src="../halle-logo.png" alt="Intensivpflege-Halle-GmbH"><small>QUALITÄTSMANAGEMENT<br>Protokoll / internes Dokument</small></div>
+  <div class="brand"><img src="../halle-logo.png" alt="Logo"><div class="brand-name"><strong>Intensivpflege-Halle-GmbH</strong><span>Qualitätsmanagement</span></div><small>QUALITÄTSMANAGEMENT<br>Protokoll / internes Dokument</small></div>
   <h1>DIENSTBERATUNG</h1><p class="intro">Protokoll für Teambesprechungen, Informationen, Beschlüsse und Aufgaben</p>
   <div class="meta">
     <div class="field"><label>Datum</label><input type="date"></div>
