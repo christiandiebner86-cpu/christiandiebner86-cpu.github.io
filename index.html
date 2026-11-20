@@ -2724,6 +2724,8 @@ let authListenerStarted = false;
 let authStateVersion = 0;
 let qmDocumentNotifications = [];
 let qmDocumentSyncRunning = false;
+let qmDocumentVersions = Object.create(null);
+let qmAckCurrentDocument = null;
 
 
 /* =========================================================
@@ -5413,7 +5415,7 @@ function fileIcon(path) {
    DOKUMENT-NEUIGKEITEN
 ========================================================= */
 
-function isPortalQmPdf(item) {
+function isPortalQmDocument(item) {
   if (!item || item.type !== "blob") {
     return false;
   }
@@ -5421,7 +5423,7 @@ function isPortalQmPdf(item) {
   const path = String(item.path || "");
   const lower = path.toLowerCase();
 
-  if (!lower.endsWith(".pdf")) {
+  if (!/\.(pdf|doc|docx|xls|xlsx|odt|ods|ppt|pptx|rtf|txt)$/i.test(lower)) {
     return false;
   }
 
@@ -5440,11 +5442,11 @@ function isPortalQmPdf(item) {
 }
 
 
-function currentPortalQmPdfMap() {
+function currentPortalQmDocumentMap() {
   const map = new Map();
 
   repositoryTree.forEach(function(item) {
-    if (!isPortalQmPdf(item)) {
+    if (!isPortalQmDocument(item)) {
       return;
     }
 
@@ -5516,16 +5518,18 @@ async function syncAndLoadQmDocumentNews() {
     });
 
     if (docs.length) {
-      const syncResult =
-        await supabaseClient.rpc(
-          "sync_qm_documents",
-          { p_documents: docs }
-        );
-
-      if (syncResult.error) {
-        throw syncResult.error;
+      if (currentProfile.role === "admin") {
+        const syncResult = await supabaseClient.rpc("sync_qm_documents", { p_documents: docs });
+        if (syncResult.error) throw syncResult.error;
       }
     }
+
+    const versionResult = await supabaseClient.rpc("get_qm_document_versions");
+    if (versionResult.error) throw versionResult.error;
+    qmDocumentVersions = Object.create(null);
+    (versionResult.data || []).forEach(function(row) {
+      qmDocumentVersions[String(row.path)] = Number(row.version || 1);
+    });
 
     const result =
       await supabaseClient.rpc(
@@ -6274,7 +6278,7 @@ function renderDocumentSearch(query) {
 
       return `
         <a
-          class="search-result-card${rawName.toLowerCase().endsWith(".pdf") ? " js-document-preview" : ""}"
+          class="search-result-card${isPortalQmDocument({type:"blob",path:file.path}) ? " js-document-preview" : ""}"
           href="${escapeHTML(fileURL(file.path))}"
           data-document-name="${escapeHTML(cleanFileName(rawName))}"
           data-document-path="${escapeHTML(file.path)}"
@@ -6767,7 +6771,7 @@ function openFolder(path, anchorCard) {
 
         html += `
           <a
-            class="file-card${extension === "pdf" ? " js-document-preview" : ""}"
+            class="file-card${isPortalQmDocument({type:"blob",path:file.path}) ? " js-document-preview" : ""}"
             href="${escapeHTML(url)}"
             data-document-name="${escapeHTML(cleanFileName(name))}"
             data-document-path="${escapeHTML(file.path)}"
