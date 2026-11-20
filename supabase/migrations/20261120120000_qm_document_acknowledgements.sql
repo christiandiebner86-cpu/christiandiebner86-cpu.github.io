@@ -117,3 +117,43 @@ end;
 $$;
 revoke all on function public.get_qm_document_versions() from public, anon;
 grant execute on function public.get_qm_document_versions() to authenticated;
+
+create or replace function public.sync_qm_documents(p_documents jsonb)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  me public.profiles%rowtype;
+  item jsonb;
+  v_path text;
+  v_sha text;
+  old_sha text;
+begin
+  select * into me from public.profiles where id = auth.uid();
+  if not found or me.active is distinct from true or me.role <> 'admin' then
+    raise exception 'Nur aktive Administratoren';
+  end if;
+  if jsonb_typeof(coalesce(p_documents, '[]'::jsonb)) <> 'array' then
+    raise exception 'Ungültige Dokumentliste';
+  end if;
+  for item in select value from jsonb_array_elements(coalesce(p_documents, '[]'::jsonb))
+  loop
+    v_path := nullif(trim(item->>'path'), '');
+    v_sha := coalesce(item->>'sha', '');
+    if v_path is null or lower(v_path) !~ '\\.(pdf|doc|docx|xls|xlsx|odt|ods|ppt|pptx|rtf|txt)$' then
+      continue;
+    end if;
+    select d.sha into old_sha from public.qm_documents d where d.path = v_path for update;
+    if not found then
+      insert into public.qm_documents(path, sha, version, discovered_at, updated_at)
+      values(v_path, v_sha, 1, now(), now());
+    elsif old_sha is distinct from v_sha then
+      update public.qm_documents
+      set sha = v_sha, version = version + 1, updated_at = now()
+      where path = v_path;
+    end if;
+  end loop;
+end;
+$$;
