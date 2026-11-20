@@ -6,7 +6,7 @@ create or replace function public.acknowledge_qm_document(p_path text, p_version
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = ''
 as $$
 declare
   me public.profiles%rowtype;
@@ -51,7 +51,7 @@ returns table (
 )
 language plpgsql
 security definer
-set search_path = public
+set search_path = ''
 as $$
 declare
   me public.profiles%rowtype;
@@ -99,7 +99,7 @@ create or replace function public.get_qm_document_versions()
 returns table(path text, version integer)
 language plpgsql
 security definer
-set search_path = public
+set search_path = ''
 as $$
 declare
   me public.profiles%rowtype;
@@ -122,7 +122,7 @@ create or replace function public.sync_qm_documents(p_documents jsonb)
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = ''
 as $$
 declare
   me public.profiles%rowtype;
@@ -157,3 +157,6 @@ begin
   end loop;
 end;
 $$;
+
+revoke all on function public.sync_qm_documents(jsonb) from public, anon;
+grant execute on function public.sync_qm_documents(jsonb) to authenticated;
