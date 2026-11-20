@@ -5850,19 +5850,10 @@ async function markQmDocumentSeen(path, version) {
     );
 
   /*
-   * Sofort aus der Oberfläche entfernen.
-   * Der Serveraufruf folgt danach.
+   * Das Dokument bleibt in der Liste, bis es ausdrücklich
+   * gelesen und zur Kenntnis genommen bestätigt wurde.
+   * "Gesehen" allein ist keine QM-Bestätigung.
    */
-  qmDocumentNotifications =
-    qmDocumentNotifications.filter(
-      function(item) {
-        return String(item.path || "") !==
-          String(path);
-      }
-    );
-
-  renderQmDocumentNews();
-
   try {
     const result =
       await supabaseClient.rpc(
