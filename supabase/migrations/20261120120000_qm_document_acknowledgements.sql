@@ -94,3 +94,26 @@ revoke all on function public.acknowledge_qm_document(text, integer) from public
 grant execute on function public.acknowledge_qm_document(text, integer) to authenticated;
 revoke all on function public.get_qm_document_ack_status() from public, anon;
 grant execute on function public.get_qm_document_ack_status() to authenticated;
+
+create or replace function public.get_qm_document_versions()
+returns table(path text, version integer)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  me public.profiles%rowtype;
+begin
+  select * into me from public.profiles where id = auth.uid();
+  if not found or me.active is distinct from true then
+    raise exception 'Nicht berechtigt';
+  end if;
+  return query
+  select d.path, d.version
+  from public.qm_documents d
+  where lower(d.path) ~ '\\.(pdf|doc|docx|xls|xlsx|odt|ods|ppt|pptx|rtf|txt)$'
+  order by d.path;
+end;
+$$;
+revoke all on function public.get_qm_document_versions() from public, anon;
+grant execute on function public.get_qm_document_versions() to authenticated;
