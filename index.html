@@ -208,6 +208,20 @@ body.portal-authenticated #authScreen {
   cursor: pointer;
 }
 
+.auth-forgot {
+  display:block;
+  width:100%;
+  margin-top:14px;
+  padding:8px;
+  border:0;
+  background:transparent;
+  color:var(--green-dark);
+  font-size:14px;
+  font-weight:700;
+  text-decoration:underline;
+  cursor:pointer;
+}
+
 .auth-submit:disabled {
   opacity: .65;
   cursor: wait;
@@ -1590,6 +1604,24 @@ body.document-viewer-open {
         🔐 Anmelden
       </button>
 
+      <button
+        id="forgotPasswordButton"
+        type="button"
+        class="auth-forgot"
+        onclick="sendPasswordRecovery()"
+      >
+        Passwort vergessen?
+      </button>
+
+    </form>
+
+    
+    <form id="passwordRecoveryForm" class="auth-form" style="display:none">
+      <label for="recoveryNewPassword">Neues Passwort</label>
+      <input id="recoveryNewPassword" type="password" autocomplete="new-password" minlength="8" required>
+      <label for="recoveryConfirmPassword">Neues Passwort wiederholen</label>
+      <input id="recoveryConfirmPassword" type="password" autocomplete="new-password" minlength="8" required>
+      <button id="recoverySaveButton" class="auth-submit" type="submit">Neues Passwort speichern</button>
     </form>
 
     <form
@@ -2744,6 +2776,7 @@ let currentProfile = null;
 let portalInitialized = false;
 let initializationRunning = false;
 let authListenerStarted = false;
+let passwordRecoveryActive = false;
 let authStateVersion = 0;
 let qmDocumentNotifications = [];
 let qmDocumentSyncRunning = false;
@@ -3131,6 +3164,123 @@ function showRegister() {
 
   clearAuthMessage();
 
+}
+
+
+/* =========================================================
+   PASSWORT VERGESSEN / WIEDERHERSTELLUNG
+========================================================= */
+
+async function sendPasswordRecovery() {
+  clearAuthMessage();
+
+  const emailField = getElement("loginEmail");
+  const email = emailField ? emailField.value.trim() : "";
+
+  if (!email) {
+    showAuthMessage("Bitte zuerst deine hinterlegte E-Mail-Adresse eingeben.", "error");
+    if (emailField) emailField.focus();
+    return;
+  }
+
+  if (!supabaseClient) {
+    showAuthMessage("Der Passwortdienst ist gerade nicht verfügbar.", "error");
+    return;
+  }
+
+  const button = getElement("forgotPasswordButton");
+  if (button) {
+    button.disabled = true;
+    button.textContent = "⏳ E-Mail wird gesendet …";
+  }
+
+  try {
+    const redirectTo = window.location.origin + window.location.pathname;
+    const result = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectTo
+    });
+
+    if (result.error) throw result.error;
+
+    showAuthMessage(
+      "Wenn für diese E-Mail-Adresse ein Konto besteht, wurde eine Nachricht zum Zurücksetzen versendet. Bitte auch den Spam-Ordner prüfen.",
+      "success"
+    );
+  } catch (error) {
+    console.error("Passwort-Wiederherstellung fehlgeschlagen:", error);
+    showAuthMessage("Die E-Mail konnte gerade nicht versendet werden. Bitte später erneut versuchen oder die Verwaltung kontaktieren.", "error");
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Passwort vergessen?";
+    }
+  }
+}
+
+
+function showPasswordRecoveryForm() {
+  passwordRecoveryActive = true;
+  showAuthScreen();
+
+  const tabs = document.querySelector(".auth-tabs");
+  if (tabs) tabs.style.display = "none";
+
+  getElement("loginForm").style.display = "none";
+  getElement("registerForm").style.display = "none";
+  getElement("passwordRecoveryForm").style.display = "block";
+
+  showAuthMessage("Bitte lege jetzt dein neues Passwort fest.", "success");
+}
+
+
+function setupPasswordRecoveryForm() {
+  const form = getElement("passwordRecoveryForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    clearAuthMessage();
+
+    const password = getElement("recoveryNewPassword").value;
+    const confirmation = getElement("recoveryConfirmPassword").value;
+    const button = getElement("recoverySaveButton");
+
+    if (password.length < 8) {
+      showAuthMessage("Das neue Passwort muss mindestens 8 Zeichen haben.", "error");
+      return;
+    }
+
+    if (password !== confirmation) {
+      showAuthMessage("Die beiden Passwörter stimmen nicht überein.", "error");
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "⏳ Passwort wird gespeichert …";
+
+    try {
+      const result = await supabaseClient.auth.updateUser({ password: password });
+      if (result.error) throw result.error;
+
+      getElement("recoveryNewPassword").value = "";
+      getElement("recoveryConfirmPassword").value = "";
+      passwordRecoveryActive = false;
+
+      await supabaseClient.auth.signOut();
+
+      form.style.display = "none";
+      const tabs = document.querySelector(".auth-tabs");
+      if (tabs) tabs.style.display = "flex";
+      showLogin();
+      showAuthMessage("Dein Passwort wurde geändert. Du kannst dich jetzt mit dem neuen Passwort anmelden.", "success");
+    } catch (error) {
+      console.error("Neues Passwort konnte nicht gespeichert werden:", error);
+      showAuthMessage("Das Passwort konnte nicht geändert werden. Bitte den Link erneut öffnen oder einen neuen anfordern.", "error");
+    } finally {
+      button.disabled = false;
+      button.textContent = "Neues Passwort speichern";
+    }
+  });
 }
 
 
@@ -7117,11 +7267,17 @@ function startAuthListener() {
       }
 
 
+      if (event === "PASSWORD_RECOVERY") {
+        showPasswordRecoveryForm();
+        return;
+      }
+
       if (
         event === "SIGNED_IN"
       ) {
 
         if (
+          !passwordRecoveryActive &&
           !initializationRunning &&
           !portalInitialized
         ) {
@@ -7156,6 +7312,7 @@ async function startApplication() {
 
   setupLoginForm();
   setupRegisterForm();
+  setupPasswordRecoveryForm();
 
 
   if (!supabaseClient) {
