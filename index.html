@@ -5482,7 +5482,7 @@ function isPortalQmDocument(item) {
   const path = String(item.path || "");
   const lower = path.toLowerCase();
 
-  if (!/\.(pdf|doc|docx|xls|xlsx|odt|ods|ppt|pptx|rtf|txt)$/i.test(lower)) {
+  if (!/\.(pdf|doc|docx|xls|xlsx|odt|ods|ppt|pptx|rtf|txt|odp|odg|csv|md)$/i.test(lower)) {
     return false;
   }
 
