@@ -2289,6 +2289,14 @@ body.document-viewer-open {
         <button class="btn-refresh" type="button" onclick="loadQmDocumentAckReport(true)">🔄 Lesestatus aktualisieren</button>
       </div>
       <div id="qmAckAdminStatus" style="margin-top:12px;color:var(--muted)">Der Lesestatus wird erst beim Öffnen geladen.</div>
+      <div id="qmAckSearchWrap" style="display:none;margin-top:12px">
+        <label for="qmAckDocumentSearch" style="display:block;font-weight:700;margin-bottom:6px">🔎 Dokument in den Lesebestätigungen suchen</label>
+        <div class="document-search-box">
+          <input id="qmAckDocumentSearch" class="document-search-input" type="search" placeholder="Dokumentname eingeben …" autocomplete="off" oninput="filterQmAckDocuments(this.value)">
+          <span class="document-search-icon">🔍</span>
+        </div>
+      </div>
+      <div id="qmAckNoSearchResults" style="display:none;margin-top:12px;color:var(--muted)">Kein passendes Dokument gefunden.</div>
       <div id="qmAckAdminList" style="margin-top:12px"></div>
     </details>
 
@@ -4357,7 +4365,7 @@ async function loadQmDocumentAckReport(forceReload) {
       return;
     }
     let confirmed = 0, total = 0, newConfirmations = 0;
-    const html = [];
+    const documents = [];
     const newSince = Date.now() - 24 * 60 * 60 * 1000;
     groups.forEach(function(items, path) {
       const version = Number(items[0].version || 1);
@@ -4371,6 +4379,10 @@ async function loadQmDocumentAckReport(forceReload) {
       total += items.length;
       confirmed += done;
       newConfirmations += fresh;
+      const latestAck = items.reduce(function(latest, item) {
+        const time = item.acknowledged_at ? new Date(item.acknowledged_at).getTime() : 0;
+        return Math.max(latest, time);
+      }, 0);
       const rowsHtml = items.map(function(item) {
         const ok = Number(item.acknowledged_version || 0) >= version;
         const dateValue = item.acknowledged_at ? new Date(item.acknowledged_at).getTime() : 0;
@@ -4380,10 +4392,24 @@ async function loadQmDocumentAckReport(forceReload) {
         return "<tr><td>" + escapeHTML(item.employee_name || "Unbenannt") + newTag + "</td><td>" + escapeHTML(item.team || "—") + "</td><td><span class='status " + (ok ? "active" : "inactive") + "'>" + (ok ? "Bestätigt" : "Noch offen") + "</span></td><td>" + escapeHTML(ok ? date : "—") + "</td></tr>";
       }).join("");
       const newSummary = fresh ? " <span style='display:inline-block;margin-left:6px;padding:2px 7px;border-radius:10px;background:#fff0c2;color:#805500;font-size:11px'>+" + fresh + " NEU</span>" : "";
-      html.push("<details style='margin:8px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff'><summary style='cursor:pointer;font-weight:800'>" + escapeHTML(path.split("/").pop()) + " · " + done + "/" + items.length + " bestätigt" + newSummary + " · Version " + version + "</summary><div style='overflow-x:auto;margin-top:10px'><table class='admin-table' style='min-width:580px'><thead><tr><th>Mitarbeiter</th><th>Team</th><th>Status</th><th>Bestätigt am</th></tr></thead><tbody>" + rowsHtml + "</tbody></table></div></details>");
+      const documentName = path.split("/").pop();
+      const searchText = (documentName + " " + path).toLocaleLowerCase("de");
+      const detailsHtml = "<details style='margin:8px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff'><summary style='cursor:pointer;font-weight:800'>" + escapeHTML(documentName) + " · " + done + "/" + items.length + " bestätigt" + newSummary + " · Version " + version + "</summary><div style='overflow-x:auto;margin-top:10px'><table class='admin-table' style='min-width:580px'><thead><tr><th>Mitarbeiter</th><th>Team</th><th>Status</th><th>Bestätigt am</th></tr></thead><tbody>" + rowsHtml + "</tbody></table></div></details>";
+      documents.push({ html: detailsHtml, search: searchText, fresh: fresh, latest: latestAck });
     });
+    documents.sort(function(a, b) {
+      if (a.fresh !== b.fresh) return b.fresh - a.fresh;
+      if (a.latest !== b.latest) return b.latest - a.latest;
+      return a.search.localeCompare(b.search, "de");
+    });
+    list.innerHTML = documents.map(function(item) {
+      return "<div class='qm-ack-document' data-search='" + escapeHTML(item.search) + "'>" + item.html + "</div>";
+    }).join("");
+    const searchWrap = getElement("qmAckSearchWrap");
+    if (searchWrap) searchWrap.style.display = "block";
+    const searchInput = getElement("qmAckDocumentSearch");
+    if (searchInput) filterQmAckDocuments(searchInput.value);
     status.textContent = confirmed + " von " + total + " Bestätigungen vorhanden (" + groups.size + " Dokumente)." + (newConfirmations ? " " + newConfirmations + " neue Bestätigung(en) innerhalb der letzten 24 Stunden." : "");
-    list.innerHTML = html.join("");
     if (summary) summary.textContent = "📋 QM-Lesebestätigungen · " + confirmed + "/" + total + " bestätigt" + (newConfirmations ? " · 🆕 " + newConfirmations + " NEU" : "");
     panel.dataset.loaded = "true";
   } catch (error) {
@@ -4396,6 +4422,22 @@ async function loadQmDocumentAckReport(forceReload) {
   }
 }
 
+
+
+function filterQmAckDocuments(value) {
+  const list = getElement("qmAckAdminList");
+  const noResults = getElement("qmAckNoSearchResults");
+  if (!list) return;
+  const query = String(value || "").trim().toLocaleLowerCase("de");
+  const entries = list.querySelectorAll(".qm-ack-document");
+  let visible = 0;
+  entries.forEach(function(entry) {
+    const matches = !query || String(entry.dataset.search || "").includes(query);
+    entry.style.display = matches ? "" : "none";
+    if (matches) visible++;
+  });
+  if (noResults) noResults.style.display = entries.length && visible === 0 ? "block" : "none";
+}
 
 /* =========================================================
    ADMIN PROFILE
