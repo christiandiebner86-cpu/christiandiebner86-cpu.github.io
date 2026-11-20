@@ -2738,6 +2738,7 @@ let qmDocumentNotifications = [];
 let qmDocumentSyncRunning = false;
 let qmDocumentVersions = Object.create(null);
 let qmAckCurrentDocument = null;
+let qmAckRefreshTimer = null;
 
 
 /* =========================================================
@@ -4330,23 +4331,33 @@ async function loadQmDocumentAckReport() {
       status.textContent = "Noch keine QM-Dokumente erfasst. Bitte Dokumente einmal über das Portal synchronisieren.";
       return;
     }
-    let confirmed = 0, total = 0;
+    let confirmed = 0, total = 0, newConfirmations = 0;
     const html = [];
+    const newSince = Date.now() - 24 * 60 * 60 * 1000;
     groups.forEach(function(items, path) {
       const version = Number(items[0].version || 1);
       const done = items.filter(function(item) {
         return Number(item.acknowledged_version || 0) >= version;
       }).length;
+      const fresh = items.filter(function(item) {
+        return Number(item.acknowledged_version || 0) >= version &&
+          item.acknowledged_at && new Date(item.acknowledged_at).getTime() >= newSince;
+      }).length;
       total += items.length;
       confirmed += done;
+      newConfirmations += fresh;
       const rowsHtml = items.map(function(item) {
         const ok = Number(item.acknowledged_version || 0) >= version;
+        const dateValue = item.acknowledged_at ? new Date(item.acknowledged_at).getTime() : 0;
+        const isNew = ok && dateValue >= newSince;
         const date = item.acknowledged_at ? new Date(item.acknowledged_at).toLocaleString("de-DE") : "—";
-        return "<tr><td>" + escapeHTML(item.employee_name || "Unbenannt") + "</td><td>" + escapeHTML(item.team || "—") + "</td><td><span class='status " + (ok ? "active" : "inactive") + "'>" + (ok ? "Bestätigt" : "Noch offen") + "</span></td><td>" + escapeHTML(ok ? date : "—") + "</td></tr>";
+        const newTag = isNew ? " <strong style='display:inline-block;margin-left:6px;padding:2px 7px;border-radius:10px;background:#fff0c2;color:#805500;font-size:11px'>NEU</strong>" : "";
+        return "<tr><td>" + escapeHTML(item.employee_name || "Unbenannt") + newTag + "</td><td>" + escapeHTML(item.team || "—") + "</td><td><span class='status " + (ok ? "active" : "inactive") + "'>" + (ok ? "Bestätigt" : "Noch offen") + "</span></td><td>" + escapeHTML(ok ? date : "—") + "</td></tr>";
       }).join("");
-      html.push("<details style='margin:8px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff'><summary style='cursor:pointer;font-weight:800'>" + escapeHTML(path.split("/").pop()) + " · " + done + "/" + items.length + " bestätigt · Version " + version + "</summary><div style='overflow-x:auto;margin-top:10px'><table class='admin-table' style='min-width:580px'><thead><tr><th>Mitarbeiter</th><th>Team</th><th>Status</th><th>Bestätigt am</th></tr></thead><tbody>" + rowsHtml + "</tbody></table></div></details>");
+      const newSummary = fresh ? " <span style='display:inline-block;margin-left:6px;padding:2px 7px;border-radius:10px;background:#fff0c2;color:#805500;font-size:11px'>+" + fresh + " NEU</span>" : "";
+      html.push("<details style='margin:8px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff'><summary style='cursor:pointer;font-weight:800'>" + escapeHTML(path.split("/").pop()) + " · " + done + "/" + items.length + " bestätigt" + newSummary + " · Version " + version + "</summary><div style='overflow-x:auto;margin-top:10px'><table class='admin-table' style='min-width:580px'><thead><tr><th>Mitarbeiter</th><th>Team</th><th>Status</th><th>Bestätigt am</th></tr></thead><tbody>" + rowsHtml + "</tbody></table></div></details>");
     });
-    status.textContent = confirmed + " von " + total + " Bestätigungen vorhanden (" + groups.size + " Dokumente).";
+    status.textContent = confirmed + " von " + total + " Bestätigungen vorhanden (" + groups.size + " Dokumente)." + (newConfirmations ? " " + newConfirmations + " neue Bestätigung(en) innerhalb der letzten 24 Stunden." : "");
     list.innerHTML = html.join("");
   } catch (error) {
     console.error("QM-Lesestatus:", error);
@@ -5609,6 +5620,16 @@ async function syncAndLoadQmDocumentNews() {
         });
 
     renderQmDocumentNews();
+    if (currentProfile.role === "admin") {
+      await loadQmDocumentAckReport();
+      if (!qmAckRefreshTimer) {
+        qmAckRefreshTimer = setInterval(function() {
+          if (currentProfile && currentProfile.role === "admin" && currentProfile.active === true) {
+            loadQmDocumentAckReport();
+          }
+        }, 30000);
+      }
+    }
   }
   catch (error) {
     /*
