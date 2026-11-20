@@ -2280,14 +2280,17 @@ body.document-viewer-open {
     <br>
     <br>
 
-    <div id="qmAckAdminPanel" style="margin:24px 0;padding:20px;border:1px solid var(--line);border-radius:16px;background:#fbfcfa">
-      <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
-        <div><h3 style="margin:0">📋 QM-Lesebestätigungen</h3><p style="margin:5px 0;color:var(--muted)">Pro Dokument siehst du, wer die aktuelle Version bestätigt hat und bei wem die Bestätigung noch fehlt.</p></div>
-        <button class="btn-refresh" type="button" onclick="loadQmDocumentAckReport()">🔄 Lesestatus laden</button>
+    <details id="qmAckAdminPanel" style="margin:24px 0;padding:16px 20px;border:1px solid var(--line);border-radius:16px;background:#fbfcfa" ontoggle="onQmAckPanelToggle(this)">
+      <summary style="cursor:pointer;font-weight:800;list-style:revert">
+        <span id="qmAckAdminSummaryText">📋 QM-Lesebestätigungen · zum Öffnen anklicken</span>
+      </summary>
+      <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px">
+        <p style="margin:0;color:var(--muted)">Hier siehst du je Dokument, wer die aktuelle Version bestätigt hat und bei wem die Bestätigung noch fehlt.</p>
+        <button class="btn-refresh" type="button" onclick="loadQmDocumentAckReport(true)">🔄 Lesestatus aktualisieren</button>
       </div>
-      <div id="qmAckAdminStatus" style="margin-top:12px;color:var(--muted)">Noch nicht geladen.</div>
+      <div id="qmAckAdminStatus" style="margin-top:12px;color:var(--muted)">Der Lesestatus wird erst beim Öffnen geladen.</div>
       <div id="qmAckAdminList" style="margin-top:12px"></div>
-    </div>
+    </details>
 
     <div class="admin-table-wrap">
 
@@ -4311,10 +4314,21 @@ async function logout() {
 
 
 
-async function loadQmDocumentAckReport() {
+function onQmAckPanelToggle(panel) {
+  if (panel && panel.open && panel.dataset.loaded !== "true" && panel.dataset.loading !== "true") {
+    loadQmDocumentAckReport();
+  }
+}
+
+async function loadQmDocumentAckReport(forceReload) {
   const status = getElement("qmAckAdminStatus");
   const list = getElement("qmAckAdminList");
-  if (!status || !list || !currentProfile || currentProfile.role !== "admin" || currentProfile.active !== true) return;
+  const panel = getElement("qmAckAdminPanel");
+  const summary = getElement("qmAckAdminSummaryText");
+  if (!status || !list || !panel || !currentProfile || currentProfile.role !== "admin" || currentProfile.active !== true) return;
+  if (panel.dataset.loading === "true") return;
+  if (panel.dataset.loaded === "true" && forceReload !== true) return;
+  panel.dataset.loading = "true";
   status.textContent = "Lesebestätigungen werden geladen …";
   list.innerHTML = "";
   try {
@@ -4370,9 +4384,15 @@ async function loadQmDocumentAckReport() {
     });
     status.textContent = confirmed + " von " + total + " Bestätigungen vorhanden (" + groups.size + " Dokumente)." + (newConfirmations ? " " + newConfirmations + " neue Bestätigung(en) innerhalb der letzten 24 Stunden." : "");
     list.innerHTML = html.join("");
+    if (summary) summary.textContent = "📋 QM-Lesebestätigungen · " + confirmed + "/" + total + " bestätigt" + (newConfirmations ? " · 🆕 " + newConfirmations + " NEU" : "");
+    panel.dataset.loaded = "true";
   } catch (error) {
     console.error("QM-Lesestatus:", error);
     status.textContent = "Lesestatus konnte nicht geladen werden: " + (error.message || "Unbekannter Fehler");
+    if (summary) summary.textContent = "📋 QM-Lesebestätigungen · ⚠️ Laden fehlgeschlagen";
+    panel.dataset.loaded = "false";
+  } finally {
+    panel.dataset.loading = "false";
   }
 }
 
@@ -5631,16 +5651,7 @@ async function syncAndLoadQmDocumentNews() {
         });
 
     renderQmDocumentNews();
-    if (currentProfile.role === "admin") {
-      await loadQmDocumentAckReport();
-      if (!qmAckRefreshTimer) {
-        qmAckRefreshTimer = setInterval(function() {
-          if (currentProfile && currentProfile.role === "admin" && currentProfile.active === true) {
-            loadQmDocumentAckReport();
-          }
-        }, 30000);
-      }
-    }
+    // Den umfangreichen Lesestatusbericht nur bei Bedarf laden.
   }
   catch (error) {
     /*
