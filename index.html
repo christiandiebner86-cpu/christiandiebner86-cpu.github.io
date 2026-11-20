@@ -5566,7 +5566,7 @@ async function syncAndLoadQmDocumentNews() {
     const docs = [];
 
     repositoryTree.forEach(function(item) {
-      if (!isPortalQmPdf(item)) {
+      if (!isPortalQmDocument(item)) {
         return;
       }
 
