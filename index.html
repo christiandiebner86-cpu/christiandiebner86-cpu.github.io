@@ -5904,8 +5904,7 @@ async function markAllQmDocumentNewsSeen() {
   }
 
   try {
-    const excludedPaths = qmDocumentNotifications.map(function(item) { return String(item.path || ""); }).filter(Boolean);
-    const result = await supabaseClient.rpc("acknowledge_all_qm_documents", { p_excluded_paths: excludedPaths });
+    const result = await supabaseClient.rpc("acknowledge_all_qm_documents");
     if (result.error) throw result.error;
 
     const count = Number(result.data || 0);
