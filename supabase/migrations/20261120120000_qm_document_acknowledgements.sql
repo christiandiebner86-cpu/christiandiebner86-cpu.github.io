@@ -111,7 +111,7 @@ begin
   return query
   select d.path, d.version
   from public.qm_documents d
-  where lower(d.path) ~ '[.](pdf|doc|docx|xls|xlsx|odt|ods|ppt|pptx|rtf|txt)$'
+  where lower(d.path) ~ '[.](pdf|doc|docx|xls|xlsx|odt|ods|ppt|pptx|rtf|txt|odp|odg|csv|md)$'
   order by d.path;
 end;
 $$;
@@ -142,7 +142,7 @@ begin
   loop
     v_path := nullif(trim(item->>'path'), '');
     v_sha := coalesce(item->>'sha', '');
-    if v_path is null or lower(v_path) !~ '[.](pdf|doc|docx|xls|xlsx|odt|ods|ppt|pptx|rtf|txt)$' then
+    if v_path is null or lower(v_path) !~ '[.](pdf|doc|docx|xls|xlsx|odt|ods|ppt|pptx|rtf|txt|odp|odg|csv|md)$' then
       continue;
     end if;
     select d.sha into old_sha from public.qm_documents d where d.path = v_path for update;
