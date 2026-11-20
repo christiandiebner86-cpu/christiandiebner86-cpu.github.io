@@ -2280,6 +2280,15 @@ body.document-viewer-open {
     <br>
     <br>
 
+    <div id="qmAckAdminPanel" style="margin:24px 0;padding:20px;border:1px solid var(--line);border-radius:16px;background:#fbfcfa">
+      <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <div><h3 style="margin:0">📋 QM-Lesebestätigungen</h3><p style="margin:5px 0;color:var(--muted)">Pro Dokument siehst du, wer die aktuelle Version bestätigt hat und bei wem die Bestätigung noch fehlt.</p></div>
+        <button class="btn-refresh" type="button" onclick="loadQmDocumentAckReport()">🔄 Lesestatus laden</button>
+      </div>
+      <div id="qmAckAdminStatus" style="margin-top:12px;color:var(--muted)">Noch nicht geladen.</div>
+      <div id="qmAckAdminList" style="margin-top:12px"></div>
+    </div>
+
     <div class="admin-table-wrap">
 
       <table class="admin-table">
@@ -2623,6 +2632,9 @@ body.document-viewer-open {
         type="button"
       >
         ✕ Schließen
+      </button>
+      <button id="documentAcknowledgeButton" type="button" style="border:0;border-radius:9px;padding:9px 12px;background:#dff5e8;color:#17613f;font-weight:800;cursor:pointer;display:none">
+        ✓ Gelesen und zur Kenntnis genommen
       </button>
     </div>
 
@@ -4293,6 +4305,53 @@ async function logout() {
 
   }
 
+}
+
+
+
+
+async function loadQmDocumentAckReport() {
+  const status = getElement("qmAckAdminStatus");
+  const list = getElement("qmAckAdminList");
+  if (!status || !list || !currentProfile || currentProfile.role !== "admin" || currentProfile.active !== true) return;
+  status.textContent = "Lesebestätigungen werden geladen …";
+  list.innerHTML = "";
+  try {
+    const result = await supabaseClient.rpc("get_qm_document_ack_status");
+    if (result.error) throw result.error;
+    const rows = Array.isArray(result.data) ? result.data : [];
+    const groups = new Map();
+    rows.forEach(function(row) {
+      const key = String(row.path);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(row);
+    });
+    if (!groups.size) {
+      status.textContent = "Noch keine QM-Dokumente erfasst. Bitte Dokumente einmal über das Portal synchronisieren.";
+      return;
+    }
+    let confirmed = 0, total = 0;
+    const html = [];
+    groups.forEach(function(items, path) {
+      const version = Number(items[0].version || 1);
+      const done = items.filter(function(item) {
+        return Number(item.acknowledged_version || 0) >= version;
+      }).length;
+      total += items.length;
+      confirmed += done;
+      const rowsHtml = items.map(function(item) {
+        const ok = Number(item.acknowledged_version || 0) >= version;
+        const date = item.acknowledged_at ? new Date(item.acknowledged_at).toLocaleString("de-DE") : "—";
+        return "<tr><td>" + escapeHTML(item.employee_name || "Unbenannt") + "</td><td>" + escapeHTML(item.team || "—") + "</td><td><span class='status " + (ok ? "active" : "inactive") + "'>" + (ok ? "Bestätigt" : "Noch offen") + "</span></td><td>" + escapeHTML(ok ? date : "—") + "</td></tr>";
+      }).join("");
+      html.push("<details style='margin:8px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff'><summary style='cursor:pointer;font-weight:800'>" + escapeHTML(path.split("/").pop()) + " · " + done + "/" + items.length + " bestätigt · Version " + version + "</summary><div style='overflow-x:auto;margin-top:10px'><table class='admin-table' style='min-width:580px'><thead><tr><th>Mitarbeiter</th><th>Team</th><th>Status</th><th>Bestätigt am</th></tr></thead><tbody>" + rowsHtml + "</tbody></table></div></details>");
+    });
+    status.textContent = confirmed + " von " + total + " Bestätigungen vorhanden (" + groups.size + " Dokumente).";
+    list.innerHTML = html.join("");
+  } catch (error) {
+    console.error("QM-Lesestatus:", error);
+    status.textContent = "Lesestatus konnte nicht geladen werden: " + (error.message || "Unbekannter Fehler");
+  }
 }
 
 
@@ -7147,7 +7206,7 @@ async function startApplication() {
    PDF-DOKUMENTE DIREKT IM PORTAL ANZEIGEN
 ========================================================= */
 
-function openDocumentViewer(url, name) {
+function openDocumentViewer(url, name, path) {
 
   const viewer =
     getElement("documentViewer");
@@ -7167,6 +7226,13 @@ function openDocumentViewer(url, name) {
   }
 
   frame.src = url;
+  qmAckCurrentDocument = path ? { path: String(path), version: Number(qmDocumentVersions[String(path)] || 1) } : null;
+  const ackButton = getElement("documentAcknowledgeButton");
+  if (ackButton) {
+    ackButton.style.display = qmAckCurrentDocument ? "inline-block" : "none";
+    ackButton.disabled = false;
+    ackButton.textContent = "✓ Gelesen und zur Kenntnis genommen";
+  }
 
   if (title) {
     title.textContent = name || "Dokument";
@@ -7198,6 +7264,7 @@ function closeDocumentViewer() {
   if (frame) {
     frame.src = "about:blank";
   }
+  qmAckCurrentDocument = null;
 
   document.body.classList.remove("document-viewer-open");
 }
@@ -7253,7 +7320,8 @@ function setupDocumentViewer() {
 
       openDocumentViewer(
         link.href,
-        link.dataset.documentName || "Dokument"
+        link.dataset.documentName || "Dokument",
+        documentPath
       );
 
       if (documentPath) {
@@ -7270,6 +7338,30 @@ function setupDocumentViewer() {
       "click",
       closeDocumentViewer
     );
+  }
+
+  const ackButton = getElement("documentAcknowledgeButton");
+  if (ackButton) {
+    ackButton.addEventListener("click", async function() {
+      if (!qmAckCurrentDocument || !supabaseClient || !currentUser) return;
+      ackButton.disabled = true;
+      ackButton.textContent = "Wird gespeichert …";
+      try {
+        const result = await supabaseClient.rpc("acknowledge_qm_document", {
+          p_path: qmAckCurrentDocument.path,
+          p_version: qmAckCurrentDocument.version
+        });
+        if (result.error) throw result.error;
+        ackButton.textContent = "✓ Bestätigt";
+        ackButton.style.background = "#dff5e8";
+        ackButton.title = "Deine Lesebestätigung wurde gespeichert.";
+      } catch (error) {
+        console.error("QM-Lesebestätigung:", error);
+        ackButton.disabled = false;
+        ackButton.textContent = "Erneut versuchen – Bestätigung speichern";
+        alert("Die Lesebestätigung konnte nicht gespeichert werden: " + (error.message || "Unbekannter Fehler"));
+      }
+    });
   }
 
   viewer.addEventListener(
