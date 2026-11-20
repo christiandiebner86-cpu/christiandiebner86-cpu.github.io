@@ -4318,9 +4318,20 @@ async function loadQmDocumentAckReport() {
   status.textContent = "Lesebestätigungen werden geladen …";
   list.innerHTML = "";
   try {
-    const result = await supabaseClient.rpc("get_qm_document_ack_status");
-    if (result.error) throw result.error;
-    const rows = Array.isArray(result.data) ? result.data : [];
+    // PostgREST liefert standardmäßig höchstens 1.000 Zeilen pro Anfrage.
+    // Der Bericht enthält mehrere tausend Mitarbeiter-Dokument-Zuordnungen,
+    // deshalb alle Seiten explizit laden.
+    const pageSize = 1000;
+    const rows = [];
+    for (let offset = 0; ; offset += pageSize) {
+      const result = await supabaseClient
+        .rpc("get_qm_document_ack_status")
+        .range(offset, offset + pageSize - 1);
+      if (result.error) throw result.error;
+      const page = Array.isArray(result.data) ? result.data : [];
+      rows.push(...page);
+      if (page.length < pageSize) break;
+    }
     const groups = new Map();
     rows.forEach(function(row) {
       const key = String(row.path);
