@@ -1818,7 +1818,7 @@ body.document-viewer-open {
         type="button"
         onclick="markAllQmDocumentNewsSeen()"
       >
-        Alle als gesehen markieren
+        Alle bisherigen QM-Dokumente als gelesen bestätigen
       </button>
     </div>
     <div id="qmDocumentNewsList" class="qm-news-list"></div>
@@ -5887,42 +5887,42 @@ async function markQmDocumentSeen(path, version) {
 
 
 async function markAllQmDocumentNewsSeen() {
-  if (!qmDocumentNotifications.length) {
+  if (!supabaseClient || !currentUser || !currentProfile || currentProfile.active !== true) {
     return;
   }
 
-  const items =
-    qmDocumentNotifications.slice();
+  const confirmed = window.confirm(
+    "Du bestätigst damit die aktuelle Version aller derzeit im QM-Portal hinterlegten Dokumente als gelesen und zur Kenntnis genommen.\n\nBitte nur fortfahren, wenn du diese Dokumente tatsächlich bereits gelesen hast. Neue oder später geänderte Dokumente müssen anschließend wieder einzeln bestätigt werden.\n\nMöchtest du alle aktuellen QM-Dokumente gesammelt bestätigen?"
+  );
 
-  qmDocumentNotifications = [];
-  renderQmDocumentNews();
+  if (!confirmed) return;
+
+  const button = getElement("qmDocumentNewsAllRead");
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Bestätigungen werden gespeichert …";
+  }
 
   try {
-    const payload =
-      items.map(function(item) {
-        return {
-          path: String(item.path || ""),
-          version: Number(item.version || 1)
-        };
-      });
+    const result = await supabaseClient.rpc("acknowledge_all_qm_documents");
+    if (result.error) throw result.error;
 
-    const result =
-      await supabaseClient.rpc(
-        "mark_qm_documents_seen",
-        { p_documents: payload }
-      );
+    const count = Number(result.data || 0);
+    qmDocumentNotifications = [];
+    renderQmDocumentNews();
 
-    if (result.error) {
-      throw result.error;
-    }
-  }
-  catch (error) {
-    console.warn(
-      "Dokumente konnten nicht vollständig als gesehen gespeichert werden:",
-      error
+    window.alert(
+      count + " QM-Dokumente wurden für dein Benutzerkonto als gelesen und zur Kenntnis genommen bestätigt.\n\nNeue oder geänderte Dokumente müssen künftig wieder einzeln bestätigt werden."
     );
-
+  } catch (error) {
+    console.error("Gesammelte QM-Lesebestätigung fehlgeschlagen:", error);
+    window.alert("Die Sammelbestätigung konnte nicht gespeichert werden: " + (error.message || "Unbekannter Fehler"));
     await syncAndLoadQmDocumentNews();
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Alle bisherigen QM-Dokumente als gelesen bestätigen";
+    }
   }
 }
 
