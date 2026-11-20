@@ -5569,6 +5569,11 @@ function isPortalQmDocument(item) {
   if (!/\.(pdf|doc|docx|xls|xlsx|odt|ods|ppt|pptx|rtf|txt|odp|odg|csv|md)$/i.test(lower)) {
     return false;
   }
+  const fileName = lower.split("/").pop();
+  if (fileName === "readme.md" || fileName === "readme.txt" || fileName === "readme") {
+    return false;
+  }
+
 
   if (lower.includes("zapke")) {
     return false;
