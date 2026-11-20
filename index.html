@@ -5892,7 +5892,7 @@ async function markAllQmDocumentNewsSeen() {
   }
 
   const confirmed = window.confirm(
-    "Du bestätigst damit die aktuelle Version aller derzeit im QM-Portal hinterlegten Dokumente als gelesen und zur Kenntnis genommen.\n\nBitte nur fortfahren, wenn du diese Dokumente tatsächlich bereits gelesen hast. Neue oder später geänderte Dokumente müssen anschließend wieder einzeln bestätigt werden.\n\nMöchtest du alle aktuellen QM-Dokumente gesammelt bestätigen?"
+    "Du bestätigst damit die aktuelle Version aller derzeit im QM-Portal hinterlegten Dokumente als gelesen und zur Kenntnis genommen.\n\nBitte nur fortfahren, wenn du diese Dokumente tatsächlich bereits gelesen hast. Die oben als NEU oder AKTUALISIERT angezeigten Dokumente werden ausgelassen und müssen einzeln geöffnet und bestätigt werden.\n\nMöchtest du alle übrigen bisherigen QM-Dokumente gesammelt bestätigen?"
   );
 
   if (!confirmed) return;
@@ -5904,15 +5904,15 @@ async function markAllQmDocumentNewsSeen() {
   }
 
   try {
-    const result = await supabaseClient.rpc("acknowledge_all_qm_documents");
+    const excludedPaths = qmDocumentNotifications.map(function(item) { return String(item.path || ""); }).filter(Boolean);
+    const result = await supabaseClient.rpc("acknowledge_all_qm_documents", { p_excluded_paths: excludedPaths });
     if (result.error) throw result.error;
 
     const count = Number(result.data || 0);
-    qmDocumentNotifications = [];
     renderQmDocumentNews();
 
     window.alert(
-      count + " QM-Dokumente wurden für dein Benutzerkonto als gelesen und zur Kenntnis genommen bestätigt.\n\nNeue oder geänderte Dokumente müssen künftig wieder einzeln bestätigt werden."
+      count + " bisherige QM-Dokumente wurden für dein Benutzerkonto als gelesen und zur Kenntnis genommen bestätigt.\n\nDie oben als NEU oder AKTUALISIERT angezeigten Dokumente wurden bewusst ausgelassen. Bitte öffne und bestätige diese einzeln."
     );
   } catch (error) {
     console.error("Gesammelte QM-Lesebestätigung fehlgeschlagen:", error);
