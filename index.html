@@ -5483,7 +5483,15 @@ function printQmForm(type){
   document.body.appendChild(area);
   document.body.classList.add("qm-printing");
   window.addEventListener("afterprint",cleanup,{once:true});
-  window.setTimeout(function(){window.print();},80);
+  /* Druckdialog direkt im Klick-Aufruf öffnen: verzögerte Aufrufe per setTimeout
+     verlieren auf einigen Mobilbrowsern die Benutzeraktion und tun scheinbar nichts. */
+  try {
+    window.print();
+  } catch (error) {
+    cleanup();
+    console.error("QM-Formular drucken:", error);
+    alert("Der Druckdialog konnte nicht geöffnet werden. Bitte öffne die Seite im Browser und versuche es erneut.");
+  }
 }
 
 function resetQmForm(type){
