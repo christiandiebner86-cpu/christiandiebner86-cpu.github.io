@@ -5516,12 +5516,27 @@ function qmFormCard(type){
 function qmRecordSelect(type){
   const ids={pflegevisite:"qmPflegevisiteRecordSelect",begleitung:"qmBegleitungRecordSelect",dienstberatung:"qmDienstberatungRecordSelect",fallbesprechung:"qmFallbesprechungRecordSelect"}; return document.getElementById(ids[type]);
 }
+function qmFormFieldKey(el){
+  if(el.id)return el.id;
+  const fields=[
+    ["data-qm-status","qm-status:"],
+    ["data-qm-note","qm-note:"],
+    ["data-qm-special","qm-special:"],
+    ["data-qm-detail","qm-detail:"],
+    ["data-b-status","b-status:"],
+    ["data-b-note","b-note:"]
+  ];
+  for(const field of fields){
+    if(el.hasAttribute(field[0]))return field[1]+el.getAttribute(field[0]);
+  }
+  return "";
+}
 function qmCollectFormData(type){
   const card=qmFormCard(type);
   if(!card)return {};
   const data={};
   card.querySelectorAll("input,select,textarea").forEach(function(el){
-    const key=el.id || el.dataset.qmStatus || el.dataset.qmNote || el.dataset.qmSpecial || el.dataset.qmDetail || el.dataset.bStatus || el.dataset.bNote;
+    const key=qmFormFieldKey(el);
     if(key)data[key]=el.value ?? "";
   });
   return data;
@@ -5531,8 +5546,19 @@ function qmApplyFormData(type,data){
   if(!card)return;
   const values=data||{};
   card.querySelectorAll("input,select,textarea").forEach(function(el){
-    const key=el.id || el.dataset.qmStatus || el.dataset.qmNote || el.dataset.qmSpecial || el.dataset.qmDetail || el.dataset.bStatus || el.dataset.bNote;
-    if(key && Object.prototype.hasOwnProperty.call(values,key))el.value=values[key]==null?"":String(values[key]);
+    const key=qmFormFieldKey(el);
+    if(!key)return;
+    let valueKey=key;
+    if(!Object.prototype.hasOwnProperty.call(values,valueKey)){
+      // Alte Datensätze nutzten für Bemerkungen noch den unpräfixierten Schlüssel.
+      const legacyAttr=el.hasAttribute("data-qm-note")?"data-qm-note":el.hasAttribute("data-b-note")?"data-b-note":null;
+      if(legacyAttr){
+        const legacyKey=el.getAttribute(legacyAttr);
+        if(Object.prototype.hasOwnProperty.call(values,legacyKey))valueKey=legacyKey;
+        else return;
+      }else return;
+    }
+    el.value=values[valueKey]==null?"":String(values[valueKey]);
   });
 }
 function qmNewFormRecord(type){
