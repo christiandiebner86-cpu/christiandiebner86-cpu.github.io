@@ -654,67 +654,6 @@ main {
 }
 
 /* =========================================================
-   FORMULARE & VORLAGEN – VIRTUELLE SAMMELANSICHT
-========================================================= */
-
-function getFormTemplateFiles() {
-  const formPattern = /formular|formblatt|vordruck|vorlage|checkliste|protokoll|antrag|nachweisblatt|unfallbericht|pflegevisitenprotokoll/i;
-  return repositoryTree
-    .filter(function(item) {
-      if (!isPortalQmDocument(item)) return false;
-      const path = String(item.path || "");
-      const lower = path.toLowerCase();
-      const name = lower.split("/").pop() || lower;
-      if (lower.includes("anweisungen von pdl an mitarbeiter") ||
-          lower.includes("/dienstanweisungen/") ||
-          lower.startsWith("dienstanweisungen/")) return false;
-      return formPattern.test(name);
-    })
-    .sort(function(a,b) {
-      return String(a.path).localeCompare(String(b.path), "de", {numeric:true, sensitivity:"base"});
-    });
-}
-
-function openFormTemplateFolder(anchorCard) {
-  const panel = getElement("contentPanel");
-  const content = getElement("folderContent");
-  const breadcrumb = getElement("breadcrumb");
-  if (!panel || !content || !breadcrumb) return;
-
-  document.querySelectorAll(".folder-card.is-open").forEach(function(card) {
-    card.classList.remove("is-open");
-  });
-  if (anchorCard) {
-    anchorCard.classList.add("is-open");
-    anchorCard.insertAdjacentElement("afterend", panel);
-  }
-
-  panel.classList.add("active");
-  currentFolderPath = "__form_template_collection__";
-  breadcrumb.textContent = "📁 Formulare & Vorlagen";
-
-  const files = getFormTemplateFiles();
-  let html = '<div class="pdl-list-intro"><strong>' + files.length + ' Formulare und Vorlagen</strong> · Zentrale Übersicht über passende Dokumente aus allen QM-Bereichen. Die Originaldateien bleiben an ihrem bisherigen Ablageort.</div>';
-
-  if (!files.length) {
-    html += '<div class="loading">Aktuell wurden keine passenden Formulare oder Vorlagen gefunden.</div>';
-  } else {
-    html += '<h3>📄 Alle Formulare & Vorlagen</h3><div class="file-list">';
-    files.forEach(function(file) {
-      const parts = String(file.path).split("/");
-      const name = parts.pop() || file.path;
-      const folder = parts.join(" / ");
-      html += '<a class="file-card js-document-preview" href="' + escapeHTML(fileURL(file.path)) + '" data-document-name="' + escapeHTML(cleanFileName(name)) + '" data-document-path="' + escapeHTML(file.path) + '" target="_blank" rel="noopener noreferrer">' +
-        '<div class="file-icon">' + fileIcon(name) + '</div>' +
-        '<div><div class="file-name">' + escapeHTML(cleanFileName(name)) + '</div><div class="file-info">' + escapeHTML(folder || "QM-Dokumente") + '</div></div></a>';
-    });
-    html += '</div>';
-  }
-  content.innerHTML = html;
-}
-
-
-/* =========================================================
    DOKUMENTSUCHE
 ========================================================= */
 
@@ -2752,6 +2691,71 @@ body.document-viewer-open {
 
 
 <script>
+
+/* =========================================================
+   FORMULARE & VORLAGEN – VIRTUELLE SAMMELANSICHT
+========================================================= */
+
+function getFormTemplateFiles() {
+  const formPattern = /formular|formblatt|vordruck|vorlage|checkliste|protokoll|antrag|nachweisblatt|unfallbericht|pflegevisitenprotokoll/i;
+  return repositoryTree
+    .filter(function(item) {
+      if (!isPortalQmDocument(item)) return false;
+      const path = String(item.path || "");
+      const lower = path.toLowerCase();
+      const name = lower.split("/").pop() || lower;
+      if (lower.includes("anweisungen von pdl an mitarbeiter") ||
+          lower.includes("/dienstanweisungen/") ||
+          lower.startsWith("dienstanweisungen/")) return false;
+      return formPattern.test(name);
+    })
+    .sort(function(a,b) {
+      return String(a.path).localeCompare(String(b.path), "de", {numeric:true, sensitivity:"base"});
+    });
+}
+
+function openFormTemplateFolder(anchorCard) {
+  const panel = getElement("contentPanel");
+  const content = getElement("folderContent");
+  const breadcrumb = getElement("breadcrumb");
+  if (!panel || !content || !breadcrumb) return;
+
+  document.querySelectorAll(".folder-card.is-open").forEach(function(card) {
+    card.classList.remove("is-open");
+  });
+  if (anchorCard) {
+    anchorCard.classList.add("is-open");
+    anchorCard.insertAdjacentElement("afterend", panel);
+  }
+
+  panel.classList.add("active");
+  currentFolderPath = "__form_template_collection__";
+  breadcrumb.textContent = "📁 Formulare & Vorlagen";
+
+  const files = getFormTemplateFiles();
+  let html = '<div class="pdl-list-intro"><strong>' + files.length + ' Formulare und Vorlagen</strong> · Zentrale Übersicht über passende Dokumente aus allen QM-Bereichen. Die Originaldateien bleiben an ihrem bisherigen Ablageort.</div>';
+
+  if (!files.length) {
+    html += '<div class="loading">Aktuell wurden keine passenden Formulare oder Vorlagen gefunden.</div>';
+  } else {
+    html += '<h3>📄 Alle Formulare & Vorlagen</h3><div class="file-list">';
+    files.forEach(function(file) {
+      const parts = String(file.path).split("/");
+      const name = parts.pop() || file.path;
+      const folder = parts.join(" / ");
+      html += '<a class="file-card js-document-preview" href="' + escapeHTML(fileURL(file.path)) + '" data-document-name="' + escapeHTML(cleanFileName(name)) + '" data-document-path="' + escapeHTML(file.path) + '" target="_blank" rel="noopener noreferrer">' +
+        '<div class="file-icon">' + fileIcon(name) + '</div>' +
+        '<div><div class="file-name">' + escapeHTML(cleanFileName(name)) + '</div><div class="file-info">' + escapeHTML(folder || "QM-Dokumente") + '</div></div></a>';
+    });
+    html += '</div>';
+  }
+  content.innerHTML = html;
+}
+
+
+
+
+
 "use strict";
 
 /* =========================================================
