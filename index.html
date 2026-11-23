@@ -5545,6 +5545,12 @@ function qmApplyFormData(type,data){
   const card=qmFormCard(type);
   if(!card)return;
   const values=data||{};
+  // Vor jedem Datensatzwechsel alle Felder zurücksetzen, damit keine Werte
+  // aus der zuvor geöffneten Visite in der neuen Anzeige stehen bleiben.
+  card.querySelectorAll("input,select,textarea").forEach(function(el){
+    if(el.tagName==="SELECT")el.selectedIndex=0;
+    else el.value="";
+  });
   card.querySelectorAll("input,select,textarea").forEach(function(el){
     const key=qmFormFieldKey(el);
     if(!key)return;
