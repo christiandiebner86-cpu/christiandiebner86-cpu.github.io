@@ -6981,6 +6981,15 @@ function openFolder(path, anchorCard) {
           }
 
 
+          /* Dienstanweisungen werden zentral über den PDL-Schnellzugriff angezeigt. */
+          if (
+            String(currentFolderPath || "").toLowerCase().startsWith("06 personal & schulungen") &&
+            (name === "dienstanweisungen" || name.includes("anweisungen von pdl an mitarbeiter"))
+          ) {
+            return false;
+          }
+
+
           return true;
 
         }
