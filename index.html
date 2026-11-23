@@ -654,6 +654,48 @@ main {
 }
 
 /* =========================================================
+   PDL-ANWEISUNGEN – VIRTUELLE SAMMELANSICHT
+========================================================= */
+
+function renderPdlDocumentList() {
+  const container = getElement("pdlFolders");
+  if (!container) return;
+
+  const files = repositoryTree
+    .filter(function(item) {
+      if (!isPortalQmDocument(item)) return false;
+      const path = String(item.path || "").toLowerCase();
+      return (
+        path.includes("anweisungen von pdl an mitarbeiter") ||
+        path.includes("/dienstanweisungen/") ||
+        path.startsWith("dienstanweisungen/")
+      );
+    })
+    .sort(function(a,b) {
+      return String(a.path).localeCompare(String(b.path), "de", {numeric:true, sensitivity:"base"});
+    });
+
+  if (!files.length) {
+    container.innerHTML = '<div class="loading">Aktuell sind keine PDL-Anweisungen im Dokumentenbestand gefunden worden.</div>';
+    return;
+  }
+
+  container.innerHTML =
+    '<div class="pdl-list-intro"><strong>' + files.length + ' Anweisungen</strong> · Alle passenden Dokumente direkt an einem Ort. Die Originaldateien bleiben in ihren bisherigen QM-Ordnern.</div>' +
+    '<div class="file-list">' +
+      files.map(function(file) {
+        const parts = String(file.path).split("/");
+        const name = parts.pop() || file.path;
+        const folder = parts.join(" / ");
+        return '<a class="file-card js-document-preview" href="' + escapeHTML(fileURL(file.path)) + '" data-document-name="' + escapeHTML(cleanFileName(name)) + '" data-document-path="' + escapeHTML(file.path) + '" target="_blank" rel="noopener noreferrer">' +
+          '<div class="file-icon">' + fileIcon(name) + '</div>' +
+          '<div><div class="search-result-name">' + escapeHTML(cleanFileName(name)) + '</div><div class="search-result-path">' + escapeHTML(folder) + '</div></div></a>';
+      }).join("") +
+    '</div>';
+}
+
+
+/* =========================================================
    DOKUMENTSUCHE
 ========================================================= */
 
@@ -6217,7 +6259,6 @@ function renderMainSections() {
   const standards = [];
   const training = [];
   const bilder = [];
-  const pdl = [];
 
 
   /*
@@ -6381,66 +6422,7 @@ function renderMainSections() {
   );
 
 
-  /*
-   * -------------------------------------------------------
-   * PDL AUS /dokumente/
-   * -------------------------------------------------------
-   */
-
-  const exactPDL =
-    "dokumente/Anweisungen von PDL an Mitarbeiter";
-
-
-  let pdlFolder =
-    repositoryTree.find(
-      function(item) {
-
-        return (
-          item.type === "tree" &&
-          String(item.path).toLowerCase() ===
-            exactPDL.toLowerCase()
-        );
-
-      }
-    );
-
-
-  if (!pdlFolder) {
-
-    pdlFolder =
-      repositoryTree.find(
-        function(item) {
-
-          if (item.type !== "tree") {
-            return false;
-          }
-
-
-          const path =
-            String(item.path || "")
-              .toLowerCase();
-
-
-          return (
-            path.startsWith("dokumente/") &&
-            path.includes(
-              "anweisungen von pdl an mitarbeiter"
-            )
-          );
-
-        }
-      );
-
-  }
-
-
-  if (pdlFolder) {
-
-    pdl.push(
-      pdlFolder.path
-    );
-
-  }
+  /* PDL documents are displayed in a virtual aggregate list. */
 
 
   /*
@@ -6467,7 +6449,6 @@ function renderMainSections() {
   standards.sort(sortFolders);
   training.sort(sortFolders);
   bilder.sort(sortFolders);
-  pdl.sort(sortFolders);
 
 
   /*
@@ -6496,10 +6477,7 @@ function renderMainSections() {
     bilder
   );
 
-  renderFolderGrid(
-    "pdlFolders",
-    pdl
-  );
+  renderPdlDocumentList();
 
 }
 
