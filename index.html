@@ -1850,7 +1850,7 @@ body.document-viewer-open {
         type="button"
         onclick="markAllQmDocumentNewsSeen()"
       >
-        Alle bisherigen QM-Dokumente als gelesen bestätigen
+        Alle QM-Dokumente als gelesen bestätigen
       </button>
     </div>
     <div id="qmDocumentNewsList" class="qm-news-list"></div>
@@ -6070,7 +6070,7 @@ async function markAllQmDocumentNewsSeen() {
   }
 
   const confirmed = window.confirm(
-    "Du bestätigst damit die aktuelle Version aller derzeit im QM-Portal hinterlegten Dokumente als gelesen und zur Kenntnis genommen.\n\nBitte nur fortfahren, wenn du diese Dokumente tatsächlich bereits gelesen hast. Die oben als NEU oder AKTUALISIERT angezeigten Dokumente werden ausgelassen und müssen einzeln geöffnet und bestätigt werden.\n\nMöchtest du alle übrigen bisherigen QM-Dokumente gesammelt bestätigen?"
+    "Du bestätigst damit die aktuelle Version ALLER derzeit im QM-Portal hinterlegten Dokumente – einschließlich aller als NEU oder AKTUALISIERT gekennzeichneten Dokumente – als gelesen und zur Kenntnis genommen.\n\nBitte nur fortfahren, wenn du alle Dokumente tatsächlich gelesen hast.\n\nMöchtest du wirklich alle QM-Dokumente gesammelt bestätigen?"
   );
 
   if (!confirmed) return;
@@ -6089,7 +6089,7 @@ async function markAllQmDocumentNewsSeen() {
     renderQmDocumentNews();
 
     window.alert(
-      count + " bisherige QM-Dokumente wurden für dein Benutzerkonto als gelesen und zur Kenntnis genommen bestätigt.\n\nDie oben als NEU oder AKTUALISIERT angezeigten Dokumente wurden bewusst ausgelassen. Bitte öffne und bestätige diese einzeln."
+      count + " QM-Dokumente wurden für dein Benutzerkonto als gelesen und zur Kenntnis genommen bestätigt. Das umfasst auch die bisher als NEU oder AKTUALISIERT gekennzeichneten Dokumente."
     );
   } catch (error) {
     console.error("Gesammelte QM-Lesebestätigung fehlgeschlagen:", error);
@@ -6098,7 +6098,7 @@ async function markAllQmDocumentNewsSeen() {
   } finally {
     if (button) {
       button.disabled = false;
-      button.textContent = "Alle bisherigen QM-Dokumente als gelesen bestätigen";
+      button.textContent = "Alle QM-Dokumente als gelesen bestätigen";
     }
   }
 }
