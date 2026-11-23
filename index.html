@@ -1902,7 +1902,7 @@ body.document-viewer-open {
     </span>
 
     <h2>
-      QM-Handbuch
+      01 QM-Handbuch & Qualitätsmanagement
     </h2>
 
   </div>
@@ -1937,7 +1937,7 @@ body.document-viewer-open {
     </span>
 
     <h2>
-      Standards & Verfahrensanweisungen
+      02–05 Pflege, Medizinprodukte, Hygiene & Arbeitsschutz
     </h2>
 
   </div>
@@ -1972,7 +1972,7 @@ body.document-viewer-open {
     </span>
 
     <h2>
-      Schulungen & Unterweisungen
+      06 Personal & Schulungen
     </h2>
 
   </div>
@@ -2007,7 +2007,7 @@ body.document-viewer-open {
     </span>
 
     <h2>
-      Bilderlaubnis
+      07–08 Formulare, Vorlagen, Prüfungen & Nachweise
     </h2>
 
   </div>
@@ -6262,13 +6262,26 @@ function renderMainSections() {
         return;
       }
 
-      if (n.startsWith("02 pflege & betreuung")) {
+      if (
+        n.startsWith("02 pflege & betreuung") ||
+        n.startsWith("03 medizinprodukte") ||
+        n.startsWith("04 hygiene") ||
+        n.startsWith("05 arbeitsschutz")
+      ) {
         standards.push(path);
         return;
       }
 
       if (n.startsWith("06 personal & schulungen")) {
         training.push(path);
+        return;
+      }
+
+      if (
+        n.startsWith("07 formulare & vorlagen") ||
+        n.startsWith("08 prüfungen, audits & nachweise")
+      ) {
+        bilder.push(path);
         return;
       }
 
