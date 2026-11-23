@@ -6245,6 +6245,12 @@ function renderMainSections() {
         name.toLowerCase();
 
 
+      /* Unterordner gehören ausschließlich in die geöffnete Hauptordner-Ansicht. */
+      if (path.includes("/")) {
+        return;
+      }
+
+
       /*
        * Neue gemeinsame QM-Hauptstruktur:
        * Die beiden bisherigen Bereiche greifen jetzt auf
