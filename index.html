@@ -5987,41 +5987,32 @@ function applyQmNewBadges() {
   document
     .querySelectorAll("a.js-document-preview[data-document-path]")
     .forEach(function(link) {
-      const old =
-        link.querySelector(".qm-new-doc-badge");
-
-      if (old) {
-        old.remove();
-      }
-
-      const unread =
-        unreadQmDocumentByPath(
-          link.dataset.documentPath
-        );
+      const badge = link.querySelector(".qm-new-doc-badge");
+      const unread = unreadQmDocumentByPath(link.dataset.documentPath);
 
       if (!unread) {
+        if (badge) badge.remove();
         return;
       }
 
-      const name =
-        link.querySelector(".file-name");
+      const name = link.querySelector(".file-name");
+      if (!name) return;
 
-      if (!name) {
+      const label = String(unread.notice_type || "") === "updated"
+        ? "AKTUALISIERT"
+        : "NEU";
+
+      // Vorhandene Kennzeichen wiederverwenden: Änderungen am DOM
+      // dürfen den globalen MutationObserver nicht erneut dauerhaft auslösen.
+      if (badge) {
+        if (badge.textContent !== label) badge.textContent = label;
         return;
       }
 
-      const badge =
-        document.createElement("span");
-
-      badge.className =
-        "qm-new-doc-badge";
-
-      badge.textContent =
-        String(unread.notice_type || "") === "updated"
-          ? "AKTUALISIERT"
-          : "NEU";
-
-      name.appendChild(badge);
+      const newBadge = document.createElement("span");
+      newBadge.className = "qm-new-doc-badge";
+      newBadge.textContent = label;
+      name.appendChild(newBadge);
     });
 }
 
