@@ -6238,21 +6238,43 @@ function renderMainSections() {
         String(item.path || "");
 
 
-      /*
-       * Nur direkte Root-Ordner.
-       */
-
-      if (path.includes("/")) {
-        return;
-      }
-
-
       const name =
         path.trim();
 
 
       const n =
         name.toLowerCase();
+
+
+      /*
+       * Neue gemeinsame QM-Hauptstruktur:
+       * Die beiden bisherigen Bereiche greifen jetzt auf
+       * die vereinheitlichten Hauptordner zu.
+       */
+
+      if (n.startsWith("01 qm-handbuch")) {
+        qm.push(path);
+        return;
+      }
+
+      if (n.startsWith("02 pflege & betreuung")) {
+        standards.push(path);
+        return;
+      }
+
+      if (n.startsWith("06 personal & schulungen")) {
+        training.push(path);
+        return;
+      }
+
+
+      /*
+       * Nur direkte Root-Ordner für die übrigen Altbereiche.
+       */
+
+      if (path.includes("/")) {
+        return;
+      }
 
 
       /*
