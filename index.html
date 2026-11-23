@@ -7105,12 +7105,7 @@ function openFolder(path, anchorCard) {
       .filter(
         function(item) {
 
-          return (
-            item.type === "blob" &&
-            !String(item.path)
-              .toLowerCase()
-              .includes("zapke")
-          );
+          return isPortalQmDocument(item);
 
         }
       )
