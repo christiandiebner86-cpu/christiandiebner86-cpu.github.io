@@ -1894,6 +1894,34 @@ function tsChange(month,day,field,value){
   }
   qmTimesheets[key]=ts;
   renderTimesheet();
+  scheduleTimesheetAutosave(month);
+}
+
+const timesheetAutosaveTimers=new Map();
+function scheduleTimesheetAutosave(month){
+  const userId=qmAuthUser?.id;
+  const key=tsKey(userId,month);
+  const status=document.getElementById("timesheetStatus");
+  if(status)status.innerHTML='<span class="badge wait">Änderung wird automatisch gespeichert …</span>';
+  clearTimeout(timesheetAutosaveTimers.get(key));
+  const timer=setTimeout(async()=>{
+    try{
+      await saveMyTimesheet(month,false);
+      if(document.getElementById("timesheetMonth")?.value===month){
+        renderTimesheet();
+        const current=document.getElementById("timesheetStatus");
+        if(current)current.innerHTML='<span class="badge ok">✓ Änderungen automatisch gespeichert</span>';
+      }
+    }catch(error){
+      console.error("Automatisches Speichern des Stundenzettels:",error);
+      const current=document.getElementById("timesheetStatus");
+      if(current)current.innerHTML='<span class="badge" style="background:#ffe8e8;color:#9b1c1c">Speichern fehlgeschlagen – bitte erneut ändern oder Seite nicht schließen.</span>';
+      alert("Änderung am Stundenzettel konnte nicht gespeichert werden: "+(error.message||"Unbekannter Fehler"));
+    }finally{
+      timesheetAutosaveTimers.delete(key);
+    }
+  },800);
+  timesheetAutosaveTimers.set(key,timer);
 }
 
 async function submitTimesheet(){
