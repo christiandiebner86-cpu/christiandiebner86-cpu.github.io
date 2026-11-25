@@ -1850,7 +1850,7 @@ body.document-viewer-open {
         type="button"
         onclick="markAllQmDocumentNewsSeen()"
       >
-        Alle QM-Dokumente als gelesen bestätigen
+        Ältere QM-Dokumente gesammelt als gelesen bestätigen
       </button>
     </div>
     <div id="qmDocumentNewsList" class="qm-news-list"></div>
@@ -6135,7 +6135,7 @@ async function markAllQmDocumentNewsSeen() {
   }
 
   const confirmed = window.confirm(
-    "Du bestätigst damit die aktuelle Version ALLER derzeit im QM-Portal hinterlegten Dokumente – einschließlich aller als NEU oder AKTUALISIERT gekennzeichneten Dokumente – als gelesen und zur Kenntnis genommen.\n\nBitte nur fortfahren, wenn du alle Dokumente tatsächlich gelesen hast.\n\nMöchtest du wirklich alle QM-Dokumente gesammelt bestätigen?"
+    "Du bestätigst damit nur den älteren Dokumentbestand, der bereits durch die Verwaltung geprüft und bestätigt wurde. Neue oder seitdem aktualisierte Dokumente sind ausdrücklich ausgeschlossen und müssen einzeln geöffnet und bestätigt werden.\n\nMöchtest du die älteren QM-Dokumente gesammelt als gelesen bestätigen?"
   );
 
   if (!confirmed) return;
@@ -6154,7 +6154,7 @@ async function markAllQmDocumentNewsSeen() {
     renderQmDocumentNews();
 
     window.alert(
-      count + " QM-Dokumente wurden für dein Benutzerkonto als gelesen und zur Kenntnis genommen bestätigt. Das umfasst auch die bisher als NEU oder AKTUALISIERT gekennzeichneten Dokumente."
+      count + " ältere QM-Dokumente wurden für dein Benutzerkonto als gelesen bestätigt. Neue oder aktualisierte Dokumente müssen weiterhin einzeln geöffnet und bestätigt werden."
     );
   } catch (error) {
     console.error("Gesammelte QM-Lesebestätigung fehlgeschlagen:", error);
@@ -6163,7 +6163,7 @@ async function markAllQmDocumentNewsSeen() {
   } finally {
     if (button) {
       button.disabled = false;
-      button.textContent = "Alle QM-Dokumente als gelesen bestätigen";
+      button.textContent = "Ältere QM-Dokumente gesammelt als gelesen bestätigen";
     }
   }
 }
